@@ -91,6 +91,8 @@ def create_model():
     model.add(Activation('softmax'))
 
     model.compile(loss='binary_crossentropy', optimizer="adam", metrics=['accuracy'])
+
+    return model
 # }}}
 
 # {{{ load_images()
@@ -131,15 +133,19 @@ def train(tr_cover_dir, tr_stego_dir, ts_cover_dir, ts_stego_dir, model_file):
     Xt = np_utils.to_categorical(Xt, 2)
     Yt = np_utils.to_categorical(Yt, 2)
 
-    idx=range(len(X))
+    idx=list(range(len(X)))
     random.shuffle(idx)
 
     X=X[idx]
     Xt=Xt[idx]
 
+
     model = create_model()
     model.fit(X, Xt, batch_size=64, epochs=100, validation_data=(Y, Yt), shuffle=True)
     model.save_weights(model_file)
 # }}}
+
+
+
 
 
