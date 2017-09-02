@@ -2,10 +2,14 @@
 
 import sys
 import numpy
-from scipy import ndimage, misc
-from cmath import sqrt
 import ntpath
 import tempfile
+from scipy import ndimage, misc
+from cmath import sqrt
+
+from PIL import Image
+from PIL.ExifTags import TAGS
+
 
 def extra_size(filename):
     name=ntpath.basename(filename)
@@ -13,6 +17,20 @@ def extra_size(filename):
 
     misc.imsave(tempfile.gettempdir()+'/'+name, I)
     return 0
+
+
+# -- EXIF --
+
+# {{{ exif()
+def exif(filename):
+    image = Image.open(filename)
+    try:
+        exif = { TAGS[k]: v for k, v in image._getexif().items() if k in TAGS }
+        return exif
+
+    except AttributeError:
+        return {}
+# }}}
 
 
 # -- SAMPLE PAIR ATTACK --

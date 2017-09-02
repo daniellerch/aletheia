@@ -2,6 +2,7 @@
 
 
 import sys
+import json
 from aletheia import attacks
 from cnn import net as cnn
 
@@ -24,11 +25,19 @@ def main():
 
     if len(sys.argv)!=3:
         print sys.argv[0], "<command> <image/dir>\n"
+        print "Commands: "
+        print "  exif:    Print EXIF information."
         print "  eof:     Find files appended at the end."
         print "  spa:     Sample Pairs Analysis attack to LSB replacement."
         print "  rs:      RS attack to LSB replacement."
         print "\n"
         sys.exit(0)
+
+
+    # {{{ exif
+    if sys.argv[1]=="exif":
+        print json.dumps(attacks.exif(sys.argv[2]), indent=3)
+    # }}}
 
     # {{{ spa
     if sys.argv[1]=="spa":
