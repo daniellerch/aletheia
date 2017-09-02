@@ -26,6 +26,7 @@ def main():
         print sys.argv[0], "<command> <image/dir>\n"
         print "  eof:     Find files appended at the end."
         print "  spa:     Sample Pairs Analysis attack to LSB replacement."
+        print "  rs:      RS attack to LSB replacement."
         print "\n"
         sys.exit(0)
 
