@@ -1,1 +1,5 @@
+numpy
+scipy
+tensorflow
+keras
 scikit-image

@@ -24,7 +24,7 @@ def main():
 
     if len(sys.argv)!=3:
         print sys.argv[0], "<command> <image/dir>\n"
-        print "  eof:     Find files at the end."
+        print "  eof:     Find files appended at the end."
         print "  spa:     Sample Pairs Analysis attack to LSB replacement."
         print "\n"
         sys.exit(0)
@@ -50,11 +50,36 @@ def main():
         sys.exit(0)
     # }}}
 
+    # {{{ rs
+    if sys.argv[1]=="rs":
+
+        threshold=0.05
+        bitrate_R=attacks.rs(sys.argv[2], 0)
+        bitrate_G=attacks.rs(sys.argv[2], 1)
+        bitrate_B=attacks.rs(sys.argv[2], 2)
+
+        if bitrate_R<threshold and bitrate_G<threshold and bitrate_B<threshold:
+            print "No hiden data found"
+            sys.exit(0)
+
+        if bitrate_R>=threshold:
+            print "Hiden data found in channel R", bitrate_R
+        if bitrate_G>=threshold:
+            print "Hiden data found in channel G", bitrate_G
+        if bitrate_B>=threshold:
+            print "Hiden data found in channel B", bitrate_B
+        sys.exit(0)
+    # }}}
+
+
+    if sys.argv[1]=="eof":
+        sz=attacks.extra_size(sys.argv[2])
+        sys.exit(0)
+
     if sys.argv[1]=="train-models":
         train_models()
 # }}}
 
-# 35, 47, 56, 
 
 if __name__ == "__main__":
     main()
