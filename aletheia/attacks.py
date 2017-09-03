@@ -10,8 +10,11 @@ from cmath import sqrt
 from PIL import Image
 from PIL.ExifTags import TAGS
 
+# -- APPENDED FILES --
 
 def extra_size(filename):
+    print "WARNING! not implemented"
+
     name=ntpath.basename(filename)
     I = misc.imread(filename)
 

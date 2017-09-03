@@ -24,9 +24,8 @@ def train_models():
 def main():
 
     if len(sys.argv)!=3:
-        print sys.argv[0], "<command> <image/dir>\n"
+        print sys.argv[0], "<command> <image>\n"
         print "Commands: "
-        print "  exif:    Print EXIF information."
         print "  eof:     Find files appended at the end."
         print "  spa:     Sample Pairs Analysis attack to LSB replacement."
         print "  rs:      RS attack to LSB replacement."
