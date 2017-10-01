@@ -1,9 +1,11 @@
 import os
 import numpy
-from oct2py import octave
+import oct2py
 
 
 def SRM_extract(path):
+
+    octave = oct2py.Oct2Py()
 
     if not os.path.isabs(path):
         path=os.path.join(os.getcwd(), path)
