@@ -1,4 +1,4 @@
-function f = SRM(IMAGE)
+function f = SRM(IMAGE, channel)
 % -------------------------------------------------------------------------
 % Copyright (c) 2011 DDE Lab, Binghamton University, NY.
 % All Rights Reserved.
@@ -35,6 +35,10 @@ function f = SRM(IMAGE)
 % -------------------------------------------------------------------------
 
 X = double(imread(IMAGE));
+
+if(size(size(I))==2)
+    X=I(:,:,channel)
+end
 
 f = post_processing(all1st(X,1),'f1',1);   % 1st order, q=1
 f = post_processing(all1st(X,2),'f1',2,f); % 1st order, q=2
