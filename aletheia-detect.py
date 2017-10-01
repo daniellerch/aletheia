@@ -18,15 +18,6 @@ def main():
         sys.exit(0)
 
 
-    # {{{ exif
-    if sys.argv[1]=="exif":
-        if not imutils.is_valid_image(sys.argv[2]):
-            print "Please, provide a valid image"
-            sys.exit(0)
-
-        print json.dumps(attacks.exif(sys.argv[2]), indent=3)
-    # }}}
-
     # {{{ spa
     if sys.argv[1]=="spa":
    
