@@ -14,6 +14,7 @@ def SRM_extract(path):
     basedir=os.path.abspath(os.path.join(currdir, os.pardir))
 
     octave.cd(basedir)
+    octave.cd('external')
     octave.cd('octave')
 
     data=octave.SRM(path)
