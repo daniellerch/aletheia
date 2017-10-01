@@ -4,7 +4,7 @@
 import sys
 import json
 from aletheia import attacks, imutils
-from cnn import net as cnn
+#from cnn import net as cnn
 
 # {{{ train_models()
 def train_models():
@@ -90,6 +90,20 @@ def main():
         if bitrate_B>=threshold:
             print "Hiden data found in channel B", bitrate_B
         sys.exit(0)
+    # }}}
+
+    # {{{ srm
+    if sys.argv[1]=="srm":
+
+        if not imutils.is_valid_image(sys.argv[2]):
+            print "Please, provide a valid image"
+            sys.exit(0)
+
+        import numpy
+        from aletheia import richmodels
+        X = richmodels.SRM_extract(sys.argv[2])
+        numpy.savetxt('srm.txt', X.reshape((-1,1)), delimiter=',') 
+
     # }}}
 
 
