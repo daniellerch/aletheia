@@ -3,7 +3,7 @@
 
 import sys
 import json
-from aletheia import attacks
+from aletheia import attacks, imutils
 from cnn import net as cnn
 
 # {{{ train_models()
@@ -35,11 +35,19 @@ def main():
 
     # {{{ exif
     if sys.argv[1]=="exif":
+        if not imutils.is_valid_image(sys.argv[2]):
+            print "Please, provide a valid image"
+            sys.exit(0)
+
         print json.dumps(attacks.exif(sys.argv[2]), indent=3)
     # }}}
 
     # {{{ spa
     if sys.argv[1]=="spa":
+   
+        if not imutils.is_valid_image(sys.argv[2]):
+            print "Please, provide a valid image"
+            sys.exit(0)
 
         threshold=0.05
         bitrate_R=attacks.spa(sys.argv[2], 0)
@@ -61,6 +69,10 @@ def main():
 
     # {{{ rs
     if sys.argv[1]=="rs":
+
+        if not imutils.is_valid_image(sys.argv[2]):
+            print "Please, provide a valid image"
+            sys.exit(0)
 
         threshold=0.05
         bitrate_R=attacks.rs(sys.argv[2], 0)
