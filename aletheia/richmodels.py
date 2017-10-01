@@ -1,10 +1,28 @@
 import os
+import sys
 import numpy
 import oct2py
+import logging
+from PIL import Image
 
+# {{{ join_features()
+def join_features(data):
 
+    X=numpy.array([])
+    for k in data.keys():
+        x=numpy.array(data[k])
+        x=numpy.reshape(x, x.shape[1])
+        X = numpy.hstack((X,x))
+    X=numpy.array(X)
+
+    return X
+# }}}
+
+# {{{ SRM_extract()
 def SRM_extract(path):
 
+    logging.basicConfig(level=logging.INFO)
+    #octave = oct2py.Oct2Py(logger=logging.getLogger())
     octave = oct2py.Oct2Py()
 
     if not os.path.isabs(path):
@@ -17,12 +35,23 @@ def SRM_extract(path):
     octave.cd('external')
     octave.cd('octave')
 
-    data=octave.SRM(path)
     X=numpy.array([])
-    for k in data.keys():
-        x=numpy.array(data[k])
-        x=numpy.reshape(x, x.shape[1])
-        X = numpy.hstack((X,x))
-    X=numpy.array(X)
+    im=Image.open(path)
+    if im.mode=='L':
+        data=octave.SRM(path, 1)
+        X=join_features(data)
+        return X
+
+    elif im.mode in ['RGB', 'RGBA', 'RGBX']:
+        R=octave.SRM(path, 1)
+        G=octave.SRM(path, 2)
+        B=octave.SRM(path, 3)
+        X=numpy.hstack((R,G,B))
+
+    else:
+        print "Image mode not supported: ", im.mode
+        sys.stdout.flush()
 
     return X
+# }}}
+

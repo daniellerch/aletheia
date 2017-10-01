@@ -56,7 +56,9 @@ def main():
         from aletheia import richmodels
         from multiprocessing.dummy import Pool as ThreadPool 
 
-        os.remove(sys.argv[3])
+        if os.path.exists(sys.argv[3]):
+            os.remove(sys.argv[3])
+
         def extract_and_save(path):
             X = richmodels.SRM_extract(path)
             X = X.reshape((1, X.shape[0]))
