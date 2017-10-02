@@ -201,7 +201,7 @@ def main():
     # }}}
 
     # {{{ rs
-    if sys.argv[1]=="rs":
+    elif sys.argv[1]=="rs":
 
         if len(sys.argv)!=3:
             print sys.argv[0], "spa <image>\n"
