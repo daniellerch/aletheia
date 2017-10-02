@@ -70,6 +70,15 @@ def main():
         pool.close()
         pool.join()
 
+        """
+        for path in files:
+            X = richmodels.SRM_extract(path)
+            print X.shape
+            X = X.reshape((1, X.shape[0]))
+            with open(sys.argv[3], 'a+') as f_handle:
+                numpy.savetxt(f_handle, X)
+        """
+
     # }}}
 
 

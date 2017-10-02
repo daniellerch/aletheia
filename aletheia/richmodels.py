@@ -40,12 +40,14 @@ def SRM_extract(path):
     if im.mode=='L':
         data=octave.SRM(path, 1)
         X=join_features(data)
-        return X
 
     elif im.mode in ['RGB', 'RGBA', 'RGBX']:
-        R=octave.SRM(path, 1)
-        G=octave.SRM(path, 2)
-        B=octave.SRM(path, 3)
+        data=octave.SRM(path, 1)
+        R=join_features(data)
+        data=octave.SRM(path, 2)
+        G=join_features(data)
+        data=octave.SRM(path, 3)
+        B=join_features(data)
         X=numpy.hstack((R,G,B))
 
     else:
