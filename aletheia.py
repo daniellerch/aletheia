@@ -74,14 +74,23 @@ def main():
 
     if len(sys.argv)<2:
         print sys.argv[0], "<command>\n"
-        print "Commands: "
-        print "  hugo-sim:       Embedding using HUGO simulator."
-        print "  wow-sim:        Embedding using WOW simulator."
-        print "  s-uniward-sim:  Embedding using S-UNIWARD simulator."
-        print "  srm-extract:    Extract features using Spatial Rich Models."
+        print "COMMANDS:"
+        print ""
+        print "  Attacks to LSB replacement:"
+        print "  - spa:   Sample Pairs Analysis."
+        print "  - rs:    RS attack."
+        print ""
+        print "  Feature extractors:"
+        print "  - srm-extract:    Extract features using Spatial Rich Models."
+        print ""
+        print "  Embedding simulators:"
+        print "  - hugo-sim:       Embedding using HUGO simulator."
+        print "  - wow-sim:        Embedding using WOW simulator."
+        print "  - s-uniward-sim:  Embedding using S-UNIWARD simulator."
         print "\n"
         sys.exit(0)
 
+    # -- FEATURE EXTRACTORS --
 
     # {{{ hugo-sim
     if sys.argv[1]=="hugo-sim":
@@ -158,6 +167,69 @@ def main():
         """
 
     # }}}
+
+
+    # -- ATTACKS --
+
+    # {{{ spa
+    elif sys.argv[1]=="spa":
+   
+        if len(sys.argv)!=3:
+            print sys.argv[0], "spa <image>\n"
+            sys.exit(0)
+
+        if not imutils.is_valid_image(sys.argv[2]):
+            print "Please, provide a valid image"
+            sys.exit(0)
+
+        threshold=0.05
+        bitrate_R=attacks.spa(sys.argv[2], 0)
+        bitrate_G=attacks.spa(sys.argv[2], 1)
+        bitrate_B=attacks.spa(sys.argv[2], 2)
+
+        if bitrate_R<threshold and bitrate_G<threshold and bitrate_B<threshold:
+            print "No hiden data found"
+            sys.exit(0)
+
+        if bitrate_R>=threshold:
+            print "Hiden data found in channel R", bitrate_R
+        if bitrate_G>=threshold:
+            print "Hiden data found in channel G", bitrate_G
+        if bitrate_B>=threshold:
+            print "Hiden data found in channel B", bitrate_B
+        sys.exit(0)
+    # }}}
+
+    # {{{ rs
+    if sys.argv[1]=="rs":
+
+        if len(sys.argv)!=3:
+            print sys.argv[0], "spa <image>\n"
+            sys.exit(0)
+
+        if not imutils.is_valid_image(sys.argv[2]):
+            print "Please, provide a valid image"
+            sys.exit(0)
+
+        threshold=0.05
+        bitrate_R=attacks.rs(sys.argv[2], 0)
+        bitrate_G=attacks.rs(sys.argv[2], 1)
+        bitrate_B=attacks.rs(sys.argv[2], 2)
+
+        if bitrate_R<threshold and bitrate_G<threshold and bitrate_B<threshold:
+            print "No hiden data found"
+            sys.exit(0)
+
+        if bitrate_R>=threshold:
+            print "Hiden data found in channel R", bitrate_R
+        if bitrate_G>=threshold:
+            print "Hiden data found in channel G", bitrate_G
+        if bitrate_B>=threshold:
+            print "Hiden data found in channel B", bitrate_B
+        sys.exit(0)
+    # }}}
+
+
 
     else:
         print "Wrong command!"
