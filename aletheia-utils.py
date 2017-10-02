@@ -42,11 +42,11 @@ def embed_message(embed_fn, path, payload, output_dir):
     results = pool.map(embed, files)
     pool.close()
     pool.join()
-
     """
+
     for path in files:
         I=scipy.misc.imread(path)
-        X=stegosim.wow(path, payload)
+        X=embed_fn(path, payload)
         basename=os.path.basename(path)
         dst_path=os.path.join(output_dir, basename)
         try:
@@ -75,6 +75,7 @@ def main():
     if len(sys.argv)<2:
         print sys.argv[0], "<command>\n"
         print "Commands: "
+        print "  hugo-sim:       Embedding using HUGO simulator."
         print "  wow-sim:        Embedding using WOW simulator."
         print "  s-uniward-sim:  Embedding using S-UNIWARD simulator."
         print "  srm-extract:    Extract features using Spatial Rich Models."
@@ -82,8 +83,18 @@ def main():
         sys.exit(0)
 
 
+    # {{{ hugo-sim
+    if sys.argv[1]=="hugo-sim":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "hugo-sim <image/dir> <payload> <output-dir>\n"
+            sys.exit(0)
+
+        embed_message(stegosim.hugo, sys.argv[2], sys.argv[3], sys.argv[4])
+    # }}}
+
     # {{{ wow-sim
-    if sys.argv[1]=="wow-sim":
+    elif sys.argv[1]=="wow-sim":
 
         if len(sys.argv)!=5:
             print sys.argv[0], "wow-sim <image/dir> <payload> <output-dir>\n"
@@ -93,7 +104,7 @@ def main():
     # }}}
 
     # {{{ s-uniward-sim
-    if sys.argv[1]=="s-uniward-sim":
+    elif sys.argv[1]=="s-uniward-sim":
 
         if len(sys.argv)!=5:
             print sys.argv[0], "s-uniward-sim <image/dir> <payload> <output-dir>\n"
@@ -103,7 +114,7 @@ def main():
     # }}}
 
     # {{{ srm-extract
-    if sys.argv[1]=="srm-extract":
+    elif sys.argv[1]=="srm-extract":
 
         if len(sys.argv)!=4:
             print sys.argv[0], "srm-extract <image/dir> <output-file>\n"
@@ -148,6 +159,8 @@ def main():
 
     # }}}
 
+    else:
+        print "Wrong command!"
 
     if sys.argv[1]=="train-models":
         train_models()

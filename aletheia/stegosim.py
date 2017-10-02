@@ -1,10 +1,13 @@
 import os
 import oct2py
 import PIL
+import logging
 
 # {{{ embed()
 def embed(sim, path, payload):
     
+    logging.basicConfig(level=logging.INFO)
+    #octave = oct2py.Oct2Py(logger=logging.getLogger())
     octave = oct2py.Oct2Py()
 
     if not os.path.isabs(path):
@@ -25,9 +28,11 @@ def embed(sim, path, payload):
     octave.eval('pkg load image')
     
     if sim=='wow':
-        X, distortion=octave.WOW(path, payload)
+        X,_=octave.WOW(path, payload)
     elif sim=='s_uniward':
         X=octave.S_UNIWARD(path, payload)
+    elif sim=='hugo':
+        X,_=octave.HUGO(path, payload)
     else:
         print "Unknown simulator: ", sim
         sys.stdout.flush()
@@ -40,6 +45,9 @@ def wow(path, payload):
        
 def s_uniward(path, payload):
     return embed('s_uniward', path, payload)
+
+def hugo(path, payload):
+    return embed('hugo', path, payload)
 
 
 
