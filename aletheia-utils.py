@@ -1,13 +1,60 @@
 #!/usr/bin/python
 
-
 import sys
 import json
 import os
 import scipy
+import numpy
 
+from aletheia import stegosim
+from multiprocessing.dummy import Pool as ThreadPool 
+from multiprocessing import cpu_count
 from aletheia import attacks, imutils
 #from cnn import net as cnn
+
+# {{{ embed_message()
+def embed_message(embed_fn, path, payload, output_dir):
+
+    # Read filenames
+    files=[]
+    if os.path.isdir(path):
+        for dirpath,_,filenames in os.walk(path):
+            for f in filenames:
+                path=os.path.abspath(os.path.join(dirpath, f))
+                if not imutils.is_valid_image(path):
+                    print "Warning, prease provide a valid image: ", f
+                else:
+                    files.append(path)
+    else:
+        files=[path]
+
+    def embed(path):
+        I=scipy.misc.imread(path)
+        X=embed_fn(path, payload)
+        basename=os.path.basename(path)
+        dst_path=os.path.join(output_dir, basename)
+        try:
+            scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
+        except Exception, e:
+            print str(e)
+
+    pool = ThreadPool(cpu_count())
+    results = pool.map(embed, files)
+    pool.close()
+    pool.join()
+
+    """
+    for path in files:
+        I=scipy.misc.imread(path)
+        X=stegosim.wow(path, payload)
+        basename=os.path.basename(path)
+        dst_path=os.path.join(output_dir, basename)
+        try:
+            scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
+        except Exception, e:
+            print str(e)
+    """
+# }}}
 
 # {{{ train_models()
 def train_models():
@@ -28,8 +75,9 @@ def main():
     if len(sys.argv)<2:
         print sys.argv[0], "<command>\n"
         print "Commands: "
-        print "  wow-sim:       Embedding using WOW simulator."
-        print "  srm-extract:   Extract features using Spatial Rich Models."
+        print "  wow-sim:        Embedding using WOW simulator."
+        print "  s-uniward-sim:  Embedding using S-UNIWARD simulator."
+        print "  srm-extract:    Extract features using Spatial Rich Models."
         print "\n"
         sys.exit(0)
 
@@ -41,54 +89,17 @@ def main():
             print sys.argv[0], "wow-sim <image/dir> <payload> <output-dir>\n"
             sys.exit(0)
 
-        payload=float(sys.argv[3])
-        output_dir=sys.argv[4]
+        embed_message(stegosim.wow, sys.argv[2], sys.argv[3], sys.argv[4])
+    # }}}
 
-        # Read filenames
-        files=[]
-        if os.path.isdir(sys.argv[2]):
-            for dirpath,_,filenames in os.walk(sys.argv[2]):
-                for f in filenames:
-                    path=os.path.abspath(os.path.join(dirpath, f))
-                    if not imutils.is_valid_image(path):
-                        print "Warning, prease provide a valid image: ", f
-                    else:
-                        files.append(path)
-        else:
-            files=[sys.argv[2]]
+    # {{{ s-uniward-sim
+    if sys.argv[1]=="s-uniward-sim":
 
+        if len(sys.argv)!=5:
+            print sys.argv[0], "s-uniward-sim <image/dir> <payload> <output-dir>\n"
+            sys.exit(0)
 
-        import numpy
-        from aletheia import stegosim
-        from multiprocessing.dummy import Pool as ThreadPool 
-        from multiprocessing import cpu_count
-
-        def embed(path):
-            I=scipy.misc.imread(path)
-            X=stegosim.wow(path, payload)
-            basename=os.path.basename(path)
-            dst_path=os.path.join(output_dir, basename)
-            try:
-                scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
-            except Exception, e:
-                print str(e)
- 
-        pool = ThreadPool(cpu_count())
-        results = pool.map(embed, files)
-        pool.close()
-        pool.join()
-
-        """
-        for path in files:
-            I=scipy.misc.imread(path)
-            X=stegosim.wow(path, payload)
-            basename=os.path.basename(path)
-            dst_path=os.path.join(output_dir, basename)
-            try:
-                scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
-            except Exception, e:
-                print str(e)
-        """
+        embed_message(stegosim.s_uniward, sys.argv[2], sys.argv[3], sys.argv[4])
     # }}}
 
     # {{{ srm-extract
@@ -111,11 +122,6 @@ def main():
         else:
             files=[sys.argv[2]]
 
-
-        import numpy
-        from aletheia import richmodels
-        from multiprocessing.dummy import Pool as ThreadPool 
-        from multiprocessing import cpu_count
 
         if os.path.exists(sys.argv[3]):
             os.remove(sys.argv[3])

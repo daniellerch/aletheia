@@ -2,7 +2,8 @@ import os
 import oct2py
 import PIL
 
-def wow(path, payload):
+# {{{ embed()
+def embed(sim, path, payload):
     
     octave = oct2py.Oct2Py()
 
@@ -14,7 +15,6 @@ def wow(path, payload):
         print "Image mode not supported: ", im.mode
         sys.stdout.flush()
 
-
     currdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(currdir, os.pardir))
 
@@ -23,6 +23,23 @@ def wow(path, payload):
     octave.cd('octave')
 
     octave.eval('pkg load image')
-    X, distortion=octave.WOW(path, payload)
+    
+    if sim=='wow':
+        X, distortion=octave.WOW(path, payload)
+    elif sim=='s_uniward':
+        X=octave.S_UNIWARD(path, payload)
+    else:
+        print "Unknown simulator: ", sim
+        sys.stdout.flush()
 
     return X
+# }}}
+
+def wow(path, payload):
+    return embed('wow', path, payload)
+       
+def s_uniward(path, payload):
+    return embed('s_uniward', path, payload)
+
+
+
