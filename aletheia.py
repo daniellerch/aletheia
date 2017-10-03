@@ -6,7 +6,7 @@ import os
 import scipy
 import numpy
 
-from aletheia import stegosim
+from aletheia import stegosim, richmodels
 from multiprocessing.dummy import Pool as ThreadPool 
 from multiprocessing import cpu_count
 from aletheia import attacks, imutils
