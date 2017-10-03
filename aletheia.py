@@ -28,9 +28,7 @@ def embed_message(embed_fn, path, payload, output_dir):
     else:
         files=[path]
     
-
     def embed(path):
-        I=scipy.misc.imread(path)
         X=embed_fn(path, payload)
         basename=os.path.basename(path)
         dst_path=os.path.join(output_dir, basename)
@@ -40,7 +38,7 @@ def embed_message(embed_fn, path, payload, output_dir):
             print str(e)
 
     # Process thread pool in batches
-    batch=100
+    batch=1000
     for i in xrange(0, len(files), batch):
         files_batch = files[i:i+batch]
         pool = ThreadPool(cpu_count())
@@ -60,6 +58,7 @@ def embed_message(embed_fn, path, payload, output_dir):
         except Exception, e:
             print str(e)
     """
+   
 # }}}
 
 # {{{ train_models()
@@ -135,6 +134,7 @@ def main():
             print sys.argv[0], "srm-extract <image/dir> <output-file>\n"
             sys.exit(0)
 
+
         # Read filenames
         files=[]
         if os.path.isdir(sys.argv[2]):
@@ -158,6 +158,7 @@ def main():
             with open(sys.argv[3], 'a+') as f_handle:
                 numpy.savetxt(f_handle, X)
  
+        #pool = ThreadPool(8)
         pool = ThreadPool(cpu_count())
         results = pool.map(extract_and_save, files)
         pool.close()
