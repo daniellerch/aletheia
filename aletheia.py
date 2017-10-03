@@ -27,6 +27,7 @@ def embed_message(embed_fn, path, payload, output_dir):
                     files.append(path)
     else:
         files=[path]
+    
 
     def embed(path):
         I=scipy.misc.imread(path)
@@ -38,12 +39,17 @@ def embed_message(embed_fn, path, payload, output_dir):
         except Exception, e:
             print str(e)
 
-    pool = ThreadPool(cpu_count())
-    results = pool.map(embed, files)
-    pool.close()
-    pool.join()
-    """
+    # Process thread pool in batches
+    batch=100
+    for i in xrange(0, len(files), batch):
+        files_batch = files[i:i+batch]
+        pool = ThreadPool(cpu_count())
+        results = pool.map(embed, files_batch)
+        pool.close()
+        pool.terminate()
+        pool.join()
 
+    """
     for path in files:
         I=scipy.misc.imread(path)
         X=embed_fn(path, payload)

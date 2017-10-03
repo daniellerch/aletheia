@@ -54,6 +54,9 @@ def SRM_extract(path):
         print "Image mode not supported: ", im.mode
         sys.stdout.flush()
 
+    im.close()
+    octave.exit()
+
     return X
 # }}}
 
