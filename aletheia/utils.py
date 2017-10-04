@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import os
 from PIL import Image
 
 def is_valid_image(path):
@@ -17,4 +18,12 @@ def is_valid_image(path):
         return False
 
     return True
+
+def absolute_path(path):
+
+    if os.path.isabs(path):
+        return path
+
+    return os.path.join(os.getcwd(), path)
+
 

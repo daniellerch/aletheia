@@ -9,7 +9,7 @@ import numpy
 from aletheia import stegosim, richmodels
 from multiprocessing.dummy import Pool as ThreadPool 
 from multiprocessing import cpu_count
-from aletheia import attacks, imutils
+from aletheia import attacks, utils
 #from cnn import net as cnn
 
 # {{{ embed_message()
@@ -21,7 +21,7 @@ def embed_message(embed_fn, path, payload, output_dir):
         for dirpath,_,filenames in os.walk(path):
             for f in filenames:
                 path=os.path.abspath(os.path.join(dirpath, f))
-                if not imutils.is_valid_image(path):
+                if not utils.is_valid_image(path):
                     print "Warning, prease provide a valid image: ", f
                 else:
                     files.append(path)
@@ -145,21 +145,21 @@ def main():
             for dirpath,_,filenames in os.walk(sys.argv[2]):
                 for f in filenames:
                     path=os.path.abspath(os.path.join(dirpath, f))
-                    if not imutils.is_valid_image(path):
+                    if not utils.is_valid_image(path):
                         print "Warning, prease provide a valid image: ", f
                     else:
                         files.append(path)
         else:
             files=[sys.argv[2]]
 
-
-        if os.path.exists(sys.argv[3]):
-            os.remove(sys.argv[3])
+        output_file=utils.absolute_path(sys.argv[3])
+        if os.path.exists(output_file):
+            os.remove(output_file)
 
         def extract_and_save(path):
             X = richmodels.SRM_extract(path)
             X = X.reshape((1, X.shape[0]))
-            with open(sys.argv[3], 'a+') as f_handle:
+            with open(output_file, 'a+') as f_handle:
                 numpy.savetxt(f_handle, X)
  
         pool = ThreadPool(cpu_count())
@@ -176,6 +176,7 @@ def main():
             with open(sys.argv[3], 'a+') as f_handle:
                 numpy.savetxt(f_handle, X)
         """
+       
 
     # }}}
 
@@ -189,7 +190,7 @@ def main():
             print sys.argv[0], "spa <image>\n"
             sys.exit(0)
 
-        if not imutils.is_valid_image(sys.argv[2]):
+        if not utils.is_valid_image(sys.argv[2]):
             print "Please, provide a valid image"
             sys.exit(0)
 
@@ -218,7 +219,7 @@ def main():
             print sys.argv[0], "spa <image>\n"
             sys.exit(0)
 
-        if not imutils.is_valid_image(sys.argv[2]):
+        if not utils.is_valid_image(sys.argv[2]):
             print "Please, provide a valid image"
             sys.exit(0)
 
