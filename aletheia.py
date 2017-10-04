@@ -92,6 +92,10 @@ def main():
         print "  - hugo-sim:       Embedding using HUGO simulator."
         print "  - wow-sim:        Embedding using WOW simulator."
         print "  - s-uniward-sim:  Embedding using S-UNIWARD simulator."
+        print ""
+        print "  Model training::"
+        print "  - ec:      Ensemble Classifiers."
+        print ""
         print "\n"
         sys.exit(0)
 
@@ -158,10 +162,10 @@ def main():
             with open(sys.argv[3], 'a+') as f_handle:
                 numpy.savetxt(f_handle, X)
  
-        #pool = ThreadPool(8)
         pool = ThreadPool(cpu_count())
         results = pool.map(extract_and_save, files)
         pool.close()
+        pool.terminate()
         pool.join()
 
         """
