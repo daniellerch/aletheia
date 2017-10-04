@@ -6,6 +6,7 @@ import numpy
 import tempfile
 import shutil
 import numpy
+import subprocess
 from scipy.io import savemat, loadmat
  
 
@@ -16,16 +17,16 @@ def _embed(sim, path, payload):
 
     X=numpy.array([])
 
-    cwd=os.getcwd()
     currdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(currdir, os.pardir))
     m_path=os.path.join(basedir, 'external', 'octave')
-    os.chdir(m_path)
 
     tmpdir=tempfile.mkdtemp()
     X_path=tmpdir+"/X.mat"
 
     m_code=""
+    m_code+="cd "+tmpdir+";"
+    m_code+="addpath('"+m_path+"');"
     m_code+="warning('off');"
     m_code+="pkg load image;"
 
@@ -39,9 +40,9 @@ def _embed(sim, path, payload):
     m_code+="save('-mat7-binary', '"+X_path+"','X');"
     m_code+="exit"
 
-    p=os.popen(M_BIN+" \""+m_code+"\"")
-    p.read()
-    os.chdir(cwd)
+    p=subprocess.Popen(M_BIN+" \""+m_code+"\"", shell=True)
+    output, err = p.communicate()
+    status = p.wait()
 
     data=loadmat(X_path)
     shutil.rmtree(tmpdir)

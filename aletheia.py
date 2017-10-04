@@ -162,7 +162,8 @@ def main():
             with open(output_file, 'a+') as f_handle:
                 numpy.savetxt(f_handle, X)
  
-        pool = ThreadPool(cpu_count())
+        #pool = ThreadPool(cpu_count())
+        pool = ThreadPool(8)
         results = pool.map(extract_and_save, files)
         pool.close()
         pool.terminate()
