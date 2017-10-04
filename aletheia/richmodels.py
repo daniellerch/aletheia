@@ -11,8 +11,8 @@ from scipy.io import loadmat
 M_BIN="octave -q --no-gui --eval"
 
 
-# {{{ SRM_extract()
-def SRM_extract(path):
+# {{{ _extract()
+def _extract(extractor_name, path):
     currdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(currdir, os.pardir))
     m_path=os.path.join(basedir, 'external', 'octave')
@@ -31,7 +31,7 @@ def SRM_extract(path):
         m_code+="cd "+tmpdir+";"
         m_code+="addpath('"+m_path+"');"
         m_code+="warning('off');"
-        m_code+="data=SRM('"+path+"', 1);"
+        m_code+="data="+extractor_name+"('"+path+"', 1);"
         m_code+="save('-mat7-binary', '"+data_path+"','data');"
         m_code+="exit"
         p=subprocess.Popen(M_BIN+" \""+m_code+"\"", shell=True)
@@ -54,9 +54,9 @@ def SRM_extract(path):
         m_code+="cd "+tmpdir+";"
         m_code+="addpath('"+m_path+"');"
         m_code+="warning('off');"
-        m_code+="data_R=SRM('"+path+"', 1);"
-        m_code+="data_G=SRM('"+path+"', 2);"
-        m_code+="data_B=SRM('"+path+"', 3);"
+        m_code+="data_R="+extractor_name+"('"+path+"', 1);"
+        m_code+="data_G="+extractor_name+"('"+path+"', 2);"
+        m_code+="data_B="+extractor_name+"('"+path+"', 3);"
         m_code+="save('-mat7-binary', '"+data_R_path+"','data_R');"
         m_code+="save('-mat7-binary', '"+data_G_path+"','data_G');"
         m_code+="save('-mat7-binary', '"+data_B_path+"','data_B');"
@@ -86,4 +86,15 @@ def SRM_extract(path):
 
     return X
 # }}}
+
+
+def SRM_extract(path):
+    return _extract('SRM', path)
+
+def SRMQ1_extract(path):
+    return _extract('SRMQ1', path)
+
+
+
+
 

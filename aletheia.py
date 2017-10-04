@@ -61,6 +61,56 @@ def embed_message(embed_fn, path, payload, output_dir):
    
 # }}}
 
+# {{{ extract_features()
+def extract_features(extract_fn, image_path, ofile):
+
+    image_path=utils.absolute_path(image_path)
+
+    # Read filenames
+    files=[]
+    if os.path.isdir(image_path):
+        for dirpath,_,filenames in os.walk(image_path):
+            for f in filenames:
+                path=os.path.abspath(os.path.join(dirpath, f))
+                if not utils.is_valid_image(path):
+                    print "Warning, prease provide a valid image: ", f
+                else:
+                    files.append(path)
+    else:
+        files=[image_path]
+
+    output_file=utils.absolute_path(ofile)
+    
+    if os.path.isdir(output_file):
+        print "The provided file is a directory:", output_file
+        sys.exit(0)
+
+    if os.path.exists(output_file):
+        os.remove(output_file)
+
+    def extract_and_save(path):
+        X = extract_fn(path)
+        X = X.reshape((1, X.shape[0]))
+        with open(output_file, 'a+') as f_handle:
+            numpy.savetxt(f_handle, X)
+
+    #pool = ThreadPool(cpu_count())
+    pool = ThreadPool(8)
+    results = pool.map(extract_and_save, files)
+    pool.close()
+    pool.terminate()
+    pool.join()
+
+    """
+    for path in files:
+        X = richmodels.SRM_extract(path)
+        print X.shape
+        X = X.reshape((1, X.shape[0]))
+        with open(sys.argv[3], 'a+') as f_handle:
+            numpy.savetxt(f_handle, X)
+    """
+# }}}
+
 # {{{ train_models()
 def train_models():
 
@@ -86,7 +136,8 @@ def main():
         print "  - rs:    RS attack."
         print ""
         print "  Feature extractors:"
-        print "  - srm-extract:    Extract features using Spatial Rich Models."
+        print "  - srm:    Full Spatial Rich Models."
+        print "  - srmq1:  Spatial Rich Models with fixed quantization q=1c."
         print ""
         print "  Embedding simulators:"
         print "  - hugo-sim:       Embedding using HUGO simulator."
@@ -131,56 +182,31 @@ def main():
         embed_message(stegosim.s_uniward, sys.argv[2], sys.argv[3], sys.argv[4])
     # }}}
 
-    # {{{ srm-extract
-    elif sys.argv[1]=="srm-extract":
+    # {{{ srm
+    elif sys.argv[1]=="srm":
 
         if len(sys.argv)!=4:
-            print sys.argv[0], "srm-extract <image/dir> <output-file>\n"
+            print sys.argv[0], "srm <image/dir> <output-file>\n"
             sys.exit(0)
 
+        image_path=sys.argv[2]
+        ofile=sys.argv[3]
 
-        # Read filenames
-        files=[]
-        if os.path.isdir(sys.argv[2]):
-            for dirpath,_,filenames in os.walk(sys.argv[2]):
-                for f in filenames:
-                    path=os.path.abspath(os.path.join(dirpath, f))
-                    if not utils.is_valid_image(path):
-                        print "Warning, prease provide a valid image: ", f
-                    else:
-                        files.append(path)
-        else:
-            files=[sys.argv[2]]
-
-        output_file=utils.absolute_path(sys.argv[3])
-        if os.path.exists(output_file):
-            os.remove(output_file)
-
-        def extract_and_save(path):
-            X = richmodels.SRM_extract(path)
-            X = X.reshape((1, X.shape[0]))
-            with open(output_file, 'a+') as f_handle:
-                numpy.savetxt(f_handle, X)
- 
-        #pool = ThreadPool(cpu_count())
-        pool = ThreadPool(8)
-        results = pool.map(extract_and_save, files)
-        pool.close()
-        pool.terminate()
-        pool.join()
-
-        """
-        for path in files:
-            X = richmodels.SRM_extract(path)
-            print X.shape
-            X = X.reshape((1, X.shape[0]))
-            with open(sys.argv[3], 'a+') as f_handle:
-                numpy.savetxt(f_handle, X)
-        """
-       
-
+        extract_features(richmodels.SRM_extract, image_path, ofile)
     # }}}
 
+    # {{{ srmq1
+    elif sys.argv[1]=="srmq1":
+
+        if len(sys.argv)!=4:
+            print sys.argv[0], "srm <image/dir> <output-file>\n"
+            sys.exit(0)
+
+        image_path=sys.argv[2]
+        ofile=sys.argv[3]
+
+        extract_features(richmodels.SRMQ1_extract, image_path, ofile)
+    # }}}
 
     # -- ATTACKS --
 
