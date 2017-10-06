@@ -1,13 +1,14 @@
-#!/usr/bin/python
+#!/usr/bin/python 
 
 import sys
 import json
 import os
 import scipy
 import numpy
+import pickle
 import multiprocessing
 
-from aletheia import stegosim, richmodels
+from aletheia import stegosim, richmodels, models
 from multiprocessing.dummy import Pool as ThreadPool 
 from multiprocessing import cpu_count
 
@@ -153,7 +154,7 @@ def main():
         print "  - s-uniward-sim:  Embedding using S-UNIWARD simulator."
         print ""
         print "  Model training::"
-        print "  - rf:   Random Forest."
+        print "  - xgb:   Extreme Gradient Boosting."
         print ""
         print "\n"
         sys.exit(0)
@@ -290,22 +291,22 @@ def main():
 
     # -- MODEL TRAINING --
 
-    # {{{ rf
-    if sys.argv[1]=="rf":
+    # {{{ xgb
+    if sys.argv[1]=="xgb":
 
-        if len(sys.argv)!=4:
-            print sys.argv[0], "rf <cover-fea> <stego-fea>\n"
+        if len(sys.argv)!=5:
+            print sys.argv[0], "xgb <cover-fea> <stego-fea> <model-file>\n"
             sys.exit(0)
 
         cover_fea=sys.argv[2]
         stego_fea=sys.argv[3]
+        model_file=sys.argv[4]
 
         Xc=numpy.loadtxt(cover_fea)
-        print Xc.shape
         Xs=numpy.loadtxt(stego_fea)
-        print Xs.shape
-
-
+        model, val_score=models.xgb(Xc, Xs)
+        pickle.dump(model, open(model_file, "wb"))
+        print "Validation score:", val_score
     # }}}
 
 
