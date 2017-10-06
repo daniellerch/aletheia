@@ -5,12 +5,17 @@ import json
 import os
 import scipy
 import numpy
+import multiprocessing
 
 from aletheia import stegosim, richmodels
 from multiprocessing.dummy import Pool as ThreadPool 
 from multiprocessing import cpu_count
+
 from aletheia import attacks, utils
 #from cnn import net as cnn
+
+lock = multiprocessing.Lock()
+
 
 # {{{ embed_message()
 def embed_message(embed_fn, path, payload, output_dir):
@@ -91,8 +96,11 @@ def extract_features(extract_fn, image_path, ofile):
     def extract_and_save(path):
         X = extract_fn(path)
         X = X.reshape((1, X.shape[0]))
+
+        lock.acquire()
         with open(output_file, 'a+') as f_handle:
             numpy.savetxt(f_handle, X)
+        lock.release()
 
     #pool = ThreadPool(cpu_count())
     pool = ThreadPool(8)
@@ -145,68 +153,14 @@ def main():
         print "  - s-uniward-sim:  Embedding using S-UNIWARD simulator."
         print ""
         print "  Model training::"
-        print "  - ec:      Ensemble Classifiers."
+        print "  - rf:   Random Forest."
         print ""
         print "\n"
         sys.exit(0)
 
-    # -- FEATURE EXTRACTORS --
 
-    # {{{ hugo-sim
-    if sys.argv[1]=="hugo-sim":
+    if False: pass
 
-        if len(sys.argv)!=5:
-            print sys.argv[0], "hugo-sim <image/dir> <payload> <output-dir>\n"
-            sys.exit(0)
-
-        embed_message(stegosim.hugo, sys.argv[2], sys.argv[3], sys.argv[4])
-    # }}}
-
-    # {{{ wow-sim
-    elif sys.argv[1]=="wow-sim":
-
-        if len(sys.argv)!=5:
-            print sys.argv[0], "wow-sim <image/dir> <payload> <output-dir>\n"
-            sys.exit(0)
-
-        embed_message(stegosim.wow, sys.argv[2], sys.argv[3], sys.argv[4])
-    # }}}
-
-    # {{{ s-uniward-sim
-    elif sys.argv[1]=="s-uniward-sim":
-
-        if len(sys.argv)!=5:
-            print sys.argv[0], "s-uniward-sim <image/dir> <payload> <output-dir>\n"
-            sys.exit(0)
-
-        embed_message(stegosim.s_uniward, sys.argv[2], sys.argv[3], sys.argv[4])
-    # }}}
-
-    # {{{ srm
-    elif sys.argv[1]=="srm":
-
-        if len(sys.argv)!=4:
-            print sys.argv[0], "srm <image/dir> <output-file>\n"
-            sys.exit(0)
-
-        image_path=sys.argv[2]
-        ofile=sys.argv[3]
-
-        extract_features(richmodels.SRM_extract, image_path, ofile)
-    # }}}
-
-    # {{{ srmq1
-    elif sys.argv[1]=="srmq1":
-
-        if len(sys.argv)!=4:
-            print sys.argv[0], "srm <image/dir> <output-file>\n"
-            sys.exit(0)
-
-        image_path=sys.argv[2]
-        ofile=sys.argv[3]
-
-        extract_features(richmodels.SRMQ1_extract, image_path, ofile)
-    # }}}
 
     # -- ATTACKS --
 
@@ -267,6 +221,93 @@ def main():
             print "Hiden data found in channel B", bitrate_B
         sys.exit(0)
     # }}}
+
+
+
+    # -- FEATURE EXTRACTORS --
+
+    # {{{ srm
+    elif sys.argv[1]=="srm":
+
+        if len(sys.argv)!=4:
+            print sys.argv[0], "srm <image/dir> <output-file>\n"
+            sys.exit(0)
+
+        image_path=sys.argv[2]
+        ofile=sys.argv[3]
+
+        extract_features(richmodels.SRM_extract, image_path, ofile)
+    # }}}
+
+    # {{{ srmq1
+    elif sys.argv[1]=="srmq1":
+
+        if len(sys.argv)!=4:
+            print sys.argv[0], "srm <image/dir> <output-file>\n"
+            sys.exit(0)
+
+        image_path=sys.argv[2]
+        ofile=sys.argv[3]
+
+        extract_features(richmodels.SRMQ1_extract, image_path, ofile)
+    # }}}
+
+
+
+    # -- EMBEDDING SIMULATORS --
+
+    # {{{ hugo-sim
+    if sys.argv[1]=="hugo-sim":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "hugo-sim <image/dir> <payload> <output-dir>\n"
+            sys.exit(0)
+
+        embed_message(stegosim.hugo, sys.argv[2], sys.argv[3], sys.argv[4])
+    # }}}
+
+    # {{{ wow-sim
+    elif sys.argv[1]=="wow-sim":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "wow-sim <image/dir> <payload> <output-dir>\n"
+            sys.exit(0)
+
+        embed_message(stegosim.wow, sys.argv[2], sys.argv[3], sys.argv[4])
+    # }}}
+
+    # {{{ s-uniward-sim
+    elif sys.argv[1]=="s-uniward-sim":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "s-uniward-sim <image/dir> <payload> <output-dir>\n"
+            sys.exit(0)
+
+        embed_message(stegosim.s_uniward, sys.argv[2], sys.argv[3], sys.argv[4])
+    # }}}
+
+
+
+    # -- MODEL TRAINING --
+
+    # {{{ rf
+    if sys.argv[1]=="rf":
+
+        if len(sys.argv)!=4:
+            print sys.argv[0], "rf <cover-fea> <stego-fea>\n"
+            sys.exit(0)
+
+        cover_fea=sys.argv[2]
+        stego_fea=sys.argv[3]
+
+        Xc=numpy.loadtxt(cover_fea)
+        print Xc.shape
+        Xs=numpy.loadtxt(stego_fea)
+        print Xs.shape
+
+
+    # }}}
+
 
 
 
