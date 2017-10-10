@@ -36,6 +36,8 @@ def _embed(sim, path, payload):
         m_code+="X=HUGO('"+path+"',"+payload+");"
     elif sim=='s_uniward':
         m_code+="X=S_UNIWARD('"+path+"',"+payload+");"
+    elif sim=='hill':
+        m_code+="X=HILL('"+path+"',"+payload+");"
 
     m_code+="save('-mat7-binary', '"+X_path+"','X');"
     m_code+="exit"
@@ -61,5 +63,7 @@ def s_uniward(path, payload):
 def hugo(path, payload):
     return _embed('hugo', path, payload)
 
+def hill(path, payload):
+    return _embed('hill', path, payload)
 
 
