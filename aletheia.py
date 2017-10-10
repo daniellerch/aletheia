@@ -158,7 +158,8 @@ def main():
         print "  - hill-sim:       Embedding using HILL simulator."
         print ""
         print "  Model training:"
-        print "  - esvm:   Ensemble of Support Vector Machines."
+        print "  - esvm:  Ensemble of Support Vector Machines."
+        print "  - e4s:   Ensemble Classifiers for Steganalysis."
         print ""
         print "\n"
         sys.exit(0)
@@ -334,6 +335,35 @@ def main():
         print "Validation score:", val_score
     # }}}
 
+    # {{{ e4s
+    elif sys.argv[1]=="e4s":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "e4s <cover-fea> <stego-fea> <model-file>\n"
+            sys.exit(0)
+
+        from sklearn.model_selection import train_test_split
+
+        cover_fea=sys.argv[2]
+        stego_fea=sys.argv[3]
+        model_file=sys.argv[4]
+
+        X_cover = pandas.read_csv(cover_fea, delimiter = " ").values
+        X_stego = pandas.read_csv(stego_fea, delimiter = " ").values
+        #X_cover=numpy.loadtxt(cover_fea)
+        #X_stego=numpy.loadtxt(stego_fea)
+
+        X=numpy.vstack((X_cover, X_stego))
+        y=numpy.hstack(([0]*len(X_cover), [1]*len(X_stego)))
+        X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.10)
+
+        clf=models.Ensemble4Stego()
+        clf.fit(X_train, y_train)
+        val_score=clf.score(X_val, y_val)
+
+        clf.save(model_file)
+        print "Validation score:", val_score
+    # }}}
 
 
     else:
