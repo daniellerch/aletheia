@@ -15,8 +15,8 @@ from multiprocessing import cpu_count
 
 class EnsembleSVM:
 
-    def __init__(self, n_estimators=20, max_samples=500, max_features=2000,
-                 n_randomized_search_iter=10):
+    def __init__(self, n_estimators=50, max_samples=1000, max_features=2000,
+                 n_randomized_search_iter=20):
 
         self.n_estimators=n_estimators
         self.max_samples=max_samples

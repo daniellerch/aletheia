@@ -1,10 +1,11 @@
-#!/usr/bin/python 
+#!/usr/bin/python -W ignore
 
 import sys
 import json
 import os
 import scipy
 import numpy
+import pandas
 import pickle
 import multiprocessing
 
@@ -20,6 +21,8 @@ lock = multiprocessing.Lock()
 
 # {{{ embed_message()
 def embed_message(embed_fn, path, payload, output_dir):
+
+    path=utils.absolute_path(path)
 
     # Read filenames
     files=[]
@@ -152,6 +155,7 @@ def main():
         print "  - hugo-sim:       Embedding using HUGO simulator."
         print "  - wow-sim:        Embedding using WOW simulator."
         print "  - s-uniward-sim:  Embedding using S-UNIWARD simulator."
+        print "  - hill-sim:       Embedding using HILL simulator."
         print ""
         print "  Model training:"
         print "  - esvm:   Ensemble of Support Vector Machines."
@@ -287,6 +291,15 @@ def main():
         embed_message(stegosim.s_uniward, sys.argv[2], sys.argv[3], sys.argv[4])
     # }}}
 
+    # {{{ hill-sim
+    elif sys.argv[1]=="hill-sim":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "s-uniward-sim <image/dir> <payload> <output-dir>\n"
+            sys.exit(0)
+
+        embed_message(stegosim.hill, sys.argv[2], sys.argv[3], sys.argv[4])
+    # }}}
 
 
     # -- MODEL TRAINING --
@@ -304,12 +317,14 @@ def main():
         stego_fea=sys.argv[3]
         model_file=sys.argv[4]
 
-        X_cover=numpy.loadtxt(cover_fea)
-        X_stego=numpy.loadtxt(stego_fea)
+        X_cover = pandas.read_csv(cover_fea, delimiter = " ").values
+        X_stego = pandas.read_csv(stego_fea, delimiter = " ").values
+        #X_cover=numpy.loadtxt(cover_fea)
+        #X_stego=numpy.loadtxt(stego_fea)
 
         X=numpy.vstack((X_cover, X_stego))
         y=numpy.hstack(([0]*len(X_cover), [1]*len(X_stego)))
-        X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.25)
+        X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.10)
 
         clf=models.EnsembleSVM()
         clf.fit(X_train, y_train)
