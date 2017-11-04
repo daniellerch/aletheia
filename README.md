@@ -16,13 +16,13 @@ First you need to clone the GIT repository:
 $ git clone https://github.com/daniellerch/aletheia.git
 ```
 
-Inside the Aletheia directory you will find a requirements file for installing Python dependences with pip:
+Inside the Aletheia directory you will find a requirements file for installing Python dependencies with pip:
 
 ```bash
 $ sudo pip install -r requirements.txt 
 ```
 
-Aletheia uses Octave so you need to install it and some dependences. You will find the depdendencies in the octave-requirements.txt file. In Debian based Linux distributions you can install the dependencies with the following commands. For different distros you can deduce the appropriate ones.
+Aletheia uses Octave so you need to install it and some dependencies. You will find the dedendencies in the octave-requirements.txt file. In Debian based Linux distributions you can install the dependencies with the following commands. For different distros you can deduce the appropriate ones.
 
 ```bash
 $ sudo apt-get install octave octave-image
@@ -93,7 +93,7 @@ $ wget http://dde.binghamton.edu/download/ImageDB/BOSSbase_1.01.zip
 $ unzip BOSSbase_1.01.zip
 ```
 
-We are going to build a detector for the HILL algorithm with payload 0.40. So we need to prepare a set of images with data hidden using this algorithm. The following command embeds iformation into all the images downloaded:
+We are going to build a detector for the HILL algorithm with payload 0.40. So we need to prepare a set of images with data hidden using this algorithm. The following command embeds information into all the images downloaded:
 
 ```bash
 $ ./aletheia.py hill-sim bossbase 0.40 bossbase_hill040 
