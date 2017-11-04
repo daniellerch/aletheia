@@ -10,7 +10,7 @@ Aletheia is a tool for the detection of hidden messages in images.
 
 ### Install
 
-First you need to download or clone the GIT repository:
+First you need to clone the GIT repository:
 
 ```bash
 $ git clone https://github.com/daniellerch/aletheia.git
