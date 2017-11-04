@@ -22,7 +22,7 @@ Inside the Aletheia directory you will find a requirements file for installing P
 $ sudo pip install -r requirements.txt 
 ```
 
-Aletheia uses Octave so you need to install it and some dependences. You will find the depdendences in the octave-requirements.txt file. In Debian based Linux distributions you can install the dependences with the following commands. For different distros you can deduce the appropriate ones.
+Aletheia uses Octave so you need to install it and some dependences. You will find the depdendencies in the octave-requirements.txt file. In Debian based Linux distributions you can install the dependencies with the following commands. For different distros you can deduce the appropriate ones.
 
 ```bash
 $ sudo apt-get install octave octave-image
@@ -58,7 +58,7 @@ COMMANDS:
 
 ### Statistical attacks to LSB replacement
 
-LSB replacement staganographic methods, that is, methods that hide information replacing the least significative bit of each pixel, are flawed. Aletheia implements two attacks to these methods: the Sample Pairs Analysis (SPA) and the RS attack.
+LSB replacement staganographic methods, that is, methods that hide information replacing the least significant bit of each pixel, are flawed. Aletheia implements two attacks to these methods: the Sample Pairs Analysis (SPA) and the RS attack.
 
 To execute the SPA attack to an included image with LSB replacement data hidden, use the following command:
 
