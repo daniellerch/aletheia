@@ -2,7 +2,7 @@
 Aletheia is a tool for the detection of hidden messages in images.
 
 
--[Install](#Install).
+- [Install](#Install).
 - [Documentation](#documentation).
   - [Introduction](#introduction)
   - [Statistical attacks to LSB replacement](#statistical-attacks-to-lsb-replacement)
