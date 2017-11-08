@@ -73,6 +73,10 @@ class EnsembleSVM:
 
 
     def predict_proba(self, X):
+        y_pred=self._predict_cover_proba(X)
+        return [ [float(x)/100, 1-float(x)/100] for x in y_pred ]
+
+    def _predict_cover_proba(self, X):
         X_val=self.selector.transform(X)
         y_val_pred=[0]*len(X_val)
         for clf in self.clf_list:
@@ -83,7 +87,7 @@ class EnsembleSVM:
 
 
     def score(self, X, y):
-        y_pred=self.predict_proba(X)
+        y_pred=self._predict_cover_proba(X)
         ok=0
         for i in range(len(y)):
             p=float(y_pred[i])/len(self.clf_list)

@@ -31,7 +31,7 @@ def embed_message(embed_fn, path, payload, output_dir):
             for f in filenames:
                 path=os.path.abspath(os.path.join(dirpath, f))
                 if not utils.is_valid_image(path):
-                    print "Warning, prease provide a valid image: ", f
+                    print "Warning, please provide a valid image: ", f
                 else:
                     files.append(path)
     else:
@@ -82,7 +82,7 @@ def extract_features(extract_fn, image_path, ofile):
             for f in filenames:
                 path=os.path.abspath(os.path.join(dirpath, f))
                 if not utils.is_valid_image(path):
-                    print "Warning, prease provide a valid image: ", f
+                    print "Warning, please provide a valid image: ", f
                 else:
                     files.append(path)
     else:
@@ -146,6 +146,10 @@ def main():
         print "  Attacks to LSB replacement:"
         print "  - spa:   Sample Pairs Analysis."
         print "  - rs:    RS attack."
+        print ""
+        print "  ML-based detectors:"
+        print "  - esvm-predict:  Predict using eSVM."
+        print "  - e4s-predict:   Predict using EC."
         print ""
         print "  Feature extractors:"
         print "  - srm:    Full Spatial Rich Models."
@@ -229,6 +233,95 @@ def main():
     # }}}
 
 
+    # -- ML-BASED DETECTORS --
+
+    # {{{ esvm
+    elif sys.argv[1]=="esvm-predict":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "esvm-predict <model-file> <feature-extractor> <image/dir>\n"
+            print "Feature extractors:"
+            print "  - srm:    Full Spatial Rich Models."
+            print "  - srmq1:  Spatial Rich Models with fixed quantization q=1c."
+            print ""
+            sys.exit(0)
+
+        model_file=sys.argv[2]
+        extractor=sys.argv[3]
+        path=utils.absolute_path(sys.argv[4])
+
+        files=[]
+        if os.path.isdir(path):
+            for dirpath,_,filenames in os.walk(path):
+                for f in filenames:
+                    path=os.path.abspath(os.path.join(dirpath, f))
+                    if not utils.is_valid_image(path):
+                        print "Warning, please provide a valid image: ", f
+                    else:
+                        files.append(path)
+        else:
+            files=[path]
+
+
+        clf=pickle.load(open(model_file, "r"))
+        for f in files:
+            
+            if extractor=="srm": X = richmodels.SRM_extract(f)
+            if extractor=="srmq1": X = richmodels.SRMQ1_extract(f)
+
+            X = X.reshape((1, X.shape[0]))
+            p = clf.predict_proba(X)
+            print p
+            if p[0][0] > 0.5:
+                print os.path.basename(f), "Cover, probability:", p[0][0]
+            else:
+                print os.path.basename(f), "Stego, probability:", p[0][1]
+    # }}}
+
+    # {{{ e4s
+    elif sys.argv[1]=="e4s-predict":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "e4s-predict <model-file> <feature-extractor> <image/dir>\n"
+            print "Feature extractors:"
+            print "  - srm:    Full Spatial Rich Models."
+            print "  - srmq1:  Spatial Rich Models with fixed quantization q=1c."
+            print ""
+            sys.exit(0)
+
+        model_file=sys.argv[2]
+        extractor=sys.argv[3]
+        path=utils.absolute_path(sys.argv[4])
+
+        files=[]
+        if os.path.isdir(path):
+            for dirpath,_,filenames in os.walk(path):
+                for f in filenames:
+                    path=os.path.abspath(os.path.join(dirpath, f))
+                    if not utils.is_valid_image(path):
+                        print "Warning, please provide a valid image: ", f
+                    else:
+                        files.append(path)
+        else:
+            files=[path]
+
+
+        clf=models.Ensemble4Stego()
+        clf.load(model_file)
+        for f in files:
+            
+            if extractor=="srm": X = richmodels.SRM_extract(f)
+            if extractor=="srmq1": X = richmodels.SRMQ1_extract(f)
+
+            X = X.reshape((1, X.shape[0]))
+            p = clf.predict_proba(X)
+            print p
+            if p[0][0] > 0.5:
+                print os.path.basename(f), "Cover, probability:", p[0][0]
+            else:
+                print os.path.basename(f), "Stego, probability:", p[0][1]
+    # }}}
+
 
     # -- FEATURE EXTRACTORS --
 
@@ -263,7 +356,7 @@ def main():
     # -- EMBEDDING SIMULATORS --
 
     # {{{ hugo-sim
-    if sys.argv[1]=="hugo-sim":
+    elif sys.argv[1]=="hugo-sim":
 
         if len(sys.argv)!=5:
             print sys.argv[0], "hugo-sim <image/dir> <payload> <output-dir>\n"
