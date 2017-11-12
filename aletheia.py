@@ -463,15 +463,15 @@ def main():
     elif sys.argv[1]=="xu-net":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "xu-net <cover-dir> <stego-dir> <model-file>\n"
+            print sys.argv[0], "xu-net <cover-dir> <stego-dir> <model-name>\n"
             sys.exit(0)
 
         cover_dir=sys.argv[2]
         stego_dir=sys.argv[3]
-        model_file=sys.argv[4]
+        model_name=sys.argv[4]
 
         net = models.XuNet()
-        net.train(cover_dir, stego_dir)
+        net.train(cover_dir, stego_dir, val_size=0.10, name=model_name)
         
         #print "Validation score:", val_score
     # }}}

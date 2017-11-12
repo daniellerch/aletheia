@@ -338,7 +338,7 @@ class XuNet:
     # }}}
 
     # {{{ train()
-    def train(self, cover_path, stego_path, val_size=0.10):
+    def train(self, cover_path, stego_path, val_size=0.10, name='xu-net'):
 
         C = self._load_images(cover_path)
         S = self._load_images(stego_path)
@@ -368,7 +368,7 @@ class XuNet:
 
         self.model.fit(X_train, y_train, batch_size=32, epochs=1000, 
                        callbacks=[SaveBestModelCallback((X_val, y_val), 
-                                                   self.model, 'xu-net')],
+                                                   self.model, name)],
                        validation_data=(X_val, y_val), shuffle=True)
 
     # }}}
