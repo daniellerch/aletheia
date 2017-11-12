@@ -5,7 +5,9 @@ import os
 import tempfile
 import shutil
 import subprocess
+import glob
 
+from aletheia import utils
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -15,9 +17,19 @@ from sklearn.model_selection import RandomizedSearchCV
 from sklearn import svm
 
 from scipy.io import savemat, loadmat
+from scipy import misc, signal # ndimage
 
 from multiprocessing.dummy import Pool as ThreadPool
 from multiprocessing import cpu_count
+
+from keras.models import Model
+from keras.callbacks import Callback
+from keras.layers.normalization import BatchNormalization
+from keras.layers import Dense, Activation, Input, Conv2D, AveragePooling2D
+from keras.layers import Lambda, GlobalAveragePooling2D
+from keras import backend as K
+from keras.utils import np_utils
+
 
 # {{{ EnsembleSVM
 class EnsembleSVM:
@@ -208,6 +220,160 @@ class Ensemble4Stego:
 
     def load(self, path):
         self.__mat_clf=loadmat(path)
+
+# }}}
+
+# {{{ SaveBestModelCallback()
+g_best_accuracy=0
+
+class SaveBestModelCallback(Callback):
+    def __init__(self, data, model, name):
+        self.data = data
+        self.name = name
+        self.model = model
+    def on_epoch_end(self, epoch, logs={}):
+        x, y = self.data
+        loss, acc = self.model.evaluate(x, y, verbose=0)
+
+        global g_best_accuracy
+        if acc>g_best_accuracy:
+            g_best_accuracy=acc
+            self.model.save_weights(self.name+"_"+str(round(acc,2))+".h5")
+# }}}
+
+# {{{ XuNet
+class XuNet:
+
+    def __init__(self):
+        self.model=self._create_model(256)
+
+    # {{{ _create_model()
+    def _create_model(self, n):
+
+        inputs = Input(shape=(1, n, n))
+        x = inputs
+
+        x = Conv2D(8, (5,5), padding="same", strides=1, data_format="channels_first")(x)
+        x = BatchNormalization()(x)
+        x = Lambda(K.abs)(x)
+        x = Activation("tanh")(x)   
+        x = AveragePooling2D(pool_size=(5, 5), strides=2, padding="same", data_format="channels_first")(x)
+        print x
+
+        x = Conv2D(16, (5,5), padding="same", data_format="channels_first")(x)
+        x = BatchNormalization()(x)
+        x = Activation("tanh")(x)   
+        x = AveragePooling2D(pool_size=(5, 5), strides=2, padding="same", data_format="channels_first")(x)
+        print x
+
+        x = Conv2D(32, (1,1), padding="same", data_format="channels_first")(x)
+        x = BatchNormalization()(x)
+        x = Activation("relu")(x)   
+        x = AveragePooling2D(pool_size=(5, 5), strides=2, padding="same", data_format="channels_first")(x)
+        print x
+
+        x = Conv2D(64, (1,1), padding="same", data_format="channels_first")(x)
+        x = BatchNormalization()(x)
+        x = Activation("relu")(x)   
+        x = AveragePooling2D(pool_size=(5, 5), strides=2, padding="same", data_format="channels_first")(x)
+        print x
+
+        x = Conv2D(128, (1,1), padding="same", data_format="channels_first")(x)
+        x = BatchNormalization()(x)
+        x = Activation("relu")(x)   
+        x = AveragePooling2D(pool_size=(5, 5), strides=2, padding="same", data_format="channels_first")(x)
+        print x
+     
+
+
+        x = GlobalAveragePooling2D(data_format="channels_first")(x) 
+        print x
+
+        x = Dense(2)(x)
+        x = Activation('softmax')(x)
+
+        predictions = x
+
+        model = Model(inputs=inputs, outputs=predictions)
+
+        return model
+    # }}}
+
+    # {{{ _load_images()
+    def _load_images(self, image_path):
+
+        F0 = numpy.array(
+           [[-1,  2,  -2,  2, -1],
+            [ 2, -6,   8, -6,  2],
+            [-2,  8, -12,  8, -2],
+            [ 2, -6,   8, -6,  2],
+            [-1,  2,  -2,  2, -1]])
+
+
+        # Read filenames
+        files=[]
+        if os.path.isdir(image_path):
+            for dirpath,_,filenames in os.walk(image_path):
+                for f in filenames:
+                    path=os.path.abspath(os.path.join(dirpath, f))
+                    if not utils.is_valid_image(path):
+                        print "Warning, please provide a valid image: ", f
+                    else:
+                        files.append(path)
+        else:
+            files=[image_path]
+
+        files=sorted(files)
+
+        X=[]
+        for f in files:
+            I = misc.imread(f)
+            I=signal.convolve2d(I, F0, mode='same')  
+            I=I.astype(numpy.int16)
+            X.append( [ I ] )
+
+        X=numpy.array(X)
+
+        return X
+    # }}}
+
+    # {{{ train()
+    def train(self, cover_path, stego_path, val_size=0.10):
+
+        C = self._load_images(cover_path)
+        S = self._load_images(stego_path)
+
+        idx=range(len(C))
+        random.shuffle(idx)
+        C=C[idx]
+        S=S[idx]
+
+        l=int(len(C)*(1-val_size))
+        Xc_train=C[:l]
+        Xs_train=S[:l]
+        Xc_val=C[l:]
+        Xs_val=S[l:]
+
+        X_train = numpy.vstack((Xc_train, Xs_train))
+        y_train = numpy.hstack(([0]*len(Xc_train), [1]*len(Xs_train)))
+        y_train = np_utils.to_categorical(y_train, 2)
+
+        X_val = numpy.vstack((Xc_val, Xs_val))
+        y_val = numpy.hstack(([0]*len(Xc_val), [1]*len(Xs_val)))
+        y_val = np_utils.to_categorical(y_val, 2)
+
+
+        self.model.compile(loss='binary_crossentropy', optimizer="adam", 
+                           metrics=['accuracy'])
+
+        self.model.fit(X_train, y_train, batch_size=32, epochs=1000, 
+                       callbacks=[SaveBestModelCallback((X_val, y_val), 
+                                                   self.model, 'xu-net')],
+                       validation_data=(X_val, y_val), shuffle=True)
+
+    # }}}
+
+
 
 # }}}
 

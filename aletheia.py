@@ -162,8 +162,9 @@ def main():
         print "  - hill-sim:       Embedding using HILL simulator."
         print ""
         print "  Model training:"
-        print "  - esvm:  Ensemble of Support Vector Machines."
-        print "  - e4s:   Ensemble Classifiers for Steganalysis."
+        print "  - esvm:     Ensemble of Support Vector Machines."
+        print "  - e4s:      Ensemble Classifiers for Steganalysis."
+        print "  - xu-net:   Convolutional Neural Network for Steganalysis."
         print ""
         print "\n"
         sys.exit(0)
@@ -458,6 +459,22 @@ def main():
         print "Validation score:", val_score
     # }}}
 
+    # {{{ xu-net
+    elif sys.argv[1]=="xu-net":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "xu-net <cover-dir> <stego-dir> <model-file>\n"
+            sys.exit(0)
+
+        cover_dir=sys.argv[2]
+        stego_dir=sys.argv[3]
+        model_file=sys.argv[4]
+
+        net = models.XuNet()
+        net.train(cover_dir, stego_dir)
+        
+        #print "Validation score:", val_score
+    # }}}
 
     else:
         print "Wrong command!"
