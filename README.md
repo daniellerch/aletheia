@@ -1,5 +1,5 @@
 # Aletheia
-Aletheia is a tool for the detection of hidden messages in images.
+Aletheia is a steganalysis tool for the detection of hidden messages in images.
 
 
 - [Install](#install)
@@ -31,7 +31,9 @@ $ sudo apt-get install octave octave-image
 After that, you can execute Aletheia with:
 
 ```bash
-$ ./aletheia.py <command>
+$ ./aletheia.py 
+
+./aletheia.py <command>
 
 COMMANDS:
 
