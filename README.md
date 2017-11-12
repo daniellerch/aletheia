@@ -31,7 +31,9 @@ $ sudo apt-get install octave octave-image
 After that, you can execute Aletheia with:
 
 ```bash
-$ ./aletheia.py <command>
+$ ./aletheia.py 
+
+./aletheia.py <command>
 
 COMMANDS:
 
