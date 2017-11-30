@@ -156,6 +156,7 @@ def main():
         print "  - srmq1:  Spatial Rich Models with fixed quantization q=1c."
         print ""
         print "  Embedding simulators:"
+        print "  - lsbr-sim:       Embedding using LSB replacement simulator."
         print "  - lsbm-sim:       Embedding using LSB matching simulator."
         print "  - hugo-sim:       Embedding using HUGO simulator."
         print "  - wow-sim:        Embedding using WOW simulator."
@@ -356,6 +357,16 @@ def main():
 
 
     # -- EMBEDDING SIMULATORS --
+
+    # {{{ lsbr-sim
+    elif sys.argv[1]=="lsbr-sim":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "lsbr-sim <image/dir> <payload> <output-dir>\n"
+            sys.exit(0)
+
+        embed_message(stegosim.lsbr, sys.argv[2], sys.argv[3], sys.argv[4])
+    # }}}
 
     # {{{ lsbm-sim
     elif sys.argv[1]=="lsbm-sim":

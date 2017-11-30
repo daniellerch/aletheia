@@ -107,4 +107,44 @@ def lsbm(path, payload):
     X = numpy.array(img)
     return X
 
+def lsbr(path, payload):
+    img = Image.open(path) 
+    pixels = img.load()
+    width, height = img.size
+
+    sign=[1, -1]
+    for j in range(height):
+        for i in range(width):
+            if random.randint(0,99)>int(float(payload)*100):
+                continue
+            
+            if img.mode=='L':
+                if pixels[i, j]%2!=random.randint(0,1): # message
+                    if pixels[i, j]%2==0: pixels[i, j]+=1
+                    else: pixels[i, j]-=1
+            elif img.mode=='RGB':
+                # message
+                kr=0; Kg=0; kb=0
+
+                if pixels[i, j][0]%2==0: kr=1
+                else: kr=-1
+
+                if pixels[i, j][1]%2==0: kg=1
+                else: kg=-1
+
+                if pixels[i, j][2]%2==0: kb=1
+                else: kb=-1
+
+                if pixels[i, j][0]%2==random.randint(0,1): kr=0
+                if pixels[i, j][1]%2==random.randint(0,1): kg=0
+                if pixels[i, j][2]%2==random.randint(0,1): kb=0
+                pixels[i, j]=(pixels[i,j][0]+kr, pixels[i,j][1]+kg, pixels[i,j][2]+kb)
+
+            else:
+                print "Error: mode not supported:", img.mode
+                system.exit(0)
+
+    X = numpy.array(img)
+    return X
+
 
