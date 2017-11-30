@@ -1,13 +1,14 @@
 import os
 import sys
-import PIL
 import logging
 import numpy
 import tempfile
 import shutil
 import numpy
 import subprocess
+import random
 from scipy.io import savemat, loadmat
+from PIL import Image
  
 
 M_BIN="octave -q --no-gui --eval"
@@ -65,5 +66,45 @@ def hugo(path, payload):
 
 def hill(path, payload):
     return _embed('hill', path, payload)
+
+def lsbm(path, payload):
+    img = Image.open(path) 
+    pixels = img.load()
+    width, height = img.size
+
+    sign=[1, -1]
+    for j in range(height):
+        for i in range(width):
+            if random.randint(0,99)>int(float(payload)*100):
+                continue
+            
+            if img.mode=='L':
+                k=sign[random.randint(0, 1)]
+                if pixels[i, j]==0: k=1
+                if pixels[i, j]==255: k=-1
+                if pixels[i, j]%2!=random.randint(0,1): # message
+                    pixels[i, j]+=k
+            elif img.mode=='RGB':
+                kr=sign[random.randint(0, 1)]
+                kg=sign[random.randint(0, 1)]
+                kb=sign[random.randint(0, 1)]
+                if pixels[i, j][0]==0: kr=1
+                if pixels[i, j][1]==0: kg=1
+                if pixels[i, j][2]==0: kb=1
+                if pixels[i, j][0]==255: kr=-1
+                if pixels[i, j][1]==255: kg=-1
+                if pixels[i, j][2]==255: kb=-1
+                # message
+                if pixels[i, j][0]%2==random.randint(0,1): kr=0
+                if pixels[i, j][1]%2==random.randint(0,1): kg=0
+                if pixels[i, j][2]%2==random.randint(0,1): kb=0
+                pixels[i, j]=(pixels[i,j][0]+kr, pixels[i,j][1]+kg, pixels[i,j][2]+kb)
+
+            else:
+                print "Error: mode not supported:", img.mode
+                system.exit(0)
+
+    X = numpy.array(img)
+    return X
 
 

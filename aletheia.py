@@ -47,6 +47,7 @@ def embed_message(embed_fn, path, payload, output_dir):
             print str(e)
 
     # Process thread pool in batches
+    """
     batch=1000
     for i in xrange(0, len(files), batch):
         files_batch = files[i:i+batch]
@@ -66,7 +67,6 @@ def embed_message(embed_fn, path, payload, output_dir):
             scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
         except Exception, e:
             print str(e)
-    """
    
 # }}}
 
@@ -156,6 +156,7 @@ def main():
         print "  - srmq1:  Spatial Rich Models with fixed quantization q=1c."
         print ""
         print "  Embedding simulators:"
+        print "  - lsbm-sim:       Embedding using LSB matching simulator."
         print "  - hugo-sim:       Embedding using HUGO simulator."
         print "  - wow-sim:        Embedding using WOW simulator."
         print "  - s-uniward-sim:  Embedding using S-UNIWARD simulator."
@@ -355,6 +356,16 @@ def main():
 
 
     # -- EMBEDDING SIMULATORS --
+
+    # {{{ lsbm-sim
+    elif sys.argv[1]=="lsbm-sim":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "lsbm-sim <image/dir> <payload> <output-dir>\n"
+            sys.exit(0)
+
+        embed_message(stegosim.lsbm, sys.argv[2], sys.argv[3], sys.argv[4])
+    # }}}
 
     # {{{ hugo-sim
     elif sys.argv[1]=="hugo-sim":
