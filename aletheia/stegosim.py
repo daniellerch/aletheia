@@ -7,7 +7,9 @@ import shutil
 import numpy
 import subprocess
 import random
+
 from scipy.io import savemat, loadmat
+from scipy import misc
 from PIL import Image
  
 
@@ -68,83 +70,69 @@ def hill(path, payload):
     return _embed('hill', path, payload)
 
 def lsbm(path, payload):
-    img = Image.open(path) 
-    pixels = img.load()
-    width, height = img.size
-
+    X = misc.imread(path)
     sign=[1, -1]
-    for j in range(height):
-        for i in range(width):
+    for j in range(X.shape[0]):
+        for i in range(X.shape[1]):
             if random.randint(0,99)>int(float(payload)*100):
                 continue
-            
-            if img.mode=='L':
+ 
+            if len(X.shape)==2:
                 k=sign[random.randint(0, 1)]
-                if pixels[i, j]==0: k=1
-                if pixels[i, j]==255: k=-1
-                if pixels[i, j]%2!=random.randint(0,1): # message
-                    pixels[i, j]+=k
-            elif img.mode=='RGB':
+                if X[i, j]==0: k=1
+                if X[i, j]==255: k=-1
+                if X[i, j]%2!=random.randint(0,1): # message
+                    X[i, j]+=k
+            else:
                 kr=sign[random.randint(0, 1)]
                 kg=sign[random.randint(0, 1)]
                 kb=sign[random.randint(0, 1)]
-                if pixels[i, j][0]==0: kr=1
-                if pixels[i, j][1]==0: kg=1
-                if pixels[i, j][2]==0: kb=1
-                if pixels[i, j][0]==255: kr=-1
-                if pixels[i, j][1]==255: kg=-1
-                if pixels[i, j][2]==255: kb=-1
+                if X[i, j][0]==0: kr=1
+                if X[i, j][1]==0: kg=1
+                if X[i, j][2]==0: kb=1
+                if X[i, j][0]==255: kr=-1
+                if X[i, j][1]==255: kg=-1
+                if X[i, j][2]==255: kb=-1
                 # message
-                if pixels[i, j][0]%2==random.randint(0,1): kr=0
-                if pixels[i, j][1]%2==random.randint(0,1): kg=0
-                if pixels[i, j][2]%2==random.randint(0,1): kb=0
-                pixels[i, j]=(pixels[i,j][0]+kr, pixels[i,j][1]+kg, pixels[i,j][2]+kb)
-
-            else:
-                print "Error: mode not supported:", img.mode
-                system.exit(0)
-
-    X = numpy.array(img)
+                if X[i, j][0]%2==random.randint(0,1): kr=0
+                if X[i, j][1]%2==random.randint(0,1): kg=0
+                if X[i, j][2]%2==random.randint(0,1): kb=0
+                X[i, j]=(X[i,j][0]+kr, X[i,j][1]+kg, X[i,j][2]+kb)
     return X
 
-def lsbr(path, payload):
-    img = Image.open(path) 
-    pixels = img.load()
-    width, height = img.size
 
+def lsbr(path, payload):
+    X = misc.imread(path)
     sign=[1, -1]
-    for j in range(height):
-        for i in range(width):
+    for j in range(X.shape[0]):
+        for i in range(X.shape[1]):
             if random.randint(0,99)>int(float(payload)*100):
                 continue
-            
-            if img.mode=='L':
-                if pixels[i, j]%2!=random.randint(0,1): # message
-                    if pixels[i, j]%2==0: pixels[i, j]+=1
-                    else: pixels[i, j]-=1
-            elif img.mode=='RGB':
+ 
+            if len(X.shape)==2:
+                k=sign[random.randint(0, 1)]
+                if X[i, j]==0: k=1
+                if X[i, j]==255: k=-1
+                if X[i, j]%2!=random.randint(0,1): # message
+                    if X[i, j]%2==0: X[i, j]+=1
+                    else: X[i, j]-=1
+            else:
                 # message
                 kr=0; Kg=0; kb=0
 
-                if pixels[i, j][0]%2==0: kr=1
+                if X[i, j][0]%2==0: kr=1
                 else: kr=-1
 
-                if pixels[i, j][1]%2==0: kg=1
+                if X[i, j][1]%2==0: kg=1
                 else: kg=-1
 
-                if pixels[i, j][2]%2==0: kb=1
+                if X[i, j][2]%2==0: kb=1
                 else: kb=-1
 
-                if pixels[i, j][0]%2==random.randint(0,1): kr=0
-                if pixels[i, j][1]%2==random.randint(0,1): kg=0
-                if pixels[i, j][2]%2==random.randint(0,1): kb=0
-                pixels[i, j]=(pixels[i,j][0]+kr, pixels[i,j][1]+kg, pixels[i,j][2]+kb)
-
-            else:
-                print "Error: mode not supported:", img.mode
-                system.exit(0)
-
-    X = numpy.array(img)
+                if X[i, j][0]%2==random.randint(0,1): kr=0
+                if X[i, j][1]%2==random.randint(0,1): kg=0
+                if X[i, j][2]%2==random.randint(0,1): kb=0
+                X[i, j]=(X[i,j][0]+kr, X[i,j][1]+kg, X[i,j][2]+kb)
     return X
 
 
