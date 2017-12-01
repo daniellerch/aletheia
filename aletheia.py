@@ -47,11 +47,12 @@ def embed_message(embed_fn, path, payload, output_dir):
             print str(e)
 
     # Process thread pool in batches
-    """
     batch=1000
     for i in xrange(0, len(files), batch):
         files_batch = files[i:i+batch]
-        pool = ThreadPool(cpu_count())
+        n_core=cpu_count()
+        print "Using", n_core, "threads"
+        pool = ThreadPool(n_core)
         results = pool.map(embed, files_batch)
         pool.close()
         pool.terminate()
@@ -67,6 +68,7 @@ def embed_message(embed_fn, path, payload, output_dir):
             scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
         except Exception, e:
             print str(e)
+    """
    
 # }}}
 
