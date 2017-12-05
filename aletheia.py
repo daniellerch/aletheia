@@ -90,6 +90,8 @@ def extract_features(extract_fn, image_path, ofile):
     else:
         files=[image_path]
 
+    #files.sort(key=utils.natural_sort_key)
+
     output_file=utils.absolute_path(ofile)
     
     if os.path.isdir(output_file):

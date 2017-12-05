@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os
+import re
 from PIL import Image
 
 def is_valid_image(path):
@@ -26,5 +27,10 @@ def absolute_path(path):
 
     return os.path.join(os.getcwd(), path)
 
+
+
+def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
+    return [int(text) if text.isdigit() else text.lower()
+            for text in re.split(_nsre, s)]    
 
 
