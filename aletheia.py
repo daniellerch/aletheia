@@ -320,7 +320,6 @@ def main():
 
             X = X.reshape((1, X.shape[0]))
             p = clf.predict_proba(X)
-            print p
             if p[0][0] > 0.5:
                 print os.path.basename(f), "Cover, probability:", p[0][0]
             else:

@@ -162,6 +162,7 @@ class Ensemble4Stego:
         currdir=os.path.dirname(__file__)
         basedir=os.path.abspath(os.path.join(currdir, os.pardir))
         m_path=os.path.join(basedir, 'external', 'octave')
+        os.chdir(m_path)
 
         self.__tmpdir=tempfile.mkdtemp()
 
