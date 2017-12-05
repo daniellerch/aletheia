@@ -314,16 +314,19 @@ def main():
         clf=models.Ensemble4Stego()
         clf.load(model_file)
         for f in files:
-            
+           
             if extractor=="srm": X = richmodels.SRM_extract(f)
-            if extractor=="srmq1": X = richmodels.SRMQ1_extract(f)
+            elif extractor=="srmq1": X = richmodels.SRMQ1_extract(f)
+            else:
+                print "Unknown extractor:", extractor
+                sys.exit(0)
 
             X = X.reshape((1, X.shape[0]))
-            p = clf.predict_proba(X)
-            if p[0][0] > 0.5:
-                print os.path.basename(f), "Cover, probability:", p[0][0]
+            p = clf.predict(X)
+            if p[0] == 0:
+                print os.path.basename(f), "Cover"
             else:
-                print os.path.basename(f), "Stego, probability:", p[0][1]
+                print os.path.basename(f), "Stego"
     # }}}
 
 
