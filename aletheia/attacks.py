@@ -45,10 +45,13 @@ def exif(filename):
 """
 def spa(filename, channel=0): 
 
-    I3d = misc.imread(filename)
-    width, height, channels = I3d.shape
-
-    I = I3d[:,:,channel]
+    if channel!=None:
+        I3d = misc.imread(filename)
+        width, height, channels = I3d.shape
+        I = I3d[:,:,channel]
+    else:
+        I = misc.imread(filename)
+        width, height = I.shape
 
     x=0; y=0; k=0
     for j in range(height):
@@ -120,7 +123,8 @@ def difference(I, mask):
 # {{{ rs()
 def rs(filename, channel=0):
     I = misc.imread(filename)
-    I = I[:,:,channel]
+    if channel!=None:
+        I = I[:,:,channel]
     I = I.astype(int)
 
     mask = numpy.array( [[1,0],[0,1]] )

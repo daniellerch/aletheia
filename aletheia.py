@@ -12,6 +12,7 @@ import multiprocessing
 from aletheia import stegosim, richmodels, models
 from multiprocessing.dummy import Pool as ThreadPool 
 from multiprocessing import cpu_count
+from scipy import misc
 
 from aletheia import attacks, utils
 #from cnn import net as cnn
@@ -193,20 +194,30 @@ def main():
             sys.exit(0)
 
         threshold=0.05
-        bitrate_R=attacks.spa(sys.argv[2], 0)
-        bitrate_G=attacks.spa(sys.argv[2], 1)
-        bitrate_B=attacks.spa(sys.argv[2], 2)
 
-        if bitrate_R<threshold and bitrate_G<threshold and bitrate_B<threshold:
-            print "No hiden data found"
-            sys.exit(0)
+        I = misc.imread(sys.argv[2])
+        if len(I.shape)==2:
+            bitrate=attacks.spa(sys.argv[2], None)
+            if bitrate<threshold:
+                print "No hiden data found"
+            else:
+                print "Hiden data found", bitrate
+        else:
+            bitrate_R=attacks.spa(sys.argv[2], 0)
+            bitrate_G=attacks.spa(sys.argv[2], 1)
+            bitrate_B=attacks.spa(sys.argv[2], 2)
 
-        if bitrate_R>=threshold:
-            print "Hiden data found in channel R", bitrate_R
-        if bitrate_G>=threshold:
-            print "Hiden data found in channel G", bitrate_G
-        if bitrate_B>=threshold:
-            print "Hiden data found in channel B", bitrate_B
+            if bitrate_R<threshold and bitrate_G<threshold and bitrate_B<threshold:
+                print "No hiden data found"
+                sys.exit(0)
+
+            if bitrate_R>=threshold:
+                print "Hiden data found in channel R", bitrate_R
+            if bitrate_G>=threshold:
+                print "Hiden data found in channel G", bitrate_G
+            if bitrate_B>=threshold:
+                print "Hiden data found in channel B", bitrate_B
+
         sys.exit(0)
     # }}}
 
@@ -222,21 +233,31 @@ def main():
             sys.exit(0)
 
         threshold=0.05
-        bitrate_R=attacks.rs(sys.argv[2], 0)
-        bitrate_G=attacks.rs(sys.argv[2], 1)
-        bitrate_B=attacks.rs(sys.argv[2], 2)
 
-        if bitrate_R<threshold and bitrate_G<threshold and bitrate_B<threshold:
-            print "No hiden data found"
+
+        I = misc.imread(sys.argv[2])
+        if len(I.shape)==2:
+            bitrate=attacks.rs(sys.argv[2], None)
+            if bitrate<threshold:
+                print "No hiden data found"
+            else:
+                print "Hiden data found", bitrate
+        else:
+            bitrate_R=attacks.rs(sys.argv[2], 0)
+            bitrate_G=attacks.rs(sys.argv[2], 1)
+            bitrate_B=attacks.rs(sys.argv[2], 2)
+
+            if bitrate_R<threshold and bitrate_G<threshold and bitrate_B<threshold:
+                print "No hiden data found"
+                sys.exit(0)
+
+            if bitrate_R>=threshold:
+                print "Hiden data found in channel R", bitrate_R
+            if bitrate_G>=threshold:
+                print "Hiden data found in channel G", bitrate_G
+            if bitrate_B>=threshold:
+                print "Hiden data found in channel B", bitrate_B
             sys.exit(0)
-
-        if bitrate_R>=threshold:
-            print "Hiden data found in channel R", bitrate_R
-        if bitrate_G>=threshold:
-            print "Hiden data found in channel G", bitrate_G
-        if bitrate_B>=threshold:
-            print "Hiden data found in channel B", bitrate_B
-        sys.exit(0)
     # }}}
 
 
