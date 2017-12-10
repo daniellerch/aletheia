@@ -6,6 +6,7 @@ import tempfile
 import shutil
 import subprocess
 import glob
+import sys
 
 from aletheia import utils
 
@@ -22,6 +23,7 @@ from scipy import misc, signal # ndimage
 from multiprocessing.dummy import Pool as ThreadPool
 from multiprocessing import cpu_count
 
+
 from keras.models import Model
 from keras.callbacks import Callback
 from keras.layers.normalization import BatchNormalization
@@ -29,6 +31,7 @@ from keras.layers import Dense, Activation, Input, Conv2D, AveragePooling2D
 from keras.layers import Lambda, GlobalAveragePooling2D
 from keras import backend as K
 from keras.utils import np_utils
+
 
 
 # {{{ EnsembleSVM
@@ -123,6 +126,7 @@ class Ensemble4Stego:
         currdir=os.path.dirname(__file__)
         basedir=os.path.abspath(os.path.join(currdir, os.pardir))
         m_path=os.path.join(basedir, 'external', 'octave')
+        os.chdir(m_path)
 
         self.__tmpdir=tempfile.mkdtemp()
 

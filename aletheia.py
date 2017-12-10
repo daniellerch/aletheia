@@ -8,6 +8,7 @@ import numpy
 import pandas
 import pickle
 import multiprocessing
+import shutil
 
 from aletheia import stegosim, richmodels, models
 from multiprocessing.dummy import Pool as ThreadPool 
@@ -144,35 +145,48 @@ def train_models():
 
 def main():
 
+    attacks_doc="\n" \
+    "  Attacks to LSB replacement:\n" \
+    "  - spa:   Sample Pairs Analysis.\n" \
+    "  - rs:    RS attack."
+
+    embsim_doc="\n" \
+    "  Embedding simulators:\n" \
+    "  - lsbr-sim:       Embedding using LSB replacement simulator.\n" \
+    "  - lsbm-sim:       Embedding using LSB matching simulator.\n" \
+    "  - hugo-sim:       Embedding using HUGO simulator.\n" \
+    "  - wow-sim:        Embedding using WOW simulator.\n" \
+    "  - s-uniward-sim:  Embedding using S-UNIWARD simulator."
+
+    model_doc="\n" \
+    "  Model training:\n" \
+    "  - esvm:     Ensemble of Support Vector Machines.\n" \
+    "  - e4s:      Ensemble Classifiers for Steganalysis.\n" \
+    "  - xu-net:   Convolutional Neural Network for Steganalysis."
+
+    mldetect_doc="\n" \
+    "  ML-based detectors:\n" \
+    "  - esvm-predict:  Predict using eSVM.\n" \
+    "  - e4s-predict:   Predict using EC."
+
+    feaextract_doc="\n" \
+    "  Feature extractors:\n" \
+    "  - srm:    Full Spatial Rich Models.\n" \
+    "  - srmq1:  Spatial Rich Models with fixed quantization q=1c."
+
+    auto_doc="\n" \
+    "  Automated attacks:\n" \
+    "  - ats:      Artificial Training Sets."
+
     if len(sys.argv)<2:
         print sys.argv[0], "<command>\n"
         print "COMMANDS:"
-        print ""
-        print "  Attacks to LSB replacement:"
-        print "  - spa:   Sample Pairs Analysis."
-        print "  - rs:    RS attack."
-        print ""
-        print "  ML-based detectors:"
-        print "  - esvm-predict:  Predict using eSVM."
-        print "  - e4s-predict:   Predict using EC."
-        print ""
-        print "  Feature extractors:"
-        print "  - srm:    Full Spatial Rich Models."
-        print "  - srmq1:  Spatial Rich Models with fixed quantization q=1c."
-        print ""
-        print "  Embedding simulators:"
-        print "  - lsbr-sim:       Embedding using LSB replacement simulator."
-        print "  - lsbm-sim:       Embedding using LSB matching simulator."
-        print "  - hugo-sim:       Embedding using HUGO simulator."
-        print "  - wow-sim:        Embedding using WOW simulator."
-        print "  - s-uniward-sim:  Embedding using S-UNIWARD simulator."
-        print "  - hill-sim:       Embedding using HILL simulator."
-        print ""
-        print "  Model training:"
-        print "  - esvm:     Ensemble of Support Vector Machines."
-        print "  - e4s:      Ensemble Classifiers for Steganalysis."
-        print "  - xu-net:   Convolutional Neural Network for Steganalysis."
-        print ""
+        print attacks_doc
+        print mldetect_doc
+        print feaextract_doc
+        print embsim_doc
+        print model_doc
+        print auto_doc
         print "\n"
         sys.exit(0)
 
@@ -267,11 +281,8 @@ def main():
     elif sys.argv[1]=="esvm-predict":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "esvm-predict <model-file> <feature-extractor> <image/dir>\n"
-            print "Feature extractors:"
-            print "  - srm:    Full Spatial Rich Models."
-            print "  - srmq1:  Spatial Rich Models with fixed quantization q=1c."
-            print ""
+            print sys.argv[0], "esvm-predict <model-file> <feature-extractor> <image/dir>"
+            print feaextract_doc
             sys.exit(0)
 
         model_file=sys.argv[2]
@@ -459,7 +470,7 @@ def main():
 
         cover_fea=sys.argv[2]
         stego_fea=sys.argv[3]
-        model_file=sys.argv[4]
+        model_file=utils.absolute_path(sys.argv[4])
 
         X_cover = pandas.read_csv(cover_fea, delimiter = " ").values
         X_stego = pandas.read_csv(stego_fea, delimiter = " ").values
@@ -489,7 +500,7 @@ def main():
 
         cover_fea=sys.argv[2]
         stego_fea=sys.argv[3]
-        model_file=sys.argv[4]
+        model_file=utils.absolute_path(sys.argv[4])
 
         X_cover = pandas.read_csv(cover_fea, delimiter = " ").values
         X_stego = pandas.read_csv(stego_fea, delimiter = " ").values
@@ -524,6 +535,98 @@ def main():
         
         #print "Validation score:", val_score
     # }}}
+
+
+    # -- AUTOMATED ATTACKS --
+
+    # {{{ ats
+    elif sys.argv[1]=="ats":
+
+        if len(sys.argv)!=6:
+            print sys.argv[0], "ats <embed-sim> <payload> <fea-extract> <images>\n"
+            print "  Embedding simulators:"
+            print "  - lsbr-sim:       Embedding using LSB replacement simulator."
+            print "  - lsbm-sim:       Embedding using LSB matching simulator."
+            print "  - hugo-sim:       Embedding using HUGO simulator."
+            print "  - wow-sim:        Embedding using WOW simulator."
+            print "  - s-uniward-sim:  Embedding using S-UNIWARD simulator."
+            print "  - hill-sim:       Embedding using HILL simulator."
+            print ""
+            print "Feature extractors:"
+            print "  - srm:    Full Spatial Rich Models."
+            print "  - srmq1:  Spatial Rich Models with fixed quantization q=1c."
+            print ""
+            sys.exit(0)
+
+        emb_sim=sys.argv[2]
+        payload=sys.argv[3]
+        feaextract=sys.argv[4]
+        A_dir=sys.argv[5]
+
+        fn_sim=""
+        if emb_sim=="lsbm-sim": fn_sim=stegosim.lsbm
+        elif emb_sim=="lsbr-sim": fn_sim=stegosim.lsbr
+        elif emb_sim=="hugo-sim": fn_sim=stegosim.hugo
+        elif emb_sim=="wow-sim": fn_sim=stegosim.wow
+        elif emb_sim=="s-uniward-sim": fn_sim=stegosim.s_uniward
+        elif emb_sim=="hill-sim": fn_sim=stegosim.hill
+        else: 
+            print "Unknown simulator:", emb_sim
+            sys.exit(0)
+
+        fn_feaextract=""
+        if feaextract=="srm": fn_feaextract=richmodels.SRM_extract
+        elif feaextract=="srmq1": fn_feaextract=richmodels.SRMQ1_extract
+        else: 
+            print "Unknown feature extractor:", feaextract
+            sys.exit(0)
+
+        import tempfile
+        B_dir=tempfile.mkdtemp()
+        C_dir=tempfile.mkdtemp()
+        embed_message(fn_sim, A_dir, payload, B_dir)
+        embed_message(fn_sim, B_dir, payload, C_dir)
+ 
+        fea_dir=tempfile.mkdtemp()
+        A_fea=os.path.join(fea_dir, "A.fea")
+        C_fea=os.path.join(fea_dir, "C.fea")
+        extract_features(fn_feaextract, A_dir, A_fea)
+        extract_features(fn_feaextract, C_dir, C_fea)
+
+        A = pandas.read_csv(A_fea, delimiter = " ").values
+        C = pandas.read_csv(C_fea, delimiter = " ").values
+
+        X=numpy.vstack((A, C))
+        y=numpy.hstack(([0]*len(A), [1]*len(C)))
+
+        clf=models.Ensemble4Stego()
+        clf.fit(X, y)
+
+
+        files=[]
+        for dirpath,_,filenames in os.walk(B_dir):
+            for f in filenames:
+                path=os.path.abspath(os.path.join(dirpath, f))
+                if not utils.is_valid_image(path):
+                    print "Warning, this is not a valid image: ", f
+                else:
+                    files.append(path)
+
+        for f in files:
+            B = fn_feaextract(f)
+            B = B.reshape((1, B.shape[0]))
+            p = clf.predict(B)
+            if p[0] == 0:
+                print os.path.basename(f), "Cover"
+            else:
+                print os.path.basename(f), "Stego"
+
+        shutil.rmtree(B_dir)
+        shutil.rmtree(C_dir)
+        shutil.rmtree(fea_dir)
+
+    # }}}
+
 
     else:
         print "Wrong command!"
