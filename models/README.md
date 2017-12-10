@@ -3,8 +3,7 @@ These models were trained using a randomly selected subset
 containing 90% of the images and validated using the remaining 10%.
 
 
-The Bossbase contains 10000 images and can be download from [here]
-(http://agents.fel.cvut.cz/stegodata/BossBase-1.01-cover.tar.bz2)
+The Bossbase contains 10000 images and can be download from [here](http://agents.fel.cvut.cz/stegodata/BossBase-1.01-cover.tar.bz2)
 
 
 | Model file                         | val score |
