@@ -11,6 +11,10 @@ The Bossbase contains 10000 images and can be download from
 |------------------------------------|-----------|
 | e4s_srm_bossbase_lsbr0.40.model    |   0.99    |
 | e4s_srm_bossbase_lsbr0.20.model    |   0.95    |
+| e4s_srm_bossbase_lsbr0.10.model    |   0.92    |
+| e4s_srm_bossbase_lsbr0.05.model    |   0.87    |
 | e4s_srm_bossbase_lsbm0.40.model    |   0.98    |
 | e4s_srm_bossbase_lsbm0.20.model    |   0.96    |
+| e4s_srm_bossbase_lsbm0.10.model    |   0.91    |
+| e4s_srm_bossbase_lsbm0.05.model    |   0.88    |
 
