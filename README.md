@@ -154,9 +154,9 @@ You can find some information about the pre-build models [here](/models/README.m
 
 ### The ATS attack
 
-The ATS attack provides a mechanimsm to deal with Cover Source Mismatch. This is a problem produced by training with an incomplete dataset. Our database, no matter how big it is, does not contains a representation of all the types of images that exist. As a consequence, if the image we want to test is not well represented in our training set, the results are going to be wrong.
+The ATS attack provides a mechanism to deal with Cover Source Mismatch. This is a problem produced by training with an incomplete dataset. Our database, no matter how big it is, does not contains a representation of all the types of images that exist. As a consequence, if the image we want to test is not well represented in our training set, the results are going to be wrong.
 
-The ATS attack is unsupervised, that means tha does not need a training database. This attack use the images we want to test (we need a number of images, this method can not be applied to only one image) to create an artificial training set that is used to train the classifier. But this method has an important drawback: we can only use it if we know the training set has some cover and some stego images. The method does not work if all the images are cover or all the images are stego.
+The ATS attack is unsupervised, that means that does not need a training database. This attack use the images we want to test (we need a number of images, this method can not be applied to only one image) to create an artificial training set that is used to train the classifier. But this method has an important drawback: we can only use it if we know the training set has some cover and some stego images. The method does not work if all the images are cover or all the images are stego.
 
 For example, we prepare a folder "test_ats" with 10 cover and 10 stego images. We can apply the ATS attack with the following command: 
 
