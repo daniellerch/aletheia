@@ -139,7 +139,7 @@ The name of the file give some details about the model. First we find the classi
 
 Remember that the reliability of the prediction is highly dependent on the cover source. This means that if the images used to train are very different from the images we want to predict the result may not be accurate. 
 
-You can find some information about the pre-build models [here](/aletheia/blob/master/models/README.md).
+You can find some information about the pre-build models [here](/models/README.md).
 
 
 
