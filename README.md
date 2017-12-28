@@ -185,7 +185,7 @@ $ ./aletheia.py ats lsbm-sim 0.40 srm test_ats/
 9902.pgm Cover
 ```
 
-
+Note we are supposed to know (or to have a strong assumption) about which is the embedding algorithm and bitrate used by the steganographer.
 
 
 
