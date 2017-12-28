@@ -277,7 +277,7 @@ def main():
 
     # -- ML-BASED DETECTORS --
 
-    # {{{ esvm
+    # {{{ esvm-predict
     elif sys.argv[1]=="esvm-predict":
 
         if len(sys.argv)!=5:
@@ -317,7 +317,7 @@ def main():
                 print os.path.basename(f), "Stego, probability:", p[0][1]
     # }}}
 
-    # {{{ e4s
+    # {{{ e4s-predict
     elif sys.argv[1]=="e4s-predict":
 
         if len(sys.argv)!=5:
@@ -525,6 +525,8 @@ def main():
         if len(sys.argv)!=5:
             print sys.argv[0], "xu-net <cover-dir> <stego-dir> <model-name>\n"
             sys.exit(0)
+
+        print "WARNING! xu-net module is not finished yet!"
 
         cover_dir=sys.argv[2]
         stego_dir=sys.argv[3]
