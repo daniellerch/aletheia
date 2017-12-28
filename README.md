@@ -6,7 +6,7 @@ Aletheia is a steganalysis tool for the detection of hidden messages in images.
 - [Statistical attacks to LSB replacement](#statistical-attacks-to-lsb-replacement)
 - [Machine Learning based attacks](#machine-learning-based-attacks)
 - [Using pre-build models](#using-pre-built-models)
-- [The-ATS-attack](#the-ats-attack)
+- [The ATS attack](#the-ats-attack)
 
 
 ### Install
