@@ -5,6 +5,7 @@ Aletheia is a steganalysis tool for the detection of hidden messages in images.
 - [Install](#install)
 - [Statistical attacks to LSB replacement](#statistical-attacks-to-lsb-replacement)
 - [Machine Learning based attacks](#machine-learning-based-attacks)
+- [Using pre-build models](#using-pre-built-models)
 
 
 
@@ -37,23 +38,33 @@ $ ./aletheia.py
 
 COMMANDS:
 
+
   Attacks to LSB replacement:
   - spa:   Sample Pairs Analysis.
   - rs:    RS attack.
+
+  ML-based detectors:
+  - esvm-predict:  Predict using eSVM.
+  - e4s-predict:   Predict using EC.
 
   Feature extractors:
   - srm:    Full Spatial Rich Models.
   - srmq1:  Spatial Rich Models with fixed quantization q=1c.
 
   Embedding simulators:
+  - lsbr-sim:       Embedding using LSB replacement simulator.
+  - lsbm-sim:       Embedding using LSB matching simulator.
   - hugo-sim:       Embedding using HUGO simulator.
   - wow-sim:        Embedding using WOW simulator.
   - s-uniward-sim:  Embedding using S-UNIWARD simulator.
-  - hill-sim:       Embedding using HILL simulator.
 
   Model training:
-  - esvm:  Ensemble of Support Vector Machines.
-  - e4s:   Ensemble Classifiers for Steganalysis.
+  - esvm:     Ensemble of Support Vector Machines.
+  - e4s:      Ensemble Classifiers for Steganalysis.
+  - xu-net:   Convolutional Neural Network for Steganalysis.
+
+  Automated attacks:
+  - ats:      Artificial Training Sets.
 
 ```
 
@@ -121,8 +132,44 @@ Finally, we can classifiy an image:
 
 ```bash
 $ ./aletheia.py e4s-predict hill040.model srm my_test_image.png
-Stego, probability: 0.81
+my_test_image.png Stego
 ```
+
+
+### Using pre-Built models
+
+We provide some pre-built models to facilitate the usage of Aletheia. You can find this models in the "models" folder. For example, you can use the model "e4s_srm_bossbase_lsbm0.10.model" to classify an image with the following command:
+
+```bash
+$ ./aletheia.py e4s-predict e4s_srm_bossbase_lsbm0.10.model srm my_test_image.png
+my_test_image.png Stego
+```
+
+The name of the file give some details about the model. First we find the classification algorithm "e4s", used for Ensemble Classifiers for Steganalysis. Next we find the name of the feature extractor (srm for Spatial Rich Models). Next we find "bossbase", the name of the image database used to train the model. Finally, we find the embedding algorithm (lsbm, for LSB matching) and the embedding rate (0.10 bits per pixel). This information is needed to execute the program so we need to provide to Aletheia the classification algorithm used to predict (e4s-predict option) and the feature extractor used (srm).
+
+Remember that the reliability of the prediction is highly dependent on the cover source. This means that if the images used to train are very different from the images we want to predict the result may not be accurate. 
+
+You can find some information about the pre-build models [here](/models/README.md).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
