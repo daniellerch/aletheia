@@ -7,16 +7,16 @@ The Bossbase contains 10000 images and can be downloaded from
 [here](http://agents.fel.cvut.cz/stegodata/BossBase-1.01-cover.tar.bz2).
 
 
-| Model file                         | val score |
-|------------------------------------|-----------|
-| e4s_srm_bossbase_lsbr0.40.model    |   0.99    |
-| e4s_srm_bossbase_lsbr0.20.model    |   0.95    |
-| e4s_srm_bossbase_lsbr0.10.model    |   0.92    |
-| e4s_srm_bossbase_lsbr0.05.model    |   0.87    |
-| e4s_srm_bossbase_lsbm0.40.model    |   0.98    |
-| e4s_srm_bossbase_lsbm0.20.model    |   0.96    |
-| e4s_srm_bossbase_lsbm0.10.model    |   0.91    |
-| e4s_srm_bossbase_lsbm0.05.model    |   0.88    |
-| e4s_srm_bossbase_hill0.40.model    |   0.72    |
-| e4s_srm_bossbase_uniw0.40.model    |   0.77    |
+| Model file                            | val score |
+|---------------------------------------|-----------|
+| e4s_srm_bossbase_lsbr0.40_gs.model    |   0.99    |
+| e4s_srm_bossbase_lsbr0.20_gs.model    |   0.95    |
+| e4s_srm_bossbase_lsbr0.10_gs.model    |   0.92    |
+| e4s_srm_bossbase_lsbr0.05_gs.model    |   0.87    |
+| e4s_srm_bossbase_lsbm0.40_gs.model    |   0.98    |
+| e4s_srm_bossbase_lsbm0.20_gs.model    |   0.96    |
+| e4s_srm_bossbase_lsbm0.10_gs.model    |   0.91    |
+| e4s_srm_bossbase_lsbm0.05_gs.model    |   0.88    |
+| e4s_srm_bossbase_hill0.40_gs.model    |   0.72    |
+| e4s_srm_bossbase_uniw0.40_gs.model    |   0.77    |
 
