@@ -26,6 +26,9 @@ def embed_message(embed_fn, path, payload, output_dir):
 
     path=utils.absolute_path(path)
 
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     # Read filenames
     files=[]
     if os.path.isdir(path):
@@ -92,7 +95,7 @@ def extract_features(extract_fn, image_path, ofile):
     else:
         files=[image_path]
 
-    #files.sort(key=utils.natural_sort_key)
+    files.sort(key=utils.natural_sort_key)
 
     output_file=utils.absolute_path(ofile)
     
