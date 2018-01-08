@@ -19,7 +19,8 @@ def _extract(extractor_name, path):
 
     X=numpy.array([])
     im=Image.open(path)
-    if im.mode=='L':
+    if ((im.mode=='L' and extractor_name in ["SRM", "SRMQ1"]) or 
+        (im.mode in ['RGB', 'RGBA', 'RGBX'] and extractor_name in ["SCRMQ1"])):
         tmpdir=tempfile.mkdtemp()
         try:
             os.chdir(tmpdir)
@@ -44,42 +45,9 @@ def _extract(extractor_name, path):
         for submodel in data["data"][0][0]:
             X = numpy.hstack((X,submodel.reshape((submodel.shape[1]))))
 
-    elif im.mode in ['RGB', 'RGBA', 'RGBX']:
-        tmpdir=tempfile.mkdtemp()
-        os.chdir(tmpdir)
-        data_R_path=tmpdir+"/data_R.mat"
-        data_G_path=tmpdir+"/data_G.mat"
-        data_B_path=tmpdir+"/data_B.mat"
-        m_code=""
-        m_code+="cd "+tmpdir+";"
-        m_code+="addpath('"+m_path+"');"
-        m_code+="warning('off');"
-        m_code+="data_R="+extractor_name+"('"+path+"', 1);"
-        m_code+="data_G="+extractor_name+"('"+path+"', 2);"
-        m_code+="data_B="+extractor_name+"('"+path+"', 3);"
-        m_code+="save('-mat7-binary', '"+data_R_path+"','data_R');"
-        m_code+="save('-mat7-binary', '"+data_G_path+"','data_G');"
-        m_code+="save('-mat7-binary', '"+data_B_path+"','data_B');"
-        m_code+="exit"
-        p=subprocess.Popen(M_BIN+" \""+m_code+"\"", shell=True)
-        output, err = p.communicate()
-        status = p.wait()
-        R=numpy.array([])
-        G=numpy.array([])
-        B=numpy.array([])
-        data_R=loadmat(data_R_path)
-        data_G=loadmat(data_G_path)
-        data_B=loadmat(data_B_path)
-        for submodel in data_R["data_R"][0][0]:
-            R = numpy.hstack((R,submodel.reshape((submodel.shape[1]))))
-        for submodel in data_G["data_G"][0][0]:
-            G = numpy.hstack((G,submodel.reshape((submodel.shape[1]))))
-        for submodel in data_B["data_B"][0][0]:
-            B = numpy.hstack((B,submodel.reshape((submodel.shape[1]))))
-        X=numpy.hstack((R,G,B))
-        shutil.rmtree(tmpdir)
     else:
-        print "Image mode not supported: ", im.mode
+        print "Image mode/extractor not supported: ", im.mode, "/", extractor_name
+        print
         sys.stdout.flush()
 
     im.close()
@@ -94,6 +62,8 @@ def SRM_extract(path):
 def SRMQ1_extract(path):
     return _extract('SRMQ1', path)
 
+def SCRMQ1_extract(path):
+    return _extract('SCRMQ1', path)
 
 
 

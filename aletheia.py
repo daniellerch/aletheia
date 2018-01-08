@@ -175,7 +175,8 @@ def main():
     feaextract_doc="\n" \
     "  Feature extractors:\n" \
     "  - srm:    Full Spatial Rich Models.\n" \
-    "  - srmq1:  Spatial Rich Models with fixed quantization q=1c."
+    "  - srmq1:  Spatial Rich Models with fixed quantization q=1c.\n" \
+    "  - scrmq1: Spatial Color Rich Models with fixed quantization q=1c."
 
     auto_doc="\n" \
     "  Automated attacks:\n" \
@@ -310,6 +311,7 @@ def main():
             
             if extractor=="srm": X = richmodels.SRM_extract(f)
             if extractor=="srmq1": X = richmodels.SRMQ1_extract(f)
+            if extractor=="scrmq1": X = richmodels.SCRMQ1_extract(f)
 
             X = X.reshape((1, X.shape[0]))
             p = clf.predict_proba(X)
@@ -325,9 +327,8 @@ def main():
 
         if len(sys.argv)!=5:
             print sys.argv[0], "e4s-predict <model-file> <feature-extractor> <image/dir>\n"
-            print "Feature extractors:"
-            print "  - srm:    Full Spatial Rich Models."
-            print "  - srmq1:  Spatial Rich Models with fixed quantization q=1c."
+            print ""
+            print feaextract_doc
             print ""
             sys.exit(0)
 
@@ -354,6 +355,7 @@ def main():
            
             if extractor=="srm": X = richmodels.SRM_extract(f)
             elif extractor=="srmq1": X = richmodels.SRMQ1_extract(f)
+            elif extractor=="scrmq1": X = richmodels.SCRMQ1_extract(f)
             else:
                 print "Unknown extractor:", extractor
                 sys.exit(0)
@@ -386,13 +388,26 @@ def main():
     elif sys.argv[1]=="srmq1":
 
         if len(sys.argv)!=4:
-            print sys.argv[0], "srm <image/dir> <output-file>\n"
+            print sys.argv[0], "srmq1 <image/dir> <output-file>\n"
             sys.exit(0)
 
         image_path=sys.argv[2]
         ofile=sys.argv[3]
 
         extract_features(richmodels.SRMQ1_extract, image_path, ofile)
+    # }}}
+
+    # {{{ scrmq1
+    elif sys.argv[1]=="scrmq1":
+
+        if len(sys.argv)!=4:
+            print sys.argv[0], "scrmq1 <image/dir> <output-file>\n"
+            sys.exit(0)
+
+        image_path=sys.argv[2]
+        ofile=sys.argv[3]
+
+        extract_features(richmodels.SCRMQ1_extract, image_path, ofile)
     # }}}
 
 
@@ -557,9 +572,7 @@ def main():
             print "  - s-uniward-sim:  Embedding using S-UNIWARD simulator."
             print "  - hill-sim:       Embedding using HILL simulator."
             print ""
-            print "Feature extractors:"
-            print "  - srm:    Full Spatial Rich Models."
-            print "  - srmq1:  Spatial Rich Models with fixed quantization q=1c."
+            print feaextract_doc
             print ""
             sys.exit(0)
 
@@ -582,6 +595,7 @@ def main():
         fn_feaextract=""
         if feaextract=="srm": fn_feaextract=richmodels.SRM_extract
         elif feaextract=="srmq1": fn_feaextract=richmodels.SRMQ1_extract
+        elif feaextract=="scrmq1": fn_feaextract=richmodels.SCRMQ1_extract
         else: 
             print "Unknown feature extractor:", feaextract
             sys.exit(0)
