@@ -2,5 +2,6 @@ numpy
 scipy
 tensorflow
 keras
+scikit-learn
 scikit-image
 pandas
