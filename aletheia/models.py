@@ -224,7 +224,7 @@ class Ensemble4Stego:
         savemat(path, self.__mat_clf, appendmat=False)
 
     def load(self, path):
-        self.__mat_clf=loadmat(path)
+        self.__mat_clf=loadmat(path, appendmat=False)
 
 # }}}
 

@@ -107,9 +107,14 @@ def extract_features(extract_fn, image_path, ofile):
         os.remove(output_file)
 
     def extract_and_save(path):
-        X = extract_fn(path)
-        X = X.reshape((1, X.shape[0]))
+        try:
+            X = extract_fn(path)
+        except Exception,e:
+            print "Cannot extract feactures from", path
+            print str(e)
+            return
 
+        X = X.reshape((1, X.shape[0]))
         lock.acquire()
         with open(output_file, 'a+') as f_handle:
             numpy.savetxt(f_handle, X)
@@ -468,7 +473,7 @@ def main():
     elif sys.argv[1]=="hill-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "s-uniward-sim <image/dir> <payload> <output-dir>\n"
+            print sys.argv[0], "hill-sim <image/dir> <payload> <output-dir>\n"
             sys.exit(0)
 
         embed_message(stegosim.hill, sys.argv[2], sys.argv[3], sys.argv[4])
