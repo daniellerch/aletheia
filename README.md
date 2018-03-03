@@ -9,7 +9,7 @@ Aletheia is an open source image steganalysis tool for the detection of hidden m
 - [Install](#install)
 - [Statistical attacks to LSB replacement](#statistical-attacks-to-lsb-replacement)
 - [Machine Learning based attacks](#machine-learning-based-attacks)
-- [Using pre-build models](#using-pre-built-models)
+- [Using pre-built models](#using-pre-built-models)
 - [The ATS attack](#the-ats-attack)
 
 
@@ -153,7 +153,7 @@ The name of the file give some details about the model. First we find the classi
 
 Remember that the reliability of the prediction is highly dependent on the cover source. This means that if the images used to train are very different from the images we want to predict the result may not be accurate. 
 
-You can find some information about the pre-build models [here](/models/README.md).
+You can find some information about the pre-built models [here](/models/README.md).
 
 
 ### The ATS attack
