@@ -117,7 +117,9 @@ def extract_features(extract_fn, image_path, ofile):
         X = X.reshape((1, X.shape[0]))
         lock.acquire()
         with open(output_file, 'a+') as f_handle:
-            numpy.savetxt(f_handle, X)
+            with open(output_file+".label", 'a+') as f_handle_label:
+                numpy.savetxt(f_handle, X)
+                f_handle_label.write(os.path.basename(path)+"\n")
         lock.release()
 
     #pool = ThreadPool(cpu_count())
@@ -164,7 +166,8 @@ def main():
     "  - lsbm-sim:       Embedding using LSB matching simulator.\n" \
     "  - hugo-sim:       Embedding using HUGO simulator.\n" \
     "  - wow-sim:        Embedding using WOW simulator.\n" \
-    "  - s-uniward-sim:  Embedding using S-UNIWARD simulator."
+    "  - s-uniward-sim:  Embedding using S-UNIWARD simulator.\n" \
+    "  - hill-sim:       Embedding using HILL simulator."
 
     model_doc="\n" \
     "  Model training:\n" \
