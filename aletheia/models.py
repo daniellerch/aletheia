@@ -17,6 +17,7 @@ from sklearn.feature_selection import f_classif, SelectKBest
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn import svm
 
+import hdf5storage
 from scipy.io import savemat, loadmat
 from scipy import misc, signal # ndimage
 
@@ -38,14 +39,16 @@ from keras.utils import np_utils
 class EnsembleSVM:
 
     def __init__(self, n_estimators=50, max_samples=1000, max_features=2000,
-                 n_randomized_search_iter=20):
+                 n_randomized_search_iter=20, random_state=123):
 
+        random.seed(random_state)
+        self.random_state=random_state
         self.n_estimators=n_estimators
         self.max_samples=max_samples
         self.max_features=max_features
         self.n_randomized_search_iter=n_randomized_search_iter
 
-    def _prepare_classifier(self, params):
+    def _prepare_classifier(self, params, n_jobs=1):
 
         X_train, y_train = params
 
@@ -55,24 +58,28 @@ class EnsembleSVM:
             'C': [1e+0,1e+1,1e+2,1e+3,1e+4,1e+5,1e+6,1e+7,1e+8,1e+9]
         }]
 
-        clf=RandomizedSearchCV(svm.SVC(), tuned_parameters[0], 
-                               n_iter=self.n_randomized_search_iter, n_jobs=1)
+        clf=RandomizedSearchCV(svm.SVC(random_state=self.random_state), 
+                               tuned_parameters[0], 
+                               n_iter=self.n_randomized_search_iter, 
+                               n_jobs=n_jobs, random_state=self.random_state)
         clf.fit(X_train, y_train)
               
         params=clf.best_params_
         clf=svm.SVC(kernel=params['kernel'], C=params['C'], 
-            gamma=params['gamma'], probability=True)
+            gamma=params['gamma'], probability=True, 
+            random_state=self.random_state)
         clf.fit(X_train, y_train)
 
         return clf
 
 
-    def fit(self, X_train, y_train):
+    def fit(self, X, y):
         
         self.selector = SelectKBest(f_classif, k=self.max_features)
-        self.selector.fit(X_train, y_train)
+        self.selector.fit(X, y)
 
-        X_train=self.selector.transform(X_train)
+        X_train=self.selector.transform(X)
+        y_train=y
 
         param_list=[]
         idx = range(len(y_train))
@@ -86,6 +93,21 @@ class EnsembleSVM:
         pool.close()
         pool.join()
 
+        """
+        X2=[]
+        for clf in self.clf_list:
+            P=clf.predict_proba(X_train)
+            if len(X2)==0:
+                X2=P[:, 0]
+            else:
+                X2=numpy.vstack((X2, P[:, 0]))
+        X2=numpy.swapaxes(X2, 0, 1)
+        print "X2:", X2.shape
+
+        from sklearn.ensemble import RandomForestClassifier
+        self.clf2=RandomForestClassifier(n_estimators=100)
+        self.clf2.fit(X2, y_train)
+        """
 
     def predict_proba(self, X):
         y_pred=self._predict_cover_proba(X)
@@ -100,6 +122,20 @@ class EnsembleSVM:
                 y_val_pred[i]+=P[i][0]
         return y_val_pred
 
+        """
+        X2=[]
+        Xt=self.selector.transform(X)
+        for clf in self.clf_list:
+            P=clf.predict_proba(Xt)
+            if len(X2)==0:
+                X2=P[:, 0]
+            else:
+                X2=numpy.vstack((X2, P[:, 0]))
+        X2=numpy.swapaxes(X2, 0, 1)
+        print "X2 predict:", X2.shape
+
+        return self.clf2.predict_proba(X2)[:,0]
+        """
 
     def score(self, X, y):
         y_pred=self._predict_cover_proba(X)
@@ -141,13 +177,19 @@ class Ensemble4Stego:
             Xc=Xc[:len(Xs)]
 
         pcover=self.__tmpdir+"/F_train_cover.mat"
-        savemat(pcover, mdict={'F': numpy.array(Xc)}, oned_as='column')
+        #savemat(pcover, mdict={'F': numpy.array(Xc)}, oned_as='column')
+        hdf5storage.write({u'F': numpy.array(Xc)}, '.', pcover, matlab_compatible=True)
 
         pstego=self.__tmpdir+"/F_train_stego.mat"
-        savemat(pstego, mdict={'F': numpy.array(Xs)}, oned_as='column')
+        #savemat(pstego, mdict={'F': numpy.array(Xs)}, oned_as='column')
+        hdf5storage.write({u'F': numpy.array(Xs)}, '.', pstego, matlab_compatible=True)
 
         pclf=self.__tmpdir+"/clf.mat"
     
+        del Xc
+        del Xs
+        del X
+
         m_code=""
         m_code+="cd "+self.__tmpdir+";"
         m_code+="addpath('"+m_path+"');"
@@ -173,7 +215,8 @@ class Ensemble4Stego:
         prob=[]
 
         path=self.__tmpdir+"/F_test.mat"
-        savemat(path, mdict={'F': numpy.array(X)}, oned_as='column')
+        #savemat(path, mdict={'F': numpy.array(X)}, oned_as='column')
+        hdf5storage.write({u'F': numpy.array(X)}, '.', path, matlab_compatible=True)
 
         pclf=self.__tmpdir+"/clf.mat"
         savemat(pclf, self.__mat_clf)
