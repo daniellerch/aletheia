@@ -486,7 +486,8 @@ def main():
     elif sys.argv[1]=="experimental-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "experimental-sim <image/dir> <payload> <output-dir>\n"
+            print sys.argv[0], "experimental-sim <image/dir> <payload> <output-dir>"
+            print "NOTE: Please, put your EXPERIMENTAL.m file into external/octave\n"
             sys.exit(0)
 
         embed_message(stegosim.experimental, sys.argv[2], sys.argv[3], sys.argv[4])
