@@ -41,6 +41,8 @@ def _embed(sim, path, payload):
         m_code+="X=S_UNIWARD('"+path+"',"+payload+");"
     elif sim=='hill':
         m_code+="X=HILL('"+path+"',"+payload+");"
+    elif sim=='experimental':
+        m_code+="X=EXPERIMENTAL('"+path+"',"+payload+");"
 
     m_code+="save('-mat7-binary', '"+X_path+"','X');"
     m_code+="exit"
@@ -68,6 +70,9 @@ def hugo(path, payload):
 
 def hill(path, payload):
     return _embed('hill', path, payload)
+
+def experimental(path, payload):
+    return _embed('experimental', path, payload)
 
 def lsbm(path, payload):
     X = misc.imread(path)
