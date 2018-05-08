@@ -418,6 +418,31 @@ def main():
         extract_features(richmodels.SCRMQ1_extract, image_path, ofile)
     # }}}
 
+    # {{{ hill-sigma-spam-psrm
+    elif sys.argv[1]=="hill-sigma-spam-psrm":
+
+        if len(sys.argv)!=4:
+            print sys.argv[0], "hill-sigma-spam-psrm <image/dir> <output-file>\n"
+            sys.exit(0)
+
+        image_path=sys.argv[2]
+        ofile=sys.argv[3]
+
+        extract_features(richmodels.HILL_sigma_spam_PSRM_extract, image_path, ofile)
+    # }}}
+
+    # {{{ hill-maxsrm
+    elif sys.argv[1]=="hill-maxsrm":
+
+        if len(sys.argv)!=4:
+            print sys.argv[0], "hill-maxsrm <image/dir> <output-file>\n"
+            sys.exit(0)
+
+        image_path=sys.argv[2]
+        ofile=sys.argv[3]
+
+        extract_features(richmodels.HILL_MAXSRM_extract, image_path, ofile)
+    # }}}
 
 
     # -- EMBEDDING SIMULATORS --

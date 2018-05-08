@@ -196,8 +196,8 @@ class Ensemble4Stego:
         m_code+="warning('off');"
         m_code+="ensemble_fit('"+pcover+"', '"+pstego+"', '"+pclf+"');"
         m_code+="exit"
-        p=subprocess.Popen(M_BIN+" \""+m_code+"\"", shell=True)
-        output, err = p.communicate()
+        p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
+        # output, err = p.communicate()
         status = p.wait()
 
         self.__mat_clf=loadmat(pclf)
@@ -229,10 +229,9 @@ class Ensemble4Stego:
         m_code+="warning('off');"
         m_code+="ensemble_predict('"+pclf+"', '"+path+"', '"+pvotes+"');"
         m_code+="exit"
-        p=subprocess.Popen(M_BIN+" \""+m_code+"\"", shell=True)
-        output, err = p.communicate()
+        p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
+        #output, err = p.communicate()
         status = p.wait()
-
 
         with open(pvotes, 'r') as f:
             lines=f.readlines()

@@ -47,8 +47,8 @@ def _embed(sim, path, payload):
     m_code+="save('-mat7-binary', '"+X_path+"','X');"
     m_code+="exit"
 
-    p=subprocess.Popen(M_BIN+" \""+m_code+"\"", shell=True)
-    output, err = p.communicate()
+    p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
+    #output, err = p.communicate()
     status = p.wait()
 
     data=loadmat(X_path)

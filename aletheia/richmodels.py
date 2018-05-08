@@ -10,6 +10,8 @@ from scipy.io import loadmat
 
 M_BIN="octave -q --no-gui --eval"
 
+FEAEXT_1CH = ["SRM", "SRMQ1", "HILL_MAXSRM", "HILL_sigma_spam_PSRM"]
+FEAEXT_3CH = ["SCRMQ1"]
 
 # {{{ _extract()
 def _extract(extractor_name, path):
@@ -19,8 +21,8 @@ def _extract(extractor_name, path):
 
     X=numpy.array([])
     im=Image.open(path)
-    if ((im.mode=='L' and extractor_name in ["SRM", "SRMQ1"]) or 
-        (im.mode in ['RGB', 'RGBA', 'RGBX'] and extractor_name in ["SCRMQ1"])):
+    if ((im.mode=='L' and extractor_name in FEAEXT_1CH) or 
+        (im.mode in ['RGB', 'RGBA', 'RGBX'] and extractor_name in FEAEXT_3CH)):
         tmpdir=tempfile.mkdtemp()
         try:
             os.chdir(tmpdir)
@@ -32,11 +34,12 @@ def _extract(extractor_name, path):
         m_code+="cd "+tmpdir+";"
         m_code+="addpath('"+m_path+"');"
         m_code+="warning('off');"
+        m_code+="pkg load image;"
         m_code+="data="+extractor_name+"('"+path+"', 1);"
         m_code+="save('-mat7-binary', '"+data_path+"','data');"
         m_code+="exit"
-        p=subprocess.Popen(M_BIN+" \""+m_code+"\"", shell=True)
-        output, err = p.communicate()
+        p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
+        # output, err = p.communicate()
         status = p.wait()
 
         data=loadmat(data_path)
@@ -65,6 +68,10 @@ def SRMQ1_extract(path):
 def SCRMQ1_extract(path):
     return _extract('SCRMQ1', path)
 
+def HILL_sigma_spam_PSRM_extract(path):
+    return _extract('HILL_sigma_spam_PSRM', path)
 
+def HILL_MAXSRM_extract(path):
+    return _extract('HILL_MAXSRM', path)
 
 

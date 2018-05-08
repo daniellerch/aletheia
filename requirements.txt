@@ -5,3 +5,5 @@ keras
 scikit-learn
 scikit-image
 pandas
+hdf5storage
+h5py
