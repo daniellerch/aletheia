@@ -42,7 +42,11 @@ def _embed(sim, path, payload, dst_path=None):
     elif sim=='hill':
         m_code+="X=HILL('"+path+"',"+payload+");"
     elif sim=='nsf5':
-        m_code+="X=NSF5('"+path+"',"+payload+",'"+dst_path+"');"
+        m_code+="NSF5('"+path+"',"+payload+",'"+dst_path+"');"
+    elif sim=='ebs':
+        m_code+="EBS('"+path+"',"+payload+",'"+dst_path+"');"
+    elif sim=='ued':
+        m_code+="UED('"+path+"',"+payload+",'"+dst_path+"');"
     elif sim=='experimental':
         m_code+="X=EXPERIMENTAL('"+path+"',"+payload+");"
 
@@ -74,6 +78,12 @@ def hugo(path, payload):
 
 def hill(path, payload):
     return _embed('hill', path, payload)
+
+def ebs(path, payload, dst_path):
+    return _embed('ebs', path, payload, dst_path)
+
+def ued(path, payload, dst_path):
+    return _embed('ued', path, payload, dst_path)
 
 def nsf5(path, payload, dst_path):
     return _embed('nsf5', path, payload, dst_path)

@@ -179,6 +179,8 @@ def main():
     "  - wow-sim:        Embedding using WOW simulator.\n" \
     "  - s-uniward-sim:  Embedding using S-UNIWARD simulator.\n" \
     "  - hill-sim:       Embedding using HILL simulator.\n" \
+    "  - ebs-sim:        Embedding using EBS simulator.\n" \
+    "  - ued-sim:        Embedding using UED simulator.\n" \
     "  - nsf5-sim:       Embedding using nsF5 simulator."
 
     model_doc="\n" \
@@ -517,6 +519,28 @@ def main():
             sys.exit(0)
 
         embed_message(stegosim.hill, sys.argv[2], sys.argv[3], sys.argv[4])
+    # }}}
+
+    # {{{ ebs-sim
+    elif sys.argv[1]=="ebs-sim":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "ebs-sim <image/dir> <payload> <output-dir>\n"
+            sys.exit(0)
+
+        embed_message(stegosim.ebs, sys.argv[2], sys.argv[3], sys.argv[4],
+                      embed_fn_saving=True)
+    # }}}
+
+    # {{{ nsf5-sim
+    elif sys.argv[1]=="ued-sim":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "ued-sim <image/dir> <payload> <output-dir>\n"
+            sys.exit(0)
+
+        embed_message(stegosim.ued, sys.argv[2], sys.argv[3], sys.argv[4],
+                      embed_fn_saving=True)
     # }}}
 
     # {{{ nsf5-sim
