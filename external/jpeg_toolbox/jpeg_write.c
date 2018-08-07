@@ -157,8 +157,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   /* initialize JPEG decompression object */
   jpeg_create_compress(&cinfo);
 
-  /* write the output file */
-  jpeg_stdio_dest(&cinfo, outfile);
 
   /* Set the compression object with our parameters */
   cinfo.image_width = 
@@ -169,6 +167,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     (int) mxGetScalar(mxGetField(mxjpeg_obj,0,"image_components"));
   cinfo.in_color_space = 
     (int) mxGetScalar(mxGetField(mxjpeg_obj,0,"image_color_space"));
+
+
+  /* write the output file */
+  jpeg_stdio_dest(&cinfo, outfile);
 
   /* set the compression object with default parameters */
   jpeg_set_defaults(&cinfo);
@@ -230,7 +232,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
        (JDIMENSION) compptr->v_samp_factor);
   }
 
-  
+  cinfo.jpeg_width = cinfo.image_width;
+  cinfo.jpeg_height = cinfo.image_height;
+
   /* realize virtual block arrays */
   jpeg_write_coefficients(&cinfo,coef_arrays);
 
