@@ -42,7 +42,6 @@ $ ./aletheia.py
 
 COMMANDS:
 
-
   Attacks to LSB replacement:
   - spa:   Sample Pairs Analysis.
   - rs:    RS attack.
@@ -54,6 +53,7 @@ COMMANDS:
   Feature extractors:
   - srm:    Full Spatial Rich Models.
   - srmq1:  Spatial Rich Models with fixed quantization q=1c.
+  - scrmq1: Spatial Color Rich Models with fixed quantization q=1c.
 
   Embedding simulators:
   - lsbr-sim:       Embedding using LSB replacement simulator.
@@ -61,6 +61,8 @@ COMMANDS:
   - hugo-sim:       Embedding using HUGO simulator.
   - wow-sim:        Embedding using WOW simulator.
   - s-uniward-sim:  Embedding using S-UNIWARD simulator.
+  - hill-sim:       Embedding using HILL simulator.
+  - nsf5-sim:       Embedding using nsF5 simulator.
 
   Model training:
   - esvm:     Ensemble of Support Vector Machines.
@@ -69,6 +71,7 @@ COMMANDS:
 
   Automated attacks:
   - ats:      Artificial Training Sets.
+
 
 ```
 
