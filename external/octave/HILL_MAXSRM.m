@@ -5,7 +5,8 @@ else
     X = IMAGE;
 end    
 P = f_cal_cost(X);
-f = MAXSRM(X, P);
+M = 1./P;
+f = MAXSRM(X, M);
 end
 
 
