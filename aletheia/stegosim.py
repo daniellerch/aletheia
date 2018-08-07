@@ -16,7 +16,7 @@ from PIL import Image
 M_BIN="octave -q --no-gui --eval"
 
 
-def _embed(sim, path, payload):
+def _embed(sim, path, payload, dst_path=None):
 
     X=numpy.array([])
 
@@ -41,23 +41,27 @@ def _embed(sim, path, payload):
         m_code+="X=S_UNIWARD('"+path+"',"+payload+");"
     elif sim=='hill':
         m_code+="X=HILL('"+path+"',"+payload+");"
+    elif sim=='nsf5':
+        m_code+="X=NSF5('"+path+"',"+payload+",'"+dst_path+"');"
     elif sim=='experimental':
         m_code+="X=EXPERIMENTAL('"+path+"',"+payload+");"
 
-    m_code+="save('-mat7-binary', '"+X_path+"','X');"
+    if not dst_path:
+        m_code+="save('-mat7-binary', '"+X_path+"','X');"
     m_code+="exit"
 
     p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
     #output, err = p.communicate()
     status = p.wait()
 
-    data=loadmat(X_path)
-    shutil.rmtree(tmpdir)
-    
-    X=data['X']
-
-    return X
+    if not dst_path:
+        data=loadmat(X_path)
+        X=data['X']
+        shutil.rmtree(tmpdir)
+        return X
      
+    shutil.rmtree(tmpdir)
+    return
 
 def wow(path, payload):
     return _embed('wow', path, payload)
@@ -70,6 +74,9 @@ def hugo(path, payload):
 
 def hill(path, payload):
     return _embed('hill', path, payload)
+
+def nsf5(path, payload, dst_path):
+    return _embed('nsf5', path, payload, dst_path)
 
 def experimental(path, payload):
     return _embed('experimental', path, payload)

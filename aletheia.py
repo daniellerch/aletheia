@@ -1,16 +1,17 @@
 #!/usr/bin/python -W ignore
 
+import os
 import sys
 import json
-import os
+import time
 import scipy
 import numpy
 import pandas
 import pickle
-import multiprocessing
 import shutil
 
 from aletheia import stegosim, richmodels, models
+import multiprocessing
 from multiprocessing.dummy import Pool as ThreadPool 
 from multiprocessing import cpu_count
 from scipy import misc
@@ -22,12 +23,15 @@ lock = multiprocessing.Lock()
 
 
 # {{{ embed_message()
-def embed_message(embed_fn, path, payload, output_dir):
+def embed_message(embed_fn, path, payload, output_dir, 
+                  embed_fn_saving=False):
 
     path=utils.absolute_path(path)
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+
+    output_dir=utils.absolute_path(output_dir)
 
     # Read filenames
     files=[]
@@ -43,13 +47,16 @@ def embed_message(embed_fn, path, payload, output_dir):
         files=[path]
     
     def embed(path):
-        X=embed_fn(path, payload)
         basename=os.path.basename(path)
         dst_path=os.path.join(output_dir, basename)
-        try:
-            scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
-        except Exception, e:
-            print str(e)
+        if embed_fn_saving:
+            embed_fn(path, payload, dst_path)
+        else:
+            X=embed_fn(path, payload)
+            try:
+                scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
+            except Exception, e:
+                print str(e)
 
     # Process thread pool in batches
     batch=1000
@@ -66,13 +73,17 @@ def embed_message(embed_fn, path, payload, output_dir):
     """
     for path in files:
         I=scipy.misc.imread(path)
-        X=embed_fn(path, payload)
         basename=os.path.basename(path)
         dst_path=os.path.join(output_dir, basename)
-        try:
-            scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
-        except Exception, e:
-            print str(e)
+        if embed_fn_saving:
+            print path, payload, dst_path
+            embed_fn(path, payload, dst_path)
+        else:
+            X=embed_fn(path, payload)
+            try:
+                scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
+            except Exception, e:
+                print str(e)
     """
    
 # }}}
@@ -167,7 +178,8 @@ def main():
     "  - hugo-sim:       Embedding using HUGO simulator.\n" \
     "  - wow-sim:        Embedding using WOW simulator.\n" \
     "  - s-uniward-sim:  Embedding using S-UNIWARD simulator.\n" \
-    "  - hill-sim:       Embedding using HILL simulator."
+    "  - hill-sim:       Embedding using HILL simulator.\n" \
+    "  - nsf5-sim:       Embedding using nsF5 simulator."
 
     model_doc="\n" \
     "  Model training:\n" \
@@ -507,6 +519,17 @@ def main():
         embed_message(stegosim.hill, sys.argv[2], sys.argv[3], sys.argv[4])
     # }}}
 
+    # {{{ nsf5-sim
+    elif sys.argv[1]=="nsf5-sim":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "nsf5-sim <image/dir> <payload> <output-dir>\n"
+            sys.exit(0)
+
+        embed_message(stegosim.nsf5, sys.argv[2], sys.argv[3], sys.argv[4],
+                      embed_fn_saving=True)
+    # }}}
+
     # {{{ experimental-sim
     elif sys.argv[1]=="experimental-sim":
 
@@ -615,6 +638,7 @@ def main():
             print "  - wow-sim:        Embedding using WOW simulator."
             print "  - s-uniward-sim:  Embedding using S-UNIWARD simulator."
             print "  - hill-sim:       Embedding using HILL simulator."
+            print "  - nsf5-sim:       Embedding using nsF5 simulator."
             print ""
             print feaextract_doc
             print ""
@@ -632,6 +656,7 @@ def main():
         elif emb_sim=="wow-sim": fn_sim=stegosim.wow
         elif emb_sim=="s-uniward-sim": fn_sim=stegosim.s_uniward
         elif emb_sim=="hill-sim": fn_sim=stegosim.hill
+        elif emb_sim=="nsf5-sim": fn_sim=stegosim.nsf5
         else: 
             print "Unknown simulator:", emb_sim
             sys.exit(0)
