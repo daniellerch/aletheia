@@ -62,6 +62,8 @@ COMMANDS:
   - wow-sim:        Embedding using WOW simulator.
   - s-uniward-sim:  Embedding using S-UNIWARD simulator.
   - hill-sim:       Embedding using HILL simulator.
+  - ebs-sim:        Embedding using EBS simulator.
+  - ued-sim:        Embedding using UED simulator.
   - nsf5-sim:       Embedding using nsF5 simulator.
 
   Model training:
