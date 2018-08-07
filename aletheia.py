@@ -178,6 +178,7 @@ def main():
     "  - hugo-sim:       Embedding using HUGO simulator.\n" \
     "  - wow-sim:        Embedding using WOW simulator.\n" \
     "  - s-uniward-sim:  Embedding using S-UNIWARD simulator.\n" \
+    "  - j-uniward-sim:  Embedding using J-UNIWARD simulator.\n" \
     "  - hill-sim:       Embedding using HILL simulator.\n" \
     "  - ebs-sim:        Embedding using EBS simulator.\n" \
     "  - ued-sim:        Embedding using UED simulator.\n" \
@@ -521,6 +522,17 @@ def main():
         embed_message(stegosim.hill, sys.argv[2], sys.argv[3], sys.argv[4])
     # }}}
 
+    # {{{ j-uniward-sim
+    elif sys.argv[1]=="j-uniward-sim":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "j-uniward-sim <image/dir> <payload> <output-dir>\n"
+            sys.exit(0)
+
+        embed_message(stegosim.j_uniward, sys.argv[2], sys.argv[3], sys.argv[4],
+                      embed_fn_saving=True)
+    # }}}
+
     # {{{ ebs-sim
     elif sys.argv[1]=="ebs-sim":
 
@@ -532,7 +544,7 @@ def main():
                       embed_fn_saving=True)
     # }}}
 
-    # {{{ nsf5-sim
+    # {{{ ued-sim
     elif sys.argv[1]=="ued-sim":
 
         if len(sys.argv)!=5:
@@ -661,6 +673,7 @@ def main():
             print "  - hugo-sim:       Embedding using HUGO simulator."
             print "  - wow-sim:        Embedding using WOW simulator."
             print "  - s-uniward-sim:  Embedding using S-UNIWARD simulator."
+            print "  - j-uniward-sim:  Embedding using J-UNIWARD simulator."
             print "  - hill-sim:       Embedding using HILL simulator."
             print "  - nsf5-sim:       Embedding using nsF5 simulator."
             print ""

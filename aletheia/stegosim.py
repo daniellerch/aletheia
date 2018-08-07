@@ -32,6 +32,7 @@ def _embed(sim, path, payload, dst_path=None):
     m_code+="addpath('"+m_path+"');"
     m_code+="warning('off');"
     m_code+="pkg load image;"
+    m_code+="pkg load signal;"
 
     if sim=='wow':
         m_code+="X=WOW('"+path+"',"+payload+");"
@@ -41,6 +42,8 @@ def _embed(sim, path, payload, dst_path=None):
         m_code+="X=S_UNIWARD('"+path+"',"+payload+");"
     elif sim=='hill':
         m_code+="X=HILL('"+path+"',"+payload+");"
+    elif sim=='j_uniward':
+        m_code+="J_UNIWARD('"+path+"',"+payload+",'"+dst_path+"');"
     elif sim=='nsf5':
         m_code+="NSF5('"+path+"',"+payload+",'"+dst_path+"');"
     elif sim=='ebs':
@@ -72,6 +75,9 @@ def wow(path, payload):
 
 def s_uniward(path, payload):
     return _embed('s_uniward', path, payload)
+
+def j_uniward(path, payload, dst_path):
+    return _embed('j_uniward', path, payload, dst_path)
 
 def hugo(path, payload):
     return _embed('hugo', path, payload)
