@@ -61,6 +61,7 @@ COMMANDS:
   - hugo-sim:       Embedding using HUGO simulator.
   - wow-sim:        Embedding using WOW simulator.
   - s-uniward-sim:  Embedding using S-UNIWARD simulator.
+  - j-uniward-sim:  Embedding using J-UNIWARD simulator.
   - hill-sim:       Embedding using HILL simulator.
   - ebs-sim:        Embedding using EBS simulator.
   - ued-sim:        Embedding using UED simulator.
