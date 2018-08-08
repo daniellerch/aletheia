@@ -30,7 +30,7 @@ $ sudo pip install -r requirements.txt
 Aletheia uses Octave so you need to install it and some dependencies. You will find the dependencies in the octave-requirements.txt file. In Debian based Linux distributions you can install the dependencies with the following commands. For different distros you can deduce the appropriate ones.
 
 ```bash
-$ sudo apt-get install octave octave-image
+$ sudo apt-get install octave octave-image octave-signal
 ```
 
 After that, you can execute Aletheia with:
