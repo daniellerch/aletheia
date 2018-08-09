@@ -202,7 +202,7 @@ def main():
     "  - scrmq1: Spatial Color Rich Models with fixed quantization q=1c."
 
     auto_doc="\n" \
-    "  Automated attacks:\n" \
+    "  Unsupervised attacks:\n" \
     "  - ats:      Artificial Training Sets."
 
     if len(sys.argv)<2:
@@ -667,15 +667,7 @@ def main():
 
         if len(sys.argv)!=6:
             print sys.argv[0], "ats <embed-sim> <payload> <fea-extract> <images>\n"
-            print "  Embedding simulators:"
-            print "  - lsbr-sim:       Embedding using LSB replacement simulator."
-            print "  - lsbm-sim:       Embedding using LSB matching simulator."
-            print "  - hugo-sim:       Embedding using HUGO simulator."
-            print "  - wow-sim:        Embedding using WOW simulator."
-            print "  - s-uniward-sim:  Embedding using S-UNIWARD simulator."
-            print "  - j-uniward-sim:  Embedding using J-UNIWARD simulator."
-            print "  - hill-sim:       Embedding using HILL simulator."
-            print "  - nsf5-sim:       Embedding using nsF5 simulator."
+            print embsim_doc
             print ""
             print feaextract_doc
             print ""
@@ -692,8 +684,11 @@ def main():
         elif emb_sim=="hugo-sim": fn_sim=stegosim.hugo
         elif emb_sim=="wow-sim": fn_sim=stegosim.wow
         elif emb_sim=="s-uniward-sim": fn_sim=stegosim.s_uniward
+        elif emb_sim=="j-uniward-sim": fn_sim=stegosim.j_uniward
         elif emb_sim=="hill-sim": fn_sim=stegosim.hill
         elif emb_sim=="nsf5-sim": fn_sim=stegosim.nsf5
+        elif emb_sim=="ebs-sim": fn_sim=stegosim.nsf5
+        elif emb_sim=="ued-sim": fn_sim=stegosim.nsf5
         else: 
             print "Unknown simulator:", emb_sim
             sys.exit(0)
