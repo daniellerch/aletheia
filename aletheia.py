@@ -9,17 +9,20 @@ import numpy
 import pandas
 import pickle
 import shutil
+import subprocess
 
-from aletheia import stegosim, richmodels, models
 import multiprocessing
 from multiprocessing.dummy import Pool as ThreadPool 
 from multiprocessing import cpu_count
 from scipy import misc
 
 from aletheia import attacks, utils
+from aletheia import stegosim, feaext, models
 #from cnn import net as cnn
 
 lock = multiprocessing.Lock()
+
+
 
 
 # {{{ embed_message()
@@ -89,7 +92,7 @@ def embed_message(embed_fn, path, payload, output_dir,
 # }}}
 
 # {{{ extract_features()
-def extract_features(extract_fn, image_path, ofile):
+def extract_features(extract_fn, image_path, ofile, params={}):
 
     image_path=utils.absolute_path(image_path)
 
@@ -119,7 +122,7 @@ def extract_features(extract_fn, image_path, ofile):
 
     def extract_and_save(path):
         try:
-            X = extract_fn(path)
+            X = extract_fn(path, **params)
         except Exception,e:
             print "Cannot extract feactures from", path
             print str(e)
@@ -142,7 +145,7 @@ def extract_features(extract_fn, image_path, ofile):
 
     """
     for path in files:
-        X = richmodels.SRM_extract(path)
+        X = feaext.SRM_extract(path, **params)
         print X.shape
         X = X.reshape((1, X.shape[0]))
         with open(sys.argv[3], 'a+') as f_handle:
@@ -199,7 +202,8 @@ def main():
     "  Feature extractors:\n" \
     "  - srm:    Full Spatial Rich Models.\n" \
     "  - srmq1:  Spatial Rich Models with fixed quantization q=1c.\n" \
-    "  - scrmq1: Spatial Color Rich Models with fixed quantization q=1c."
+    "  - scrmq1: Spatial Color Rich Models with fixed quantization q=1c.\n" \
+    "  - gfr:    JPEG steganalysis with 2D Gabor Filters."
 
     auto_doc="\n" \
     "  Unsupervised attacks:\n" \
@@ -332,10 +336,7 @@ def main():
         clf=pickle.load(open(model_file, "r"))
         for f in files:
             
-            if extractor=="srm": X = richmodels.SRM_extract(f)
-            if extractor=="srmq1": X = richmodels.SRMQ1_extract(f)
-            if extractor=="scrmq1": X = richmodels.SCRMQ1_extract(f)
-
+            X = feaext.extractor_fn(extractor)(f)
             X = X.reshape((1, X.shape[0]))
             p = clf.predict_proba(X)
             print p
@@ -376,13 +377,7 @@ def main():
         clf.load(model_file)
         for f in files:
            
-            if extractor=="srm": X = richmodels.SRM_extract(f)
-            elif extractor=="srmq1": X = richmodels.SRMQ1_extract(f)
-            elif extractor=="scrmq1": X = richmodels.SCRMQ1_extract(f)
-            else:
-                print "Unknown extractor:", extractor
-                sys.exit(0)
-
+            X = feaext.extractor_fn(extractor)(f)
             X = X.reshape((1, X.shape[0]))
             p = clf.predict(X)
             if p[0] == 0:
@@ -404,7 +399,7 @@ def main():
         image_path=sys.argv[2]
         ofile=sys.argv[3]
 
-        extract_features(richmodels.SRM_extract, image_path, ofile)
+        extract_features(feaext.SRM_extract, image_path, ofile)
     # }}}
 
     # {{{ srmq1
@@ -417,7 +412,7 @@ def main():
         image_path=sys.argv[2]
         ofile=sys.argv[3]
 
-        extract_features(richmodels.SRMQ1_extract, image_path, ofile)
+        extract_features(feaext.SRMQ1_extract, image_path, ofile)
     # }}}
 
     # {{{ scrmq1
@@ -430,7 +425,40 @@ def main():
         image_path=sys.argv[2]
         ofile=sys.argv[3]
 
-        extract_features(richmodels.SCRMQ1_extract, image_path, ofile)
+        extract_features(feaext.SCRMQ1_extract, image_path, ofile)
+    # }}}
+
+    # {{{ gfr
+    elif sys.argv[1]=="gfr":
+
+        if len(sys.argv)<4:
+            print sys.argv[0], "gfr <image/dir> <output-file> [quality] [rotations]\n"
+            sys.exit(0)
+
+        image_path=sys.argv[2]
+        ofile=sys.argv[3]
+
+        if len(sys.argv)<5:
+            quality = "auto"
+            print "JPEG quality not provided, using detection via 'identify'"
+        else:
+            quality = sys.argv[4]
+
+
+        if len(sys.argv)<6:
+            rotations = 32
+            print "Number of rotations for Gabor kernel no provided, using:", \
+                  rotations
+        else:
+            rotations = sys.argv[6]
+
+
+        params = {
+            "quality": quality,
+            "rotations": rotations
+        }
+            
+        extract_features(feaext.GFR_extract, image_path, ofile, params)
     # }}}
 
     # {{{ hill-sigma-spam-psrm
@@ -443,7 +471,7 @@ def main():
         image_path=sys.argv[2]
         ofile=sys.argv[3]
 
-        extract_features(richmodels.HILL_sigma_spam_PSRM_extract, image_path, ofile)
+        extract_features(feaext.HILL_sigma_spam_PSRM_extract, image_path, ofile)
     # }}}
 
     # {{{ hill-maxsrm
@@ -456,7 +484,7 @@ def main():
         image_path=sys.argv[2]
         ofile=sys.argv[3]
 
-        extract_features(richmodels.HILL_MAXSRM_extract, image_path, ofile)
+        extract_features(feaext.HILL_MAXSRM_extract, image_path, ofile)
     # }}}
 
 
@@ -678,28 +706,8 @@ def main():
         feaextract=sys.argv[4]
         A_dir=sys.argv[5]
 
-        fn_sim=""
-        if emb_sim=="lsbm-sim": fn_sim=stegosim.lsbm
-        elif emb_sim=="lsbr-sim": fn_sim=stegosim.lsbr
-        elif emb_sim=="hugo-sim": fn_sim=stegosim.hugo
-        elif emb_sim=="wow-sim": fn_sim=stegosim.wow
-        elif emb_sim=="s-uniward-sim": fn_sim=stegosim.s_uniward
-        elif emb_sim=="j-uniward-sim": fn_sim=stegosim.j_uniward
-        elif emb_sim=="hill-sim": fn_sim=stegosim.hill
-        elif emb_sim=="nsf5-sim": fn_sim=stegosim.nsf5
-        elif emb_sim=="ebs-sim": fn_sim=stegosim.nsf5
-        elif emb_sim=="ued-sim": fn_sim=stegosim.nsf5
-        else: 
-            print "Unknown simulator:", emb_sim
-            sys.exit(0)
-
-        fn_feaextract=""
-        if feaextract=="srm": fn_feaextract=richmodels.SRM_extract
-        elif feaextract=="srmq1": fn_feaextract=richmodels.SRMQ1_extract
-        elif feaextract=="scrmq1": fn_feaextract=richmodels.SCRMQ1_extract
-        else: 
-            print "Unknown feature extractor:", feaextract
-            sys.exit(0)
+        fn_sim=stegosim.embedding_fn(emb_sim)
+        fn_feaextract=feaext.extractor_fn(feaextract)
 
         import tempfile
         B_dir=tempfile.mkdtemp()

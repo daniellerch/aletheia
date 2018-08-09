@@ -1,4 +1,8 @@
-function f = SCRMQ1(IMAGE,Tc,part)
+function f = SCRMQ1(IMAGE)
+
+part = 'all';
+Tc = 3;
+
 % -------------------------------------------------------------------------
 % Copyright (c) 2011 DDE Lab, Binghamton University, NY.
 % All Rights Reserved.
@@ -56,15 +60,15 @@ else
 end
 
 f = [];
-if nargin<3,
-    part = 'all';
-elseif isempty(part),
-    part = 'all';
-end
-if nargin<2,
-    % SCRMQ1 for color image, T=3 fixed
-    ,Tc=3,      % truncation for between color cooccurrences
-end
+% if nargin<3,
+%     part = 'all';
+%elseif isempty(part),
+%    part = 'all';
+%end
+%if nargin<2,
+%    % SCRMQ1 for color image, T=3 fixed
+%    ,Tc=3,      % truncation for between color cooccurrences
+%end
 f = post_processing(all1stc(X,1,Tc),'f1',1,f,Tc);   % 1st order, q=1
 % f = post_processing(all1stc(X,2,Tc),'f1',2,f,Tc); % 1st order, q=2
 for q=[1], f = post_processing(all2ndc(X,q*2,Tc),'f2',q,f,Tc); end    % 2nd order

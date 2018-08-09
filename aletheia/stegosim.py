@@ -17,8 +17,12 @@ M_BIN="octave -q --no-gui --eval"
 
 
 def _embed(sim, path, payload, dst_path=None):
-
     X=numpy.array([])
+
+    im=Image.open(path)
+    if (im.mode!='L' and sim in ["wow", "hugo", "hill", "s_uniward"]):
+        print "Error,", sim, "must be used with grayscale images"
+        return X
 
     currdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(currdir, os.pardir))
@@ -162,5 +166,38 @@ def lsbr(path, payload):
                 if X[i, j][2]%2==random.randint(0,1): kb=0
                 X[i, j]=(X[i,j][0]+kr, X[i,j][1]+kg, X[i,j][2]+kb)
     return X
+
+
+
+
+def embedding_fn(name):
+    if name=="lsbm-sim":
+        return stegosim.lsbm
+    if name=="lsbr-sim":
+        return stegosim.lsbr
+    if name=="hugo-sim":
+        return stegosim.hugo
+    if name=="wow-sim":
+        return stegosim.wow
+    if name=="s-uniward-sim":
+        return stegosim.s_uniward
+    if name=="j-uniward-sim":
+        return stegosim.j_uniward
+    if name=="hill-sim":
+        return stegosim.hill
+    if name=="nsf5-sim":
+        return stegosim.nsf5
+    if name=="ebs-sim":
+        return stegosim.ebs
+    if name=="ued-sim":
+        return stegosim.ued
+
+    print "Unknown simulator:", name
+    sys.exit(0)
+
+
+
+
+
 
 
