@@ -72,8 +72,9 @@ COMMANDS:
   - e4s:      Ensemble Classifiers for Steganalysis.
   - xu-net:   Convolutional Neural Network for Steganalysis.
 
-  Automated attacks:
+  Unsupervised attacks:
   - ats:      Artificial Training Sets.
+
 
 
 ```
