@@ -14,7 +14,7 @@ FEAEXT_1CH = ["SRM", "SRMQ1", "HILL_MAXSRM", "HILL_sigma_spam_PSRM"]
 FEAEXT_3CH = ["SCRMQ1", "GFR"]
 
 # {{{ _extract()
-def _extract(extractor_name, path, params):
+def _extract(extractor_name, path, params={}):
     currdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(currdir, os.pardir))
     m_path=os.path.join(basedir, 'external', 'octave')
