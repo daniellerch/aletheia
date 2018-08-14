@@ -200,10 +200,11 @@ def main():
 
     feaextract_doc="\n" \
     "  Feature extractors:\n" \
-    "  - srm:    Full Spatial Rich Models.\n" \
-    "  - srmq1:  Spatial Rich Models with fixed quantization q=1c.\n" \
-    "  - scrmq1: Spatial Color Rich Models with fixed quantization q=1c.\n" \
-    "  - gfr:    JPEG steganalysis with 2D Gabor Filters."
+    "  - srm:           Full Spatial Rich Models.\n" \
+    "  - hill-maxsrm:   Selection-Channel-Aware Spatial Rich Models for HILL.\n" \
+    "  - srmq1:         Spatial Rich Models with fixed quantization q=1c.\n" \
+    "  - scrmq1:        Spatial Color Rich Models with fixed quantization q=1c.\n" \
+    "  - gfr:           JPEG steganalysis with 2D Gabor Filters."
 
     auto_doc="\n" \
     "  Unsupervised attacks:\n" \
