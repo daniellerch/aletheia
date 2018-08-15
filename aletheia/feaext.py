@@ -11,7 +11,7 @@ from scipy.io import loadmat
 M_BIN="octave -q --no-gui --eval"
 
 FEAEXT_1CH = ["SRM", "SRMQ1", "HILL_MAXSRM", "HILL_sigma_spam_PSRM"]
-FEAEXT_3CH = ["SCRMQ1", "GFR"]
+FEAEXT_3CH = ["SCRMQ1", "GFR", "SRM"]
 
 # {{{ _extract()
 def _extract(extractor_name, path, params={}):
@@ -29,6 +29,10 @@ def _extract(extractor_name, path, params={}):
         except Exception,e:
             print "chdir:", str(e)
 
+        channel = 1
+        if "channel" in params:
+            channel = params["channel"]
+
         data_path=tmpdir+"/data.mat"
         m_code=""
         m_code+="cd "+tmpdir+";"
@@ -40,7 +44,7 @@ def _extract(extractor_name, path, params={}):
             m_code+="data="+extractor_name+"('"+path+"'," \
                     +str(params["rotations"])+", "+str(params["quality"])+");"
         else:
-            m_code+="data="+extractor_name+"('"+path+"', 1);"
+            m_code+="data="+extractor_name+"('"+path+"', "+str(channel)+");"
         m_code+="save('-mat7-binary', '"+data_path+"','data');"
         m_code+="exit"
         p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
@@ -68,7 +72,11 @@ def _extract(extractor_name, path, params={}):
 
 
 def SRM_extract(path):
-    return _extract('SRM', path)
+    C1 = _extract('SRM', path, params={"channel":1})
+    C2 = _extract('SRM', path, params={"channel":2})
+    C3 = _extract('SRM', path, params={"channel":3})
+    X = numpy.hstack((C1, C2, C3))
+    return X
 
 def SRMQ1_extract(path):
     return _extract('SRMQ1', path)
