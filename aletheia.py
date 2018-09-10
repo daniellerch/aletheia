@@ -20,9 +20,6 @@ from aletheia import attacks, utils
 from aletheia import stegosim, feaext, models
 #from cnn import net as cnn
 
-lock = multiprocessing.Lock()
-
-
 
 
 # {{{ embed_message()
@@ -91,67 +88,6 @@ def embed_message(embed_fn, path, payload, output_dir,
    
 # }}}
 
-# {{{ extract_features()
-def extract_features(extract_fn, image_path, ofile, params={}):
-
-    image_path=utils.absolute_path(image_path)
-
-    # Read filenames
-    files=[]
-    if os.path.isdir(image_path):
-        for dirpath,_,filenames in os.walk(image_path):
-            for f in filenames:
-                path=os.path.abspath(os.path.join(dirpath, f))
-                if not utils.is_valid_image(path):
-                    print "Warning, please provide a valid image: ", f
-                else:
-                    files.append(path)
-    else:
-        files=[image_path]
-
-    files.sort(key=utils.natural_sort_key)
-
-    output_file=utils.absolute_path(ofile)
-    
-    if os.path.isdir(output_file):
-        print "The provided file is a directory:", output_file
-        sys.exit(0)
-
-    if os.path.exists(output_file):
-        os.remove(output_file)
-
-    def extract_and_save(path):
-        try:
-            X = extract_fn(path, **params)
-        except Exception,e:
-            print "Cannot extract feactures from", path
-            print str(e)
-            return
-
-        X = X.reshape((1, X.shape[0]))
-        lock.acquire()
-        with open(output_file, 'a+') as f_handle:
-            with open(output_file+".label", 'a+') as f_handle_label:
-                numpy.savetxt(f_handle, X)
-                f_handle_label.write(os.path.basename(path)+"\n")
-        lock.release()
-
-    #pool = ThreadPool(cpu_count())
-    pool = ThreadPool(8)
-    results = pool.map(extract_and_save, files)
-    pool.close()
-    pool.terminate()
-    pool.join()
-
-    """
-    for path in files:
-        X = feaext.SRM_extract(path, **params)
-        print X.shape
-        X = X.reshape((1, X.shape[0]))
-        with open(sys.argv[3], 'a+') as f_handle:
-            numpy.savetxt(f_handle, X)
-    """
-# }}}
 
 # {{{ train_models()
 def train_models():
@@ -400,7 +336,7 @@ def main():
         image_path=sys.argv[2]
         ofile=sys.argv[3]
 
-        extract_features(feaext.SRM_extract, image_path, ofile)
+        feaext.extract_features(feaext.SRM_extract, image_path, ofile)
     # }}}
 
     # {{{ srmq1
@@ -413,7 +349,7 @@ def main():
         image_path=sys.argv[2]
         ofile=sys.argv[3]
 
-        extract_features(feaext.SRMQ1_extract, image_path, ofile)
+        feaext.extract_features(feaext.SRMQ1_extract, image_path, ofile)
     # }}}
 
     # {{{ scrmq1
@@ -426,7 +362,7 @@ def main():
         image_path=sys.argv[2]
         ofile=sys.argv[3]
 
-        extract_features(feaext.SCRMQ1_extract, image_path, ofile)
+        feaext.extract_features(feaext.SCRMQ1_extract, image_path, ofile)
     # }}}
 
     # {{{ gfr
@@ -459,7 +395,7 @@ def main():
             "rotations": rotations
         }
             
-        extract_features(feaext.GFR_extract, image_path, ofile, params)
+        feaext.extract_features(feaext.GFR_extract, image_path, ofile, params)
     # }}}
 
     # {{{ hill-sigma-spam-psrm
@@ -472,7 +408,7 @@ def main():
         image_path=sys.argv[2]
         ofile=sys.argv[3]
 
-        extract_features(feaext.HILL_sigma_spam_PSRM_extract, image_path, ofile)
+        feaext.extract_features(feaext.HILL_sigma_spam_PSRM_extract, image_path, ofile)
     # }}}
 
     # {{{ hill-maxsrm
@@ -485,7 +421,7 @@ def main():
         image_path=sys.argv[2]
         ofile=sys.argv[3]
 
-        extract_features(feaext.HILL_MAXSRM_extract, image_path, ofile)
+        feaext.extract_features(feaext.HILL_MAXSRM_extract, image_path, ofile)
     # }}}
 
 
@@ -719,8 +655,8 @@ def main():
         fea_dir=tempfile.mkdtemp()
         A_fea=os.path.join(fea_dir, "A.fea")
         C_fea=os.path.join(fea_dir, "C.fea")
-        extract_features(fn_feaextract, A_dir, A_fea)
-        extract_features(fn_feaextract, C_dir, C_fea)
+        feaext.extract_features(fn_feaextract, A_dir, A_fea)
+        feaext.extract_features(fn_feaextract, C_dir, C_fea)
 
         A = pandas.read_csv(A_fea, delimiter = " ").values
         C = pandas.read_csv(C_fea, delimiter = " ").values

@@ -1,4 +1,4 @@
-function F=GFR(IMAGE,NR,QF)
+function F=GFR(IMAGE,NR,QF,channel)
 % -------------------------------------------------------------------------
 % Copyright (c) 2015 DDE Lab, Binghamton University, NY.
 % All Rights Reserved.
@@ -64,8 +64,13 @@ AspectRatio = 0.5;
 
 % Decompress to spatial domain
 % fun = @(x)x.data .*I_STRUCT.quant_tables{1};
-fun = @(x)x .*I_STRUCT.quant_tables{1};
-I_spatial = blockproc(I_STRUCT.coef_arrays{1},[8 8],fun);
+if channel>1
+    fun = @(x)x .*I_STRUCT.quant_tables{2};
+else
+    fun = @(x)x .*I_STRUCT.quant_tables{1};
+end
+
+I_spatial = blockproc(I_STRUCT.coef_arrays{channel},[8 8],fun);
 % fun=@(x)idct2(x.data);
 fun=@(x)idct2(x);
 I_spatial = blockproc(I_spatial,[8 8],fun);
