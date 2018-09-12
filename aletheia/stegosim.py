@@ -48,6 +48,8 @@ def _embed(sim, path, payload, dst_path=None):
         m_code+="X=HILL('"+path+"',"+payload+");"
     elif sim=='j_uniward':
         m_code+="J_UNIWARD('"+path+"',"+payload+",'"+dst_path+"');"
+    elif sim=='j_uniward_color':
+        m_code+="J_UNIWARD_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
     elif sim=='nsf5':
         m_code+="NSF5('"+path+"',"+payload+",'"+dst_path+"');"
     elif sim=='ebs':
@@ -82,6 +84,9 @@ def s_uniward(path, payload):
 
 def j_uniward(path, payload, dst_path):
     return _embed('j_uniward', path, payload, dst_path)
+
+def j_uniward_color(path, payload, dst_path):
+    return _embed('j_uniward_color', path, payload, dst_path)
 
 def hugo(path, payload):
     return _embed('hugo', path, payload)
@@ -183,6 +188,8 @@ def embedding_fn(name):
         return stegosim.s_uniward
     if name=="j-uniward-sim":
         return stegosim.j_uniward
+    if name=="j-uniward-color-sim":
+        return stegosim.j_uniward_color
     if name=="hill-sim":
         return stegosim.hill
     if name=="nsf5-sim":

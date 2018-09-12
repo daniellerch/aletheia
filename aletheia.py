@@ -112,16 +112,17 @@ def main():
 
     embsim_doc="\n" \
     "  Embedding simulators:\n" \
-    "  - lsbr-sim:       Embedding using LSB replacement simulator.\n" \
-    "  - lsbm-sim:       Embedding using LSB matching simulator.\n" \
-    "  - hugo-sim:       Embedding using HUGO simulator.\n" \
-    "  - wow-sim:        Embedding using WOW simulator.\n" \
-    "  - s-uniward-sim:  Embedding using S-UNIWARD simulator.\n" \
-    "  - j-uniward-sim:  Embedding using J-UNIWARD simulator.\n" \
-    "  - hill-sim:       Embedding using HILL simulator.\n" \
-    "  - ebs-sim:        Embedding using EBS simulator.\n" \
-    "  - ued-sim:        Embedding using UED simulator.\n" \
-    "  - nsf5-sim:       Embedding using nsF5 simulator."
+    "  - lsbr-sim:             Embedding using LSB replacement simulator.\n" \
+    "  - lsbm-sim:             Embedding using LSB matching simulator.\n" \
+    "  - hugo-sim:             Embedding using HUGO simulator.\n" \
+    "  - wow-sim:              Embedding using WOW simulator.\n" \
+    "  - s-uniward-sim:        Embedding using S-UNIWARD simulator.\n" \
+    "  - j-uniward-sim:        Embedding using J-UNIWARD simulator.\n" \
+    "  - j-uniward-color-sim:  Embedding using J-UNIWARD color simulator.\n" \
+    "  - hill-sim:             Embedding using HILL simulator.\n" \
+    "  - ebs-sim:              Embedding using EBS simulator.\n" \
+    "  - ued-sim:              Embedding using UED simulator.\n" \
+    "  - nsf5-sim:             Embedding using nsF5 simulator."
 
     model_doc="\n" \
     "  Model training:\n" \
@@ -495,6 +496,17 @@ def main():
             sys.exit(0)
 
         embed_message(stegosim.j_uniward, sys.argv[2], sys.argv[3], sys.argv[4],
+                      embed_fn_saving=True)
+    # }}}
+
+    # {{{ j-uniward-color-sim
+    elif sys.argv[1]=="j-uniward-color-sim":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "j-uniward-color-sim <image/dir> <payload> <output-dir>\n"
+            sys.exit(0)
+
+        embed_message(stegosim.j_uniward_color, sys.argv[2], sys.argv[3], sys.argv[4],
                       embed_fn_saving=True)
     # }}}
 
