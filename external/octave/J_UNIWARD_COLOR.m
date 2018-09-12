@@ -140,6 +140,14 @@ for index_color=1:3
     %% Embedding simulation
     STEGO.coef_arrays{index_color} = EmbeddingSimulator(C_COEFFS, rhoP1, rhoM1, round(payload*nzAC));
 
+    try
+        jpeg_write(STEGO, stego);
+    catch
+        error('ERROR (problem with saving the stego image)')
+    end
+
+
+
 end
     
 function [y, pChangeP1, pChangeM1] = EmbeddingSimulator(x, rhoP1, rhoM1, m)
