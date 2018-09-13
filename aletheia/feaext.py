@@ -170,18 +170,13 @@ def GFR_extract(path, quality="auto", rotations=32):
             quality = 95
 
 
-    # Only two qualities are supported. Use the closest.
-    #print "quality:", quality
-    quality = int(quality)
-    if abs(quality-75) > abs(quality-95):
-        quality = 95
-    else:
-        quality = 75
-
+    # suppoted qualities
+    q = numpy.array([75, 85, 95])
     params = {
         "rotations": rotations,
-        "quality": quality
+        "quality": q[numpy.argmin(numpy.abs(q-int(quality)))]
     }
+    print params
 
     im=Image.open(path)
     if im.mode in ['RGB', 'RGBA', 'RGBX']:

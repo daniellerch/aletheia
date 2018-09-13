@@ -46,6 +46,8 @@ T = 4;
 % quantization steps 
 if QF==75
     q = [2 4 6 8];
+elseif QF==85
+    q = [1.5 2 4 6];
 elseif QF==95
     q = [0.5 1 1.5 2];
 end
