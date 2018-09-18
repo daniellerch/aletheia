@@ -122,7 +122,8 @@ def main():
     "  - hill-sim:             Embedding using HILL simulator.\n" \
     "  - ebs-sim:              Embedding using EBS simulator.\n" \
     "  - ued-sim:              Embedding using UED simulator.\n" \
-    "  - nsf5-sim:             Embedding using nsF5 simulator."
+    "  - nsf5-sim:             Embedding using nsF5 simulator.\n" \
+    "  - nsf5-color-sim:       Embedding using nsF5 color simulator."
 
     model_doc="\n" \
     "  Model training:\n" \
@@ -540,6 +541,17 @@ def main():
             sys.exit(0)
 
         embed_message(stegosim.nsf5, sys.argv[2], sys.argv[3], sys.argv[4],
+                      embed_fn_saving=True)
+    # }}}
+
+    # {{{ nsf5-color-sim
+    elif sys.argv[1]=="nsf5-color-sim":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "nsf5-color-sim <image/dir> <payload> <output-dir>\n"
+            sys.exit(0)
+
+        embed_message(stegosim.nsf5_color, sys.argv[2], sys.argv[3], sys.argv[4],
                       embed_fn_saving=True)
     # }}}
 

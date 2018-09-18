@@ -52,6 +52,8 @@ def _embed(sim, path, payload, dst_path=None):
         m_code+="J_UNIWARD_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
     elif sim=='nsf5':
         m_code+="NSF5('"+path+"',"+payload+",'"+dst_path+"');"
+    elif sim=='nsf5_color':
+        m_code+="NSF5_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
     elif sim=='ebs':
         m_code+="EBS('"+path+"',"+payload+",'"+dst_path+"');"
     elif sim=='ued':
@@ -102,6 +104,9 @@ def ued(path, payload, dst_path):
 
 def nsf5(path, payload, dst_path):
     return _embed('nsf5', path, payload, dst_path)
+
+def nsf5_color(path, payload, dst_path):
+    return _embed('nsf5_color', path, payload, dst_path)
 
 def experimental(path, payload):
     return _embed('experimental', path, payload)
@@ -194,6 +199,8 @@ def embedding_fn(name):
         return stegosim.hill
     if name=="nsf5-sim":
         return stegosim.nsf5
+    if name=="nsf5-color-sim":
+        return stegosim.nsf5_color
     if name=="ebs-sim":
         return stegosim.ebs
     if name=="ued-sim":
