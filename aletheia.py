@@ -46,9 +46,22 @@ def embed_message(embed_fn, path, payload, output_dir,
     else:
         files=[path]
     
+    # remove fileas already generated in a previous execution
+    filtered_files = []
+    for f in files:
+        basename=os.path.basename(f)
+        dst_path=os.path.join(output_dir, basename)
+        if os.path.exists(dst_path):
+            print "Warning! file already exists, ignored:", dst_path
+            continue
+        filtered_files.append(f)
+    files = filtered_files
+    del filtered_files
+
+
     def embed(path):
         basename=os.path.basename(path)
-        dst_path=os.path.join(output_dir, basename)
+
         if embed_fn_saving:
             embed_fn(path, payload, dst_path)
         else:
