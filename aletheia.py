@@ -58,9 +58,9 @@ def embed_message(embed_fn, path, payload, output_dir,
     files = filtered_files
     del filtered_files
 
-
     def embed(path):
         basename=os.path.basename(path)
+        dst_path=os.path.join(output_dir, basename)
 
         if embed_fn_saving:
             embed_fn(path, payload, dst_path)
