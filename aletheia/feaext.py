@@ -66,8 +66,7 @@ def extract_features(extract_fn, image_path, ofile, params={}):
                 f_handle_label.write(os.path.basename(path)+"\n")
         lock.release()
 
-    #pool = ThreadPool(cpu_count())
-    pool = ThreadPool(8)
+    pool = ThreadPool(cpu_count())
     results = pool.map(extract_and_save, files)
     pool.close()
     pool.terminate()
