@@ -11,9 +11,6 @@ import pickle
 import shutil
 import subprocess
 
-import multiprocessing
-from multiprocessing.dummy import Pool as ThreadPool 
-from multiprocessing import cpu_count
 from scipy import misc
 
 from aletheia import attacks, utils
@@ -22,84 +19,6 @@ from aletheia import stegosim, feaext, models
 
 
 
-# {{{ embed_message()
-def embed_message(embed_fn, path, payload, output_dir, 
-                  embed_fn_saving=False):
-
-    path=utils.absolute_path(path)
-
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    output_dir=utils.absolute_path(output_dir)
-
-    # Read filenames
-    files=[]
-    if os.path.isdir(path):
-        for dirpath,_,filenames in os.walk(path):
-            for f in filenames:
-                path=os.path.abspath(os.path.join(dirpath, f))
-                if not utils.is_valid_image(path):
-                    print "Warning, please provide a valid image: ", f
-                else:
-                    files.append(path)
-    else:
-        files=[path]
-    
-    # remove fileas already generated in a previous execution
-    filtered_files = []
-    for f in files:
-        basename=os.path.basename(f)
-        dst_path=os.path.join(output_dir, basename)
-        if os.path.exists(dst_path):
-            print "Warning! file already exists, ignored:", dst_path
-            continue
-        filtered_files.append(f)
-    files = filtered_files
-    del filtered_files
-
-    def embed(path):
-        basename=os.path.basename(path)
-        dst_path=os.path.join(output_dir, basename)
-
-        if embed_fn_saving:
-            embed_fn(path, payload, dst_path)
-        else:
-            X=embed_fn(path, payload)
-            try:
-                scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
-            except Exception, e:
-                print str(e)
-
-    # Process thread pool in batches
-    batch=1000
-    for i in xrange(0, len(files), batch):
-        files_batch = files[i:i+batch]
-        n_core=cpu_count()
-        print "Using", n_core, "threads"
-        pool = ThreadPool(n_core)
-        results = pool.map(embed, files_batch)
-        pool.close()
-        pool.terminate()
-        pool.join()
-
-    """
-    for path in files:
-        I=scipy.misc.imread(path)
-        basename=os.path.basename(path)
-        dst_path=os.path.join(output_dir, basename)
-        if embed_fn_saving:
-            print path, payload, dst_path
-            embed_fn(path, payload, dst_path)
-        else:
-            X=embed_fn(path, payload)
-            try:
-                scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
-            except Exception, e:
-                print str(e)
-    """
-   
-# }}}
 
 
 # {{{ train_models()
@@ -449,7 +368,7 @@ def main():
             print sys.argv[0], "lsbr-sim <image/dir> <payload> <output-dir>\n"
             sys.exit(0)
 
-        embed_message(stegosim.lsbr, sys.argv[2], sys.argv[3], sys.argv[4])
+        stegosim.embed_message(stegosim.lsbr, sys.argv[2], sys.argv[3], sys.argv[4])
     # }}}
 
     # {{{ lsbm-sim
@@ -459,7 +378,7 @@ def main():
             print sys.argv[0], "lsbm-sim <image/dir> <payload> <output-dir>\n"
             sys.exit(0)
 
-        embed_message(stegosim.lsbm, sys.argv[2], sys.argv[3], sys.argv[4])
+        stegosim.embed_message(stegosim.lsbm, sys.argv[2], sys.argv[3], sys.argv[4])
     # }}}
 
     # {{{ hugo-sim
@@ -469,7 +388,7 @@ def main():
             print sys.argv[0], "hugo-sim <image/dir> <payload> <output-dir>\n"
             sys.exit(0)
 
-        embed_message(stegosim.hugo, sys.argv[2], sys.argv[3], sys.argv[4])
+        stegosim.embed_message(stegosim.hugo, sys.argv[2], sys.argv[3], sys.argv[4])
     # }}}
 
     # {{{ wow-sim
@@ -479,7 +398,7 @@ def main():
             print sys.argv[0], "wow-sim <image/dir> <payload> <output-dir>\n"
             sys.exit(0)
 
-        embed_message(stegosim.wow, sys.argv[2], sys.argv[3], sys.argv[4])
+        stegosim.embed_message(stegosim.wow, sys.argv[2], sys.argv[3], sys.argv[4])
     # }}}
 
     # {{{ s-uniward-sim
@@ -489,7 +408,7 @@ def main():
             print sys.argv[0], "s-uniward-sim <image/dir> <payload> <output-dir>\n"
             sys.exit(0)
 
-        embed_message(stegosim.s_uniward, sys.argv[2], sys.argv[3], sys.argv[4])
+        stegosim.embed_message(stegosim.s_uniward, sys.argv[2], sys.argv[3], sys.argv[4])
     # }}}
 
     # {{{ hill-sim
@@ -499,7 +418,7 @@ def main():
             print sys.argv[0], "hill-sim <image/dir> <payload> <output-dir>\n"
             sys.exit(0)
 
-        embed_message(stegosim.hill, sys.argv[2], sys.argv[3], sys.argv[4])
+        stegosim.embed_message(stegosim.hill, sys.argv[2], sys.argv[3], sys.argv[4])
     # }}}
 
     # {{{ j-uniward-sim
@@ -509,7 +428,7 @@ def main():
             print sys.argv[0], "j-uniward-sim <image/dir> <payload> <output-dir>\n"
             sys.exit(0)
 
-        embed_message(stegosim.j_uniward, sys.argv[2], sys.argv[3], sys.argv[4],
+        stegosim.embed_message(stegosim.j_uniward, sys.argv[2], sys.argv[3], sys.argv[4],
                       embed_fn_saving=True)
     # }}}
 
@@ -520,7 +439,7 @@ def main():
             print sys.argv[0], "j-uniward-color-sim <image/dir> <payload> <output-dir>\n"
             sys.exit(0)
 
-        embed_message(stegosim.j_uniward_color, sys.argv[2], sys.argv[3], sys.argv[4],
+        stegosim.embed_message(stegosim.j_uniward_color, sys.argv[2], sys.argv[3], sys.argv[4],
                       embed_fn_saving=True)
     # }}}
 
@@ -531,7 +450,7 @@ def main():
             print sys.argv[0], "ebs-sim <image/dir> <payload> <output-dir>\n"
             sys.exit(0)
 
-        embed_message(stegosim.ebs, sys.argv[2], sys.argv[3], sys.argv[4],
+        stegosim.embed_message(stegosim.ebs, sys.argv[2], sys.argv[3], sys.argv[4],
                       embed_fn_saving=True)
     # }}}
 
@@ -542,7 +461,7 @@ def main():
             print sys.argv[0], "ued-sim <image/dir> <payload> <output-dir>\n"
             sys.exit(0)
 
-        embed_message(stegosim.ued, sys.argv[2], sys.argv[3], sys.argv[4],
+        stegosim.embed_message(stegosim.ued, sys.argv[2], sys.argv[3], sys.argv[4],
                       embed_fn_saving=True)
     # }}}
 
@@ -553,7 +472,7 @@ def main():
             print sys.argv[0], "nsf5-sim <image/dir> <payload> <output-dir>\n"
             sys.exit(0)
 
-        embed_message(stegosim.nsf5, sys.argv[2], sys.argv[3], sys.argv[4],
+        stegosim.embed_message(stegosim.nsf5, sys.argv[2], sys.argv[3], sys.argv[4],
                       embed_fn_saving=True)
     # }}}
 
@@ -564,7 +483,7 @@ def main():
             print sys.argv[0], "nsf5-color-sim <image/dir> <payload> <output-dir>\n"
             sys.exit(0)
 
-        embed_message(stegosim.nsf5_color, sys.argv[2], sys.argv[3], sys.argv[4],
+        stegosim.embed_message(stegosim.nsf5_color, sys.argv[2], sys.argv[3], sys.argv[4],
                       embed_fn_saving=True)
     # }}}
 
@@ -576,7 +495,7 @@ def main():
             print "NOTE: Please, put your EXPERIMENTAL.m file into external/octave\n"
             sys.exit(0)
 
-        embed_message(stegosim.experimental, sys.argv[2], sys.argv[3], sys.argv[4])
+        stegosim.embed_message(stegosim.experimental, sys.argv[2], sys.argv[3], sys.argv[4])
     # }}}
 
 
@@ -686,8 +605,8 @@ def main():
         import tempfile
         B_dir=tempfile.mkdtemp()
         C_dir=tempfile.mkdtemp()
-        embed_message(fn_sim, A_dir, payload, B_dir)
-        embed_message(fn_sim, B_dir, payload, C_dir)
+        stegosim.embed_message(fn_sim, A_dir, payload, B_dir)
+        stegosim.embed_message(fn_sim, B_dir, payload, C_dir)
  
         fea_dir=tempfile.mkdtemp()
         A_fea=os.path.join(fea_dir, "A.fea")

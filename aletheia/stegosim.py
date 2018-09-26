@@ -11,9 +11,94 @@ import random
 from scipy.io import savemat, loadmat
 from scipy import misc
 from PIL import Image
- 
+
+from aletheia import utils
+
+import multiprocessing
+from multiprocessing.dummy import Pool as ThreadPool 
+from multiprocessing import cpu_count
 
 M_BIN="octave -q --no-gui --eval"
+
+
+# {{{ embed_message()
+def embed_message(embed_fn, path, payload, output_dir, 
+                  embed_fn_saving=False):
+
+    path=utils.absolute_path(path)
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    output_dir=utils.absolute_path(output_dir)
+
+    # Read filenames
+    files=[]
+    if os.path.isdir(path):
+        for dirpath,_,filenames in os.walk(path):
+            for f in filenames:
+                path=os.path.abspath(os.path.join(dirpath, f))
+                if not utils.is_valid_image(path):
+                    print "Warning, please provide a valid image: ", f
+                else:
+                    files.append(path)
+    else:
+        files=[path]
+    
+    # remove fileas already generated in a previous execution
+    filtered_files = []
+    for f in files:
+        basename=os.path.basename(f)
+        dst_path=os.path.join(output_dir, basename)
+        if os.path.exists(dst_path):
+            print "Warning! file already exists, ignored:", dst_path
+            continue
+        filtered_files.append(f)
+    files = filtered_files
+    del filtered_files
+
+    def embed(path):
+        basename=os.path.basename(path)
+        dst_path=os.path.join(output_dir, basename)
+
+        if embed_fn_saving:
+            embed_fn(path, payload, dst_path)
+        else:
+            X=embed_fn(path, payload)
+            try:
+                scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
+            except Exception, e:
+                print str(e)
+
+    # Process thread pool in batches
+    batch=1000
+    for i in xrange(0, len(files), batch):
+        files_batch = files[i:i+batch]
+        n_core=cpu_count()
+        print "Using", n_core, "threads"
+        pool = ThreadPool(n_core)
+        results = pool.map(embed, files_batch)
+        pool.close()
+        pool.terminate()
+        pool.join()
+
+    """
+    for path in files:
+        I=scipy.misc.imread(path)
+        basename=os.path.basename(path)
+        dst_path=os.path.join(output_dir, basename)
+        if embed_fn_saving:
+            print path, payload, dst_path
+            embed_fn(path, payload, dst_path)
+        else:
+            X=embed_fn(path, payload)
+            try:
+                scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
+            except Exception, e:
+                print str(e)
+    """
+   
+# }}}
 
 
 def _embed(sim, path, payload, dst_path=None):

@@ -24,6 +24,7 @@ FEAEXT_3CH = ["SCRMQ1", "GFR", "SRM"]
 # {{{ extract_features()
 def extract_features(extract_fn, image_path, ofile, params={}):
 
+    cwd = os.getcwd()
     image_path=utils.absolute_path(image_path)
 
     # Read filenames
@@ -80,6 +81,8 @@ def extract_features(extract_fn, image_path, ofile, params={}):
         with open(sys.argv[3], 'a+') as f_handle:
             numpy.savetxt(f_handle, X)
     """
+
+    os.chdir(cwd)
 # }}}
 
 # {{{ _extract()
@@ -175,7 +178,7 @@ def GFR_extract(path, quality="auto", rotations=32):
         "rotations": rotations,
         "quality": q[numpy.argmin(numpy.abs(q-int(quality)))]
     }
-    print params
+    #print params
 
     im=Image.open(path)
     if im.mode in ['RGB', 'RGBA', 'RGBX']:
