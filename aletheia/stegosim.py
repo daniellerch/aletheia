@@ -141,6 +141,8 @@ def _embed(sim, path, payload, dst_path=None):
         m_code+="NSF5_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
     elif sim=='ebs':
         m_code+="EBS('"+path+"',"+payload+",'"+dst_path+"');"
+    elif sim=='ebs_color':
+        m_code+="EBS_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
     elif sim=='ued':
         m_code+="UED('"+path+"',"+payload+",'"+dst_path+"');"
     elif sim=='experimental':
@@ -183,6 +185,9 @@ def hill(path, payload):
 
 def ebs(path, payload, dst_path):
     return _embed('ebs', path, payload, dst_path)
+
+def ebs_color(path, payload, dst_path):
+    return _embed('ebs_color', path, payload, dst_path)
 
 def ued(path, payload, dst_path):
     return _embed('ued', path, payload, dst_path)
@@ -288,6 +293,8 @@ def embedding_fn(name):
         return stegosim.nsf5_color
     if name=="ebs-sim":
         return stegosim.ebs
+    if name=="ebs-color-sim":
+        return stegosim.ebs_color
     if name=="ued-sim":
         return stegosim.ued
 

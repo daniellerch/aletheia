@@ -53,6 +53,7 @@ def main():
     "  - j-uniward-color-sim:  Embedding using J-UNIWARD color simulator.\n" \
     "  - hill-sim:             Embedding using HILL simulator.\n" \
     "  - ebs-sim:              Embedding using EBS simulator.\n" \
+    "  - ebs-color-sim:        Embedding using EBS color simulator.\n" \
     "  - ued-sim:              Embedding using UED simulator.\n" \
     "  - nsf5-sim:             Embedding using nsF5 simulator.\n" \
     "  - nsf5-color-sim:       Embedding using nsF5 color simulator."
@@ -451,6 +452,17 @@ def main():
             sys.exit(0)
 
         stegosim.embed_message(stegosim.ebs, sys.argv[2], sys.argv[3], sys.argv[4],
+                      embed_fn_saving=True)
+    # }}}
+
+    # {{{ ebs-color-sim
+    elif sys.argv[1]=="ebs-color-sim":
+
+        if len(sys.argv)!=5:
+            print sys.argv[0], "ebs-color-sim <image/dir> <payload> <output-dir>\n"
+            sys.exit(0)
+
+        stegosim.embed_message(stegosim.ebs_color, sys.argv[2], sys.argv[3], sys.argv[4],
                       embed_fn_saving=True)
     # }}}
 
