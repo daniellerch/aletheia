@@ -145,6 +145,8 @@ def _embed(sim, path, payload, dst_path=None):
         m_code+="EBS_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
     elif sim=='ued':
         m_code+="UED('"+path+"',"+payload+",'"+dst_path+"');"
+    elif sim=='ued_color':
+        m_code+="UED_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
     elif sim=='experimental':
         m_code+="X=EXPERIMENTAL('"+path+"',"+payload+");"
 
@@ -191,6 +193,9 @@ def ebs_color(path, payload, dst_path):
 
 def ued(path, payload, dst_path):
     return _embed('ued', path, payload, dst_path)
+
+def ued_color(path, payload, dst_path):
+    return _embed('ued_color', path, payload, dst_path)
 
 def nsf5(path, payload, dst_path):
     return _embed('nsf5', path, payload, dst_path)
@@ -297,6 +302,8 @@ def embedding_fn(name):
         return stegosim.ebs_color
     if name=="ued-sim":
         return stegosim.ued
+    if name=="ueb-color-sim":
+        return stegosim.ued_color
 
     print "Unknown simulator:", name
     sys.exit(0)
