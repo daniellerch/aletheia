@@ -13,7 +13,7 @@ from PIL.ExifTags import TAGS
 # -- APPENDED FILES --
 
 def extra_size(filename):
-    print "WARNING! not implemented"
+    print("WARNING! not implemented")
 
     name=ntpath.basename(filename)
     I = misc.imread(filename)
@@ -66,7 +66,7 @@ def spa(filename, channel=0):
                 k+=1
 
     if k==0:
-        print "ERROR"
+        print("ERROR")
         sys.exit(0)
 
     a=2*k
@@ -100,8 +100,8 @@ def groups(I, mask):
     grp=[]
     m, n = I.shape 
     x, y = numpy.abs(mask).shape
-    for i in xrange(m-x):
-        for j in xrange(n-y):
+    for i in range(m-x):
+        for j in range(n-y):
             grp.append(I[i:(i+x), j:(j+y)])
     return grp
 # }}}

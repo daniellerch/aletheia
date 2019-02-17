@@ -305,36 +305,36 @@ class XuNet:
         x = Lambda(K.abs)(x)
         x = Activation("tanh")(x)   
         x = AveragePooling2D(pool_size=(5, 5), strides=2, padding="same", data_format="channels_first")(x)
-        print x
+        print(x)
 
         x = Conv2D(16, (5,5), padding="same", data_format="channels_first")(x)
         x = BatchNormalization()(x)
         x = Activation("tanh")(x)   
         x = AveragePooling2D(pool_size=(5, 5), strides=2, padding="same", data_format="channels_first")(x)
-        print x
+        print(x)
 
         x = Conv2D(32, (1,1), padding="same", data_format="channels_first")(x)
         x = BatchNormalization()(x)
         x = Activation("relu")(x)   
         x = AveragePooling2D(pool_size=(5, 5), strides=2, padding="same", data_format="channels_first")(x)
-        print x
+        print(x)
 
         x = Conv2D(64, (1,1), padding="same", data_format="channels_first")(x)
         x = BatchNormalization()(x)
         x = Activation("relu")(x)   
         x = AveragePooling2D(pool_size=(5, 5), strides=2, padding="same", data_format="channels_first")(x)
-        print x
+        print(x)
 
         x = Conv2D(128, (1,1), padding="same", data_format="channels_first")(x)
         x = BatchNormalization()(x)
         x = Activation("relu")(x)   
         x = AveragePooling2D(pool_size=(5, 5), strides=2, padding="same", data_format="channels_first")(x)
-        print x
+        print(x)
      
 
 
         x = GlobalAveragePooling2D(data_format="channels_first")(x) 
-        print x
+        print(x)
 
         x = Dense(2)(x)
         x = Activation('softmax')(x)
@@ -364,7 +364,7 @@ class XuNet:
                 for f in filenames:
                     path=os.path.abspath(os.path.join(dirpath, f))
                     if not utils.is_valid_image(path):
-                        print "Warning, please provide a valid image: ", f
+                        print("Warning, please provide a valid image: ", f)
                     else:
                         files.append(path)
         else:

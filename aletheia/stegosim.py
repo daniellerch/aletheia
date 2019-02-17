@@ -39,7 +39,7 @@ def embed_message(embed_fn, path, payload, output_dir,
             for f in filenames:
                 path=os.path.abspath(os.path.join(dirpath, f))
                 if not utils.is_valid_image(path):
-                    print "Warning, please provide a valid image: ", f
+                    print("Warning, please provide a valid image: ", f)
                 else:
                     files.append(path)
     else:
@@ -51,7 +51,7 @@ def embed_message(embed_fn, path, payload, output_dir,
         basename=os.path.basename(f)
         dst_path=os.path.join(output_dir, basename)
         if os.path.exists(dst_path):
-            print "Warning! file already exists, ignored:", dst_path
+            print("Warning! file already exists, ignored:", dst_path)
             continue
         filtered_files.append(f)
     files = filtered_files
@@ -67,15 +67,15 @@ def embed_message(embed_fn, path, payload, output_dir,
             X=embed_fn(path, payload)
             try:
                 scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
-            except Exception, e:
-                print str(e)
+            except Exception as e:
+                print(str(e))
 
     # Process thread pool in batches
     batch=1000
-    for i in xrange(0, len(files), batch):
+    for i in range(0, len(files), batch):
         files_batch = files[i:i+batch]
         n_core=cpu_count()
-        print "Using", n_core, "threads"
+        print("Using", n_core, "threads")
         pool = ThreadPool(n_core)
         results = pool.map(embed, files_batch)
         pool.close()
@@ -106,7 +106,7 @@ def _embed(sim, path, payload, dst_path=None):
 
     im=Image.open(path)
     if (im.mode!='L' and sim in ["wow", "hugo", "hill", "s_uniward"]):
-        print "Error,", sim, "must be used with grayscale images"
+        print("Error,", sim, "must be used with grayscale images")
         return X
 
     currdir=os.path.dirname(__file__)
@@ -305,7 +305,7 @@ def embedding_fn(name):
     if name=="ueb-color-sim":
         return stegosim.ued_color
 
-    print "Unknown simulator:", name
+    print("Unknown simulator:", name)
     sys.exit(0)
 
 

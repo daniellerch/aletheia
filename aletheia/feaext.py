@@ -34,7 +34,7 @@ def extract_features(extract_fn, image_path, ofile, params={}):
             for f in filenames:
                 path=os.path.abspath(os.path.join(dirpath, f))
                 if not utils.is_valid_image(path):
-                    print "Warning, please provide a valid image: ", f
+                    print("Warning, please provide a valid image: ", f)
                 else:
                     files.append(path)
     else:
@@ -45,7 +45,7 @@ def extract_features(extract_fn, image_path, ofile, params={}):
     output_file=utils.absolute_path(ofile)
     
     if os.path.isdir(output_file):
-        print "The provided file is a directory:", output_file
+        print("The provided file is a directory:", output_file)
         sys.exit(0)
 
     if os.path.exists(output_file):
@@ -54,9 +54,9 @@ def extract_features(extract_fn, image_path, ofile, params={}):
     def extract_and_save(path):
         try:
             X = extract_fn(path, **params)
-        except Exception,e:
-            print "Cannot extract feactures from", path
-            print str(e)
+        except Exception as e:
+            print("Cannot extract feactures from", path)
+            print(str(e))
             return
 
         X = X.reshape((1, X.shape[0]))
@@ -98,8 +98,8 @@ def _extract(extractor_name, path, params={}):
         tmpdir=tempfile.mkdtemp()
         try:
             os.chdir(tmpdir)
-        except Exception,e:
-            print "chdir:", str(e)
+        except Exception as e:
+            print("chdir:", str(e))
 
         channel = 1
         if "channel" in params:
@@ -133,8 +133,8 @@ def _extract(extractor_name, path, params={}):
                 X = numpy.hstack((X,submodel.reshape((submodel.shape[1]))))
 
     else:
-        print "Image mode/extractor not supported: ", im.mode, "/", extractor_name
-        print
+        print("Image mode/extractor not supported: ", im.mode, "/", extractor_name)
+        print("")
         sys.stdout.flush()
 
     im.close()
@@ -210,7 +210,7 @@ def extractor_fn(name):
     if name == "gfr": 
         return GFR_extract
 
-    print "Unknown feature extractor:", name
+    print("Unknown feature extractor:", name)
     sys.exit(0)
 
 
