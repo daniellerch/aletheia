@@ -1,4 +1,4 @@
-#!/usr/bin/python -W ignore
+#!/usr/bin/python3 -W ignore
 
 import os
 import sys
@@ -24,7 +24,7 @@ from aletheia import stegosim, feaext, models
 # {{{ train_models()
 def train_models():
 
-    print "-- TRAINING HUGO 0.40 --"
+    print("-- TRAINING HUGO 0.40 --")
     tr_cover='../WORKDIR/DL_TR_RK_HUGO_0.40_db_boss5000_50/A_cover'
     tr_stego='../WORKDIR/DL_TR_RK_HUGO_0.40_db_boss5000_50/A_stego'
     ts_cover='../WORKDIR/DL_TS_RK_HUGO_0.40_db_boss250_50/SUP/cover'
@@ -83,15 +83,15 @@ def main():
     "  - ats:      Artificial Training Sets."
 
     if len(sys.argv)<2:
-        print sys.argv[0], "<command>\n"
-        print "COMMANDS:"
-        print attacks_doc
-        print mldetect_doc
-        print feaextract_doc
-        print embsim_doc
-        print model_doc
-        print auto_doc
-        print "\n"
+        print(sys.argv[0], "<command>\n")
+        print("COMMANDS:")
+        print(attacks_doc)
+        print(mldetect_doc)
+        print(feaextract_doc)
+        print(embsim_doc)
+        print(model_doc)
+        print(auto_doc)
+        print("\n")
         sys.exit(0)
 
 
@@ -104,11 +104,11 @@ def main():
     elif sys.argv[1]=="spa":
    
         if len(sys.argv)!=3:
-            print sys.argv[0], "spa <image>\n"
+            print(sys.argv[0], "spa <image>\n")
             sys.exit(0)
 
         if not utils.is_valid_image(sys.argv[2]):
-            print "Please, provide a valid image"
+            print("Please, provide a valid image")
             sys.exit(0)
 
         threshold=0.05
@@ -117,24 +117,24 @@ def main():
         if len(I.shape)==2:
             bitrate=attacks.spa(sys.argv[2], None)
             if bitrate<threshold:
-                print "No hiden data found"
+                print("No hiden data found")
             else:
-                print "Hiden data found", bitrate
+                print("Hiden data found"), bitrate
         else:
             bitrate_R=attacks.spa(sys.argv[2], 0)
             bitrate_G=attacks.spa(sys.argv[2], 1)
             bitrate_B=attacks.spa(sys.argv[2], 2)
 
             if bitrate_R<threshold and bitrate_G<threshold and bitrate_B<threshold:
-                print "No hiden data found"
+                print("No hiden data found")
                 sys.exit(0)
 
             if bitrate_R>=threshold:
-                print "Hiden data found in channel R", bitrate_R
+                print("Hiden data found in channel R", bitrate_R)
             if bitrate_G>=threshold:
-                print "Hiden data found in channel G", bitrate_G
+                print("Hiden data found in channel G", bitrate_G)
             if bitrate_B>=threshold:
-                print "Hiden data found in channel B", bitrate_B
+                print("Hiden data found in channel B", bitrate_B)
 
         sys.exit(0)
     # }}}
@@ -143,11 +143,11 @@ def main():
     elif sys.argv[1]=="rs":
 
         if len(sys.argv)!=3:
-            print sys.argv[0], "spa <image>\n"
+            print(sys.argv[0], "spa <image>\n")
             sys.exit(0)
 
         if not utils.is_valid_image(sys.argv[2]):
-            print "Please, provide a valid image"
+            print("Please, provide a valid image")
             sys.exit(0)
 
         threshold=0.05
@@ -157,24 +157,24 @@ def main():
         if len(I.shape)==2:
             bitrate=attacks.rs(sys.argv[2], None)
             if bitrate<threshold:
-                print "No hiden data found"
+                print("No hiden data found")
             else:
-                print "Hiden data found", bitrate
+                print("Hiden data found", bitrate)
         else:
             bitrate_R=attacks.rs(sys.argv[2], 0)
             bitrate_G=attacks.rs(sys.argv[2], 1)
             bitrate_B=attacks.rs(sys.argv[2], 2)
 
             if bitrate_R<threshold and bitrate_G<threshold and bitrate_B<threshold:
-                print "No hiden data found"
+                print("No hiden data found")
                 sys.exit(0)
 
             if bitrate_R>=threshold:
-                print "Hiden data found in channel R", bitrate_R
+                print("Hiden data found in channel R", bitrate_R)
             if bitrate_G>=threshold:
-                print "Hiden data found in channel G", bitrate_G
+                print("Hiden data found in channel G", bitrate_G)
             if bitrate_B>=threshold:
-                print "Hiden data found in channel B", bitrate_B
+                print("Hiden data found in channel B", bitrate_B)
             sys.exit(0)
     # }}}
 
@@ -185,8 +185,8 @@ def main():
     elif sys.argv[1]=="esvm-predict":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "esvm-predict <model-file> <feature-extractor> <image/dir>"
-            print feaextract_doc
+            print(sys.argv[0], "esvm-predict <model-file> <feature-extractor> <image/dir>")
+            print(feaextract_doc)
             sys.exit(0)
 
         model_file=sys.argv[2]
@@ -199,7 +199,7 @@ def main():
                 for f in filenames:
                     path=os.path.abspath(os.path.join(dirpath, f))
                     if not utils.is_valid_image(path):
-                        print "Warning, please provide a valid image: ", f
+                        print("Warning, please provide a valid image: ", f)
                     else:
                         files.append(path)
         else:
@@ -212,21 +212,21 @@ def main():
             X = feaext.extractor_fn(extractor)(f)
             X = X.reshape((1, X.shape[0]))
             p = clf.predict_proba(X)
-            print p
+            print(p)
             if p[0][0] > 0.5:
-                print os.path.basename(f), "Cover, probability:", p[0][0]
+                print(os.path.basename(f), "Cover, probability:", p[0][0])
             else:
-                print os.path.basename(f), "Stego, probability:", p[0][1]
+                print(os.path.basename(f), "Stego, probability:", p[0][1])
     # }}}
 
     # {{{ e4s-predict
     elif sys.argv[1]=="e4s-predict":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "e4s-predict <model-file> <feature-extractor> <image/dir>\n"
-            print ""
-            print feaextract_doc
-            print ""
+            print(sys.argv[0], "e4s-predict <model-file> <feature-extractor> <image/dir>\n")
+            print("")
+            print(feaextract_doc)
+            print("")
             sys.exit(0)
 
         model_file=sys.argv[2]
@@ -239,7 +239,7 @@ def main():
                 for f in filenames:
                     path=os.path.abspath(os.path.join(dirpath, f))
                     if not utils.is_valid_image(path):
-                        print "Warning, please provide a valid image: ", f
+                        print("Warning, please provide a valid image: ", f)
                     else:
                         files.append(path)
         else:
@@ -254,9 +254,9 @@ def main():
             X = X.reshape((1, X.shape[0]))
             p = clf.predict(X)
             if p[0] == 0:
-                print os.path.basename(f), "Cover"
+                print(os.path.basename(f), "Cover")
             else:
-                print os.path.basename(f), "Stego"
+                print(os.path.basename(f), "Stego")
     # }}}
 
 
@@ -266,7 +266,7 @@ def main():
     elif sys.argv[1]=="srm":
 
         if len(sys.argv)!=4:
-            print sys.argv[0], "srm <image/dir> <output-file>\n"
+            print(sys.argv[0], "srm <image/dir> <output-file>\n")
             sys.exit(0)
 
         image_path=sys.argv[2]
@@ -279,7 +279,7 @@ def main():
     elif sys.argv[1]=="srmq1":
 
         if len(sys.argv)!=4:
-            print sys.argv[0], "srmq1 <image/dir> <output-file>\n"
+            print(sys.argv[0], "srmq1 <image/dir> <output-file>\n")
             sys.exit(0)
 
         image_path=sys.argv[2]
@@ -292,7 +292,7 @@ def main():
     elif sys.argv[1]=="scrmq1":
 
         if len(sys.argv)!=4:
-            print sys.argv[0], "scrmq1 <image/dir> <output-file>\n"
+            print(sys.argv[0], "scrmq1 <image/dir> <output-file>\n")
             sys.exit(0)
 
         image_path=sys.argv[2]
@@ -305,7 +305,7 @@ def main():
     elif sys.argv[1]=="gfr":
 
         if len(sys.argv)<4:
-            print sys.argv[0], "gfr <image/dir> <output-file> [quality] [rotations]\n"
+            print(sys.argv[0], "gfr <image/dir> <output-file> [quality] [rotations]\n")
             sys.exit(0)
 
         image_path=sys.argv[2]
@@ -313,15 +313,15 @@ def main():
 
         if len(sys.argv)<5:
             quality = "auto"
-            print "JPEG quality not provided, using detection via 'identify'"
+            print("JPEG quality not provided, using detection via 'identify'")
         else:
             quality = sys.argv[4]
 
 
         if len(sys.argv)<6:
             rotations = 32
-            print "Number of rotations for Gabor kernel no provided, using:", \
-                  rotations
+            print("Number of rotations for Gabor kernel no provided, using:", \
+                  rotations)
         else:
             rotations = sys.argv[6]
 
@@ -338,7 +338,7 @@ def main():
     elif sys.argv[1]=="hill-sigma-spam-psrm":
 
         if len(sys.argv)!=4:
-            print sys.argv[0], "hill-sigma-spam-psrm <image/dir> <output-file>\n"
+            print(sys.argv[0], "hill-sigma-spam-psrm <image/dir> <output-file>\n")
             sys.exit(0)
 
         image_path=sys.argv[2]
@@ -351,7 +351,7 @@ def main():
     elif sys.argv[1]=="hill-maxsrm":
 
         if len(sys.argv)!=4:
-            print sys.argv[0], "hill-maxsrm <image/dir> <output-file>\n"
+            print(sys.argv[0], "hill-maxsrm <image/dir> <output-file>\n")
             sys.exit(0)
 
         image_path=sys.argv[2]
@@ -367,7 +367,7 @@ def main():
     elif sys.argv[1]=="lsbr-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "lsbr-sim <image/dir> <payload> <output-dir>\n"
+            print(sys.argv[0], "lsbr-sim <image/dir> <payload> <output-dir>\n")
             sys.exit(0)
 
         stegosim.embed_message(stegosim.lsbr, sys.argv[2], sys.argv[3], sys.argv[4])
@@ -377,7 +377,7 @@ def main():
     elif sys.argv[1]=="lsbm-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "lsbm-sim <image/dir> <payload> <output-dir>\n"
+            print(sys.argv[0], "lsbm-sim <image/dir> <payload> <output-dir>\n")
             sys.exit(0)
 
         stegosim.embed_message(stegosim.lsbm, sys.argv[2], sys.argv[3], sys.argv[4])
@@ -387,7 +387,7 @@ def main():
     elif sys.argv[1]=="hugo-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "hugo-sim <image/dir> <payload> <output-dir>\n"
+            print(sys.argv[0], "hugo-sim <image/dir> <payload> <output-dir>\n")
             sys.exit(0)
 
         stegosim.embed_message(stegosim.hugo, sys.argv[2], sys.argv[3], sys.argv[4])
@@ -397,7 +397,7 @@ def main():
     elif sys.argv[1]=="wow-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "wow-sim <image/dir> <payload> <output-dir>\n"
+            print(sys.argv[0], "wow-sim <image/dir> <payload> <output-dir>\n")
             sys.exit(0)
 
         stegosim.embed_message(stegosim.wow, sys.argv[2], sys.argv[3], sys.argv[4])
@@ -407,7 +407,7 @@ def main():
     elif sys.argv[1]=="s-uniward-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "s-uniward-sim <image/dir> <payload> <output-dir>\n"
+            print(sys.argv[0], "s-uniward-sim <image/dir> <payload> <output-dir>\n")
             sys.exit(0)
 
         stegosim.embed_message(stegosim.s_uniward, sys.argv[2], sys.argv[3], sys.argv[4])
@@ -417,7 +417,7 @@ def main():
     elif sys.argv[1]=="hill-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "hill-sim <image/dir> <payload> <output-dir>\n"
+            print(sys.argv[0], "hill-sim <image/dir> <payload> <output-dir>\n")
             sys.exit(0)
 
         stegosim.embed_message(stegosim.hill, sys.argv[2], sys.argv[3], sys.argv[4])
@@ -427,7 +427,7 @@ def main():
     elif sys.argv[1]=="j-uniward-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "j-uniward-sim <image/dir> <payload> <output-dir>\n"
+            print(sys.argv[0], "j-uniward-sim <image/dir> <payload> <output-dir>\n")
             sys.exit(0)
 
         stegosim.embed_message(stegosim.j_uniward, sys.argv[2], sys.argv[3], sys.argv[4],
@@ -438,7 +438,7 @@ def main():
     elif sys.argv[1]=="j-uniward-color-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "j-uniward-color-sim <image/dir> <payload> <output-dir>\n"
+            print(sys.argv[0], "j-uniward-color-sim <image/dir> <payload> <output-dir>\n")
             sys.exit(0)
 
         stegosim.embed_message(stegosim.j_uniward_color, sys.argv[2], sys.argv[3], sys.argv[4],
@@ -449,7 +449,7 @@ def main():
     elif sys.argv[1]=="ebs-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "ebs-sim <image/dir> <payload> <output-dir>\n"
+            print(sys.argv[0], "ebs-sim <image/dir> <payload> <output-dir>\n")
             sys.exit(0)
 
         stegosim.embed_message(stegosim.ebs, sys.argv[2], sys.argv[3], sys.argv[4],
@@ -460,7 +460,7 @@ def main():
     elif sys.argv[1]=="ebs-color-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "ebs-color-sim <image/dir> <payload> <output-dir>\n"
+            print(sys.argv[0], "ebs-color-sim <image/dir> <payload> <output-dir>\n")
             sys.exit(0)
 
         stegosim.embed_message(stegosim.ebs_color, sys.argv[2], sys.argv[3], sys.argv[4],
@@ -471,7 +471,7 @@ def main():
     elif sys.argv[1]=="ued-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "ued-sim <image/dir> <payload> <output-dir>\n"
+            print(sys.argv[0], "ued-sim <image/dir> <payload> <output-dir>\n")
             sys.exit(0)
 
         stegosim.embed_message(stegosim.ued, sys.argv[2], sys.argv[3], sys.argv[4],
@@ -482,7 +482,7 @@ def main():
     elif sys.argv[1]=="ued-color-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "ued-color-sim <image/dir> <payload> <output-dir>\n"
+            print(sys.argv[0], "ued-color-sim <image/dir> <payload> <output-dir>\n")
             sys.exit(0)
 
         stegosim.embed_message(stegosim.ued_color, sys.argv[2], sys.argv[3], sys.argv[4],
@@ -493,7 +493,7 @@ def main():
     elif sys.argv[1]=="nsf5-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "nsf5-sim <image/dir> <payload> <output-dir>\n"
+            print(sys.argv[0], "nsf5-sim <image/dir> <payload> <output-dir>\n")
             sys.exit(0)
 
         stegosim.embed_message(stegosim.nsf5, sys.argv[2], sys.argv[3], sys.argv[4],
@@ -504,7 +504,7 @@ def main():
     elif sys.argv[1]=="nsf5-color-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "nsf5-color-sim <image/dir> <payload> <output-dir>\n"
+            print(sys.argv[0], "nsf5-color-sim <image/dir> <payload> <output-dir>\n")
             sys.exit(0)
 
         stegosim.embed_message(stegosim.nsf5_color, sys.argv[2], sys.argv[3], sys.argv[4],
@@ -515,8 +515,8 @@ def main():
     elif sys.argv[1]=="experimental-sim":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "experimental-sim <image/dir> <payload> <output-dir>"
-            print "NOTE: Please, put your EXPERIMENTAL.m file into external/octave\n"
+            print(sys.argv[0], "experimental-sim <image/dir> <payload> <output-dir>")
+            print("NOTE: Please, put your EXPERIMENTAL.m file into external/octave\n")
             sys.exit(0)
 
         stegosim.embed_message(stegosim.experimental, sys.argv[2], sys.argv[3], sys.argv[4])
@@ -529,7 +529,7 @@ def main():
     elif sys.argv[1]=="esvm":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "esvm <cover-fea> <stego-fea> <model-file>\n"
+            print(sys.argv[0], "esvm <cover-fea> <stego-fea> <model-file>\n")
             sys.exit(0)
 
         from sklearn.model_selection import train_test_split
@@ -552,14 +552,14 @@ def main():
         val_score=clf.score(X_val, y_val)
 
         pickle.dump(clf, open(model_file, "wb"))
-        print "Validation score:", val_score
+        print("Validation score:", val_score)
     # }}}
 
     # {{{ e4s
     elif sys.argv[1]=="e4s":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "e4s <cover-fea> <stego-fea> <model-file>\n"
+            print(sys.argv[0], "e4s <cover-fea> <stego-fea> <model-file>\n")
             sys.exit(0)
 
         from sklearn.model_selection import train_test_split
@@ -582,17 +582,17 @@ def main():
         val_score=clf.score(X_val, y_val)
 
         clf.save(model_file)
-        print "Validation score:", val_score
+        print("Validation score:", val_score)
     # }}}
 
     # {{{ xu-net
     elif sys.argv[1]=="xu-net":
 
         if len(sys.argv)!=5:
-            print sys.argv[0], "xu-net <cover-dir> <stego-dir> <model-name>\n"
+            print(sys.argv[0], "xu-net <cover-dir> <stego-dir> <model-name>\n")
             sys.exit(0)
 
-        print "WARNING! xu-net module is not finished yet!"
+        print("WARNING! xu-net module is not finished yet!")
 
         cover_dir=sys.argv[2]
         stego_dir=sys.argv[3]
@@ -601,7 +601,7 @@ def main():
         net = models.XuNet()
         net.train(cover_dir, stego_dir, val_size=0.10, name=model_name)
         
-        #print "Validation score:", val_score
+        #print("Validation score:", val_score)
     # }}}
 
 
@@ -611,11 +611,11 @@ def main():
     elif sys.argv[1]=="ats":
 
         if len(sys.argv)!=6:
-            print sys.argv[0], "ats <embed-sim> <payload> <fea-extract> <images>\n"
-            print embsim_doc
-            print ""
-            print feaextract_doc
-            print ""
+            print(sys.argv[0], "ats <embed-sim> <payload> <fea-extract> <images>\n")
+            print(embsim_doc)
+            print("")
+            print(feaextract_doc)
+            print("")
             sys.exit(0)
 
         emb_sim=sys.argv[2]
@@ -653,7 +653,7 @@ def main():
             for f in filenames:
                 path=os.path.abspath(os.path.join(dirpath, f))
                 if not utils.is_valid_image(path):
-                    print "Warning, this is not a valid image: ", f
+                    print("Warning, this is not a valid image: ", f)
                 else:
                     files.append(path)
 
@@ -662,9 +662,9 @@ def main():
             B = B.reshape((1, B.shape[0]))
             p = clf.predict(B)
             if p[0] == 0:
-                print os.path.basename(f), "Cover"
+                print(os.path.basename(f), "Cover")
             else:
-                print os.path.basename(f), "Stego"
+                print(os.path.basename(f), "Stego")
 
         shutil.rmtree(B_dir)
         shutil.rmtree(C_dir)
@@ -674,7 +674,7 @@ def main():
 
 
     else:
-        print "Wrong command!"
+        print("Wrong command!")
 
     if sys.argv[1]=="train-models":
         train_models()
