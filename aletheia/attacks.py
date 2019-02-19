@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
 import sys
-import numpy
 import ntpath
 import tempfile
+import numpy as np
 from scipy import ndimage, misc
 from cmath import sqrt
 
@@ -85,21 +85,21 @@ def spa(filename, channel=0):
 
 # {{{ solve()
 def solve(a, b, c):
-    sq = numpy.sqrt(b**2 - 4*a*c)
+    sq = np.sqrt(b**2 - 4*a*c)
     return ( -b + sq ) / ( 2*a ), ( -b - sq ) / ( 2*a )
 # }}}
 
 # {{{ smoothness()
 def smoothness(I):
-    return ( numpy.sum(numpy.abs( I[:-1,:] - I[1:,:] )) + 
-             numpy.sum(numpy.abs( I[:,:-1] - I[:,1:] )) )
+    return ( np.sum(np.abs( I[:-1,:] - I[1:,:] )) + 
+             np.sum(np.abs( I[:,:-1] - I[:,1:] )) )
 # }}}
 
 # {{{ groups()
 def groups(I, mask):
     grp=[]
     m, n = I.shape 
-    x, y = numpy.abs(mask).shape
+    x, y = np.abs(mask).shape
     for i in range(m-x):
         for j in range(n-y):
             grp.append(I[i:(i+x), j:(j+y)])
@@ -112,8 +112,8 @@ def difference(I, mask):
     cmask[(mask > 0)] = 0
     L = []
     for g in groups(I, mask):
-        flip = (g + cmask) ^ numpy.abs(mask) - cmask
-        L.append(numpy.sign(smoothness(flip) - smoothness(g)))
+        flip = (g + cmask) ^ np.abs(mask) - cmask
+        L.append(np.sign(smoothness(flip) - smoothness(g)))
     N = len(L)
     R = float(L.count(1))/N
     S = float(L.count(-1))/N
@@ -127,7 +127,7 @@ def rs(filename, channel=0):
         I = I[:,:,channel]
     I = I.astype(int)
 
-    mask = numpy.array( [[1,0],[0,1]] )
+    mask = np.array( [[1,0],[0,1]] )
     d0 = difference(I, mask)
     d1 = difference(I^1, mask)
 
@@ -136,7 +136,7 @@ def rs(filename, channel=0):
     n_d1 = difference(I^1, mask)
 
     p0, p1 = solve(2*(d1+d0), (n_d0-n_d1-d1-3*d0), (d0-n_d0)) 
-    if numpy.abs(p0) < numpy.abs(p1): 
+    if np.abs(p0) < np.abs(p1): 
         z = p0
     else: 
         z = p1
@@ -145,7 +145,62 @@ def rs(filename, channel=0):
 # }}}
 
 
+# -- NAIVE ATTACKS
+
+# {{{ high_pass_filter()
+def high_pass_filter(input_image, output_image): 
+
+    I = misc.imread(input_image)
+    if len(I.shape)==3:
+        kernel = np.array([[[-1, -1, -1],
+                            [-1,  8, -1],
+                            [-1, -1, -1]],
+                           [[-1, -1, -1],
+                            [-1,  8, -1],
+                            [-1, -1, -1]],
+                           [[-1, -1, -1],
+                            [-1,  8, -1],
+                            [-1, -1, -1]]])
+    else:
+        kernel = np.array([[-1, -1, -1],
+                           [-1,  8, -1],
+                           [-1, -1, -1]])
 
 
+    If = ndimage.convolve(I, kernel)
+    misc.imsave(output_image, If)
+# }}}
+
+# {{{ low_pass_filter()
+def low_pass_filter(input_image, output_image): 
+
+    I = misc.imread(input_image)
+    if len(I.shape)==3:
+        kernel = np.array([[[1, 1, 1],
+                            [1, 1, 1],
+                            [1, 1, 1]],
+                           [[1, 1, 1],
+                            [1, 1, 1],
+                            [1, 1, 1]],
+                           [[1, 1, 1],
+                            [1, 1, 1],
+                            [1, 1, 1]]])
+    else:
+        kernel = np.array([[1, 1, 1],
+                           [1, 1, 1],
+                           [1, 1, 1]])
+
+    kernel = kernel.astype('float32')/9
+    If = ndimage.convolve(I, kernel)
+    misc.imsave(output_image, If)
+# }}}
+
+# {{{ remove_alpha_channel()
+def remove_alpha_channel(input_image, output_image): 
+
+    I = misc.imread(input_image)
+    I[:,:,3] = 255;
+    misc.imsave(output_image, I)
+# }}}
 
 

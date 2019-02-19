@@ -82,6 +82,12 @@ def main():
     "  Unsupervised attacks:\n" \
     "  - ats:      Artificial Training Sets."
 
+    naive_doc="\n" \
+    "  Naive attacks:\n" \
+    "  - hpf:       High-pass filter.\n" \
+    "  - rm-alpha:  Opacity of the alpha channel to 255."
+
+
     if len(sys.argv)<2:
         print(sys.argv[0], "<command>\n")
         print("COMMANDS:")
@@ -91,6 +97,7 @@ def main():
         print(embsim_doc)
         print(model_doc)
         print(auto_doc)
+        print(naive_doc)
         print("\n")
         sys.exit(0)
 
@@ -671,6 +678,34 @@ def main():
         shutil.rmtree(fea_dir)
 
     # }}}
+
+
+
+    # -- NAIVE ATTACKS --
+
+    # {{{ 
+    elif sys.argv[1]=="hpf":
+
+        if len(sys.argv)!=4:
+            print(sys.argv[0], "hpf <input-image> <output-image>\n")
+            print("")
+            sys.exit(0)
+
+        attacks.high_pass_filter(sys.argv[2], sys.argv[3])
+    # }}}
+
+    # {{{ 
+    elif sys.argv[1]=="rm-alpha":
+
+        if len(sys.argv)!=4:
+            print(sys.argv[0], "rm-alpha <input-image> <output-image>\n")
+            print("")
+            sys.exit(0)
+
+        attacks.remove_alpha_channel(sys.argv[2], sys.argv[3])
+    # }}}
+
+
 
 
     else:
