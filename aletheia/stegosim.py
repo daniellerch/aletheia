@@ -1,5 +1,6 @@
 import os
 import sys
+import scipy
 import logging
 import numpy
 import tempfile
