@@ -103,70 +103,80 @@ def embed_message(embed_fn, path, payload, output_dir,
 
 
 def _embed(sim, path, payload, dst_path=None):
-    X=numpy.array([])
 
-    im=Image.open(path)
-    if (im.mode!='L' and sim in ["wow", "hugo", "hill", "s_uniward"]):
-        print("Error,", sim, "must be used with grayscale images")
-        return X
+    for i in range(3):
+        try:
+            X=numpy.array([])
 
-    currdir=os.path.dirname(__file__)
-    basedir=os.path.abspath(os.path.join(currdir, os.pardir))
-    m_path=os.path.join(basedir, 'external', 'octave')
+            im=Image.open(path)
+            if (im.mode!='L' and sim in ["wow", "hugo", "hill", "s_uniward"]):
+                print("Error,", sim, "must be used with grayscale images")
+                return X
 
-    tmpdir=tempfile.mkdtemp()
-    X_path=tmpdir+"/X.mat"
+            currdir=os.path.dirname(__file__)
+            basedir=os.path.abspath(os.path.join(currdir, os.pardir))
+            m_path=os.path.join(basedir, 'external', 'octave')
 
-    m_code=""
-    m_code+="cd "+tmpdir+";"
-    m_code+="addpath('"+m_path+"');"
-    m_code+="warning('off');"
-    m_code+="pkg load image;"
-    m_code+="pkg load signal;"
+            tmpdir=tempfile.mkdtemp()
+            X_path=tmpdir+"/X.mat"
 
-    if sim=='wow':
-        m_code+="X=WOW('"+path+"',"+payload+");"
-    elif sim=='hugo':
-        m_code+="X=HUGO('"+path+"',"+payload+");"
-    elif sim=='s_uniward':
-        m_code+="X=S_UNIWARD('"+path+"',"+payload+");"
-    elif sim=='hill':
-        m_code+="X=HILL('"+path+"',"+payload+");"
-    elif sim=='j_uniward':
-        m_code+="J_UNIWARD('"+path+"',"+payload+",'"+dst_path+"');"
-    elif sim=='j_uniward_color':
-        m_code+="J_UNIWARD_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
-    elif sim=='nsf5':
-        m_code+="NSF5('"+path+"',"+payload+",'"+dst_path+"');"
-    elif sim=='nsf5_color':
-        m_code+="NSF5_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
-    elif sim=='ebs':
-        m_code+="EBS('"+path+"',"+payload+",'"+dst_path+"');"
-    elif sim=='ebs_color':
-        m_code+="EBS_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
-    elif sim=='ued':
-        m_code+="UED('"+path+"',"+payload+",'"+dst_path+"');"
-    elif sim=='ued_color':
-        m_code+="UED_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
-    elif sim=='experimental':
-        m_code+="X=EXPERIMENTAL('"+path+"',"+payload+");"
+            m_code=""
+            m_code+="cd "+tmpdir+";"
+            m_code+="addpath('"+m_path+"');"
+            m_code+="warning('off');"
+            m_code+="pkg load image;"
+            m_code+="pkg load signal;"
 
-    if not dst_path:
-        m_code+="save('-mat7-binary', '"+X_path+"','X');"
-    m_code+="exit"
+            if sim=='wow':
+                m_code+="X=WOW('"+path+"',"+payload+");"
+            elif sim=='hugo':
+                m_code+="X=HUGO('"+path+"',"+payload+");"
+            elif sim=='s_uniward':
+                m_code+="X=S_UNIWARD('"+path+"',"+payload+");"
+            elif sim=='hill':
+                m_code+="X=HILL('"+path+"',"+payload+");"
+            elif sim=='j_uniward':
+                m_code+="J_UNIWARD('"+path+"',"+payload+",'"+dst_path+"');"
+            elif sim=='j_uniward_color':
+                m_code+="J_UNIWARD_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
+            elif sim=='nsf5':
+                m_code+="NSF5('"+path+"',"+payload+",'"+dst_path+"');"
+            elif sim=='nsf5_color':
+                m_code+="NSF5_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
+            elif sim=='ebs':
+                m_code+="EBS('"+path+"',"+payload+",'"+dst_path+"');"
+            elif sim=='ebs_color':
+                m_code+="EBS_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
+            elif sim=='ued':
+                m_code+="UED('"+path+"',"+payload+",'"+dst_path+"');"
+            elif sim=='ued_color':
+                m_code+="UED_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
+            elif sim=='experimental':
+                m_code+="X=EXPERIMENTAL('"+path+"',"+payload+");"
 
-    p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
-    #output, err = p.communicate()
-    status = p.wait()
+            if not dst_path:
+                m_code+="save('-mat7-binary', '"+X_path+"','X');"
+            m_code+="exit"
 
-    if not dst_path:
-        data=loadmat(X_path)
-        X=data['X']
-        shutil.rmtree(tmpdir)
-        return X
-     
-    shutil.rmtree(tmpdir)
+            p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
+            #output, err = p.communicate()
+            status = p.wait()
+
+            if not dst_path:
+                data=loadmat(X_path)
+                X=data['X']
+                shutil.rmtree(tmpdir)
+                return X
+             
+            shutil.rmtree(tmpdir)
+            return
+
+        except:
+            print("Error, retry!")
+            continue
     return
+
+
 
 def wow(path, payload):
     return _embed('wow', path, payload)
