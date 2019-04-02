@@ -85,6 +85,7 @@ def main():
     naive_doc="\n" \
     "  Naive attacks:\n" \
     "  - hpf:       High-pass filter.\n" \
+    "  - imgdiff:   Differences between two images.\n" \
     "  - rm-alpha:  Opacity of the alpha channel to 255."
 
 
@@ -683,7 +684,7 @@ def main():
 
     # -- NAIVE ATTACKS --
 
-    # {{{ 
+    # {{{ hpf
     elif sys.argv[1]=="hpf":
 
         if len(sys.argv)!=4:
@@ -694,7 +695,18 @@ def main():
         attacks.high_pass_filter(sys.argv[2], sys.argv[3])
     # }}}
 
-    # {{{ 
+    # {{{ imgdiff
+    elif sys.argv[1]=="imgdiff":
+
+        if len(sys.argv)!=4:
+            print(sys.argv[0], "imgdiff <image1> <image2>\n")
+            print("")
+            sys.exit(0)
+
+        attacks.imgdiff(sys.argv[2], sys.argv[3])
+    # }}}
+
+    # {{{ rm-alpha
     elif sys.argv[1]=="rm-alpha":
 
         if len(sys.argv)!=4:
