@@ -227,6 +227,43 @@ def imgdiff(image1, image2):
 
 # }}}
 
+# {{{ imgdiff_pixels()
+def imgdiff_pixels(image1, image2): 
+
+    I1 = misc.imread(image1).astype('int16')
+    I2 = misc.imread(image2).astype('int16')
+    np.set_printoptions(threshold=sys.maxsize)
+
+    if len(I1.shape) != len(I2.shape):
+        print("Error, both images must have the same dimensionality")
+        sys.exit(0)
+
+    if len(I1.shape) == 2:
+        D = I1 - I2
+        pairs = list(zip(I1.ravel(), D.ravel()))
+        print(np.array(pairs, dtype=('i4,i4')).reshape(I1.shape))
+
+
+    elif len(I1.shape) == 3:
+        D1 = I1[:,:,0] - I2[:,:,0]
+        D2 = I1[:,:,1] - I2[:,:,1]
+        D3 = I1[:,:,2] - I2[:,:,2]
+        print("Channel 1:")
+        pairs = list(zip(I1[:,:,0].ravel(), D1.ravel()))
+        print(np.array(pairs, dtype=('i4,i4')).reshape(I1[:,:,0].shape))
+        print("Channel 2:")
+        pairs = list(zip(I1[:,:,1].ravel(), D2.ravel()))
+        print(np.array(pairs, dtype=('i4,i4')).reshape(I1[:,:,1].shape))
+        print("Channel 3:")
+        pairs = list(zip(I1[:,:,2].ravel(), D3.ravel()))
+        print(np.array(pairs, dtype=('i4,i4')).reshape(I1[:,:,2].shape))
+    else:
+        print("Error, too many dimensions:", I1.shape)
+
+
+
+# }}}
+
 # {{{ remove_alpha_channel()
 def remove_alpha_channel(input_image, output_image): 
 
