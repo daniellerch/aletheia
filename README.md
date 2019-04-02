@@ -82,9 +82,10 @@ COMMANDS:
   - ats:      Artificial Training Sets.
 
   Naive attacks:
-  - hpf:       High-pass filter.
-  - rm-alpha:  Opacity of the alpha channel to 255.
-
+  - hpf:               High-pass filter.
+  - imgdiff:           Differences between two images.
+  - imgdiff-pixels:    Differences between two images (show pixel values).
+  - rm-alpha:          Opacity of the alpha channel to 255.
 
 ```
 
