@@ -84,6 +84,7 @@ def main():
 
     naive_doc="\n" \
     "  Naive attacks:\n" \
+    "  - brute-force:       Brute force attack using a list of passwords.\n" \
     "  - hpf:               High-pass filter.\n" \
     "  - imgdiff:           Differences between two images.\n" \
     "  - imgdiff-pixels:    Differences between two images (show pixel values).\n" \
@@ -684,6 +685,19 @@ def main():
 
 
     # -- NAIVE ATTACKS --
+
+    # {{{ brute-force
+    elif sys.argv[1]=="brute-force":
+
+        if len(sys.argv)!=4:
+            print(sys.argv[0], "brute-force <unhide command> <passw file>\n")
+            print("Example:")
+            print(sys.argv[0], "brute-force 'steghide extract -sf image.jpg -xf output.txt -p <PASSWORD> -f' resources/passwords.txt\n")
+            print("")
+            sys.exit(0)
+
+        attacks.brute_force(sys.argv[2], sys.argv[3])
+    # }}}
 
     # {{{ hpf
     elif sys.argv[1]=="hpf":
