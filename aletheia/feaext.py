@@ -49,7 +49,13 @@ def extract_features(extract_fn, image_path, ofile, params={}):
         sys.exit(0)
 
     if os.path.exists(output_file):
-        os.remove(output_file)
+        print("Output file already exists! cotinue ...")
+        with open(output_file+".label", 'r') as f:
+            labels = [os.path.join(image_path, x) for x in f.read().splitlines()]
+
+        pending_files = [x for x in files if x not in labels]
+        files = pending_files
+        print("Pending files:", len(files))
 
     def extract_and_save(path):
         try:
