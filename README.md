@@ -48,8 +48,9 @@ COMMANDS:
   - rs:    RS attack.
 
   ML-based detectors:
-  - esvm-predict:  Predict using eSVM.
-  - e4s-predict:   Predict using EC.
+  - esvm-predict:   Predict using eSVM.
+  - e4s-predict:    Predict using EC.
+  - srnet-predict:  Predict using SRNet.
 
   Feature extractors:
   - srm:           Full Spatial Rich Models.
@@ -77,7 +78,7 @@ COMMANDS:
   Model training:
   - esvm:     Ensemble of Support Vector Machines.
   - e4s:      Ensemble Classifiers for Steganalysis.
-  - xu-net:   Convolutional Neural Network for Steganalysis.
+  - srnet:    Steganalysis Residual Network.
 
   Unsupervised attacks:
   - ats:      Artificial Training Sets.
@@ -88,6 +89,10 @@ COMMANDS:
   - imgdiff:           Differences between two images.
   - imgdiff-pixels:    Differences between two images (show pixel values).
   - rm-alpha:          Opacity of the alpha channel to 255.
+
+  Tools:
+  - prep-ml-exp:     Prepare an experiment for testing ML tools.
+
 
 ```
 

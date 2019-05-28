@@ -103,7 +103,8 @@ def embed_message(embed_fn, path, payload, output_dir,
 
 
 def _embed(sim, path, payload, dst_path=None):
-
+    
+    payload = str(payload)
     for i in range(3):
         try:
             X=numpy.array([])
@@ -288,33 +289,33 @@ def lsbr(path, payload):
 
 def embedding_fn(name):
     if name=="lsbm-sim":
-        return stegosim.lsbm
+        return lsbm
     if name=="lsbr-sim":
-        return stegosim.lsbr
+        return lsbr
     if name=="hugo-sim":
-        return stegosim.hugo
+        return hugo
     if name=="wow-sim":
-        return stegosim.wow
+        return wow
     if name=="s-uniward-sim":
-        return stegosim.s_uniward
+        return s_uniward
     if name=="j-uniward-sim":
-        return stegosim.j_uniward
+        return j_uniward
     if name=="j-uniward-color-sim":
-        return stegosim.j_uniward_color
+        return j_uniward_color
     if name=="hill-sim":
-        return stegosim.hill
+        return hill
     if name=="nsf5-sim":
-        return stegosim.nsf5
+        return nsf5
     if name=="nsf5-color-sim":
-        return stegosim.nsf5_color
+        return nsf5_color
     if name=="ebs-sim":
-        return stegosim.ebs
+        return ebs
     if name=="ebs-color-sim":
-        return stegosim.ebs_color
+        return ebs_color
     if name=="ued-sim":
-        return stegosim.ued
+        return ued
     if name=="ueb-color-sim":
-        return stegosim.ued_color
+        return ued_color
 
     print("Unknown simulator:", name)
     sys.exit(0)

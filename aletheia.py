@@ -2,6 +2,7 @@
 
 import os
 import sys
+import glob
 import json
 import time
 import scipy
@@ -9,6 +10,7 @@ import numpy
 import pandas
 import pickle
 import shutil
+import random
 import subprocess
 
 from scipy import misc
@@ -20,20 +22,6 @@ from aletheia import stegosim, feaext, models
 
 
 
-
-# {{{ train_models()
-def train_models():
-
-    print("-- TRAINING HUGO 0.40 --")
-    tr_cover='../WORKDIR/DL_TR_RK_HUGO_0.40_db_boss5000_50/A_cover'
-    tr_stego='../WORKDIR/DL_TR_RK_HUGO_0.40_db_boss5000_50/A_stego'
-    ts_cover='../WORKDIR/DL_TS_RK_HUGO_0.40_db_boss250_50/SUP/cover'
-    ts_stego='../WORKDIR/DL_TS_RK_HUGO_0.40_db_boss250_50/SUP/stego'
-    tr_cover=ts_cover
-    tr_stego=ts_stego
-    nn = cnn.GrayScale(tr_cover, tr_stego, ts_cover, ts_stego)
-    nn.train('models/hugo-0.40.h5')
-# }}}
 
 def main():
 
@@ -63,12 +51,13 @@ def main():
     "  Model training:\n" \
     "  - esvm:     Ensemble of Support Vector Machines.\n" \
     "  - e4s:      Ensemble Classifiers for Steganalysis.\n" \
-    "  - xu-net:   Convolutional Neural Network for Steganalysis."
+    "  - srnet:    Steganalysis Residual Network."
 
     mldetect_doc="\n" \
     "  ML-based detectors:\n" \
-    "  - esvm-predict:  Predict using eSVM.\n" \
-    "  - e4s-predict:   Predict using EC."
+    "  - esvm-predict:   Predict using eSVM.\n" \
+    "  - e4s-predict:    Predict using EC.\n" \
+    "  - srnet-predict:  Predict using SRNet."
 
     feaextract_doc="\n" \
     "  Feature extractors:\n" \
@@ -90,6 +79,13 @@ def main():
     "  - imgdiff-pixels:    Differences between two images (show pixel values).\n" \
     "  - rm-alpha:          Opacity of the alpha channel to 255."
 
+    tools_doc="\n" \
+    "  Tools:\n" \
+    "  - prep-ml-exp:     Prepare an experiment for testing ML tools."
+
+
+
+
 
     if len(sys.argv)<2:
         print(sys.argv[0], "<command>\n")
@@ -101,6 +97,7 @@ def main():
         print(model_doc)
         print(auto_doc)
         print(naive_doc)
+        print(tools_doc)
         print("\n")
         sys.exit(0)
 
@@ -267,6 +264,48 @@ def main():
                 print(os.path.basename(f), "Cover")
             else:
                 print(os.path.basename(f), "Stego")
+    # }}}
+
+    # {{{ srnet-predict
+    elif sys.argv[1]=="srnet-predict":
+
+        if len(sys.argv)<4:
+            print(sys.argv[0], "srnet-predict <model dir> <image/dir> [dev]\n")
+            print("      dev:  Device: GPU Id or 'CPU' (default='CPU')")
+            print("")
+            sys.exit(0)
+
+        model_dir=sys.argv[2]
+        path=utils.absolute_path(sys.argv[3])
+
+        if len(sys.argv)<5:
+            dev_id = "CPU"
+            print("'dev' not provided, using:", dev_id)
+        else:
+            dev_id = sys.argv[4]
+
+
+        files=[]
+        if os.path.isdir(path):
+            for dirpath,_,filenames in os.walk(path):
+                for f in filenames:
+                    path=os.path.abspath(os.path.join(dirpath, f))
+                    if not utils.is_valid_image(path):
+                        print("Warning, please provide a valid image: ", f)
+                    else:
+                        files.append(path)
+        else:
+            files=[path]
+
+        models.nn_configure_device(dev_id)
+        pred = models.nn_predict(models.SRNet, files, model_dir, batch_size=20)
+        #print(pred)
+
+        for i in range(len(files)):
+            if pred[i] == 0:
+                print(os.path.basename(files[i]), "Cover")
+            else:
+                print(os.path.basename(files[i]), "Stego")
     # }}}
 
 
@@ -595,23 +634,75 @@ def main():
         print("Validation score:", val_score)
     # }}}
 
-    # {{{ xu-net
-    elif sys.argv[1]=="xu-net":
+    # {{{ srnet
+    elif sys.argv[1]=="srnet":
 
-        if len(sys.argv)!=5:
-            print(sys.argv[0], "xu-net <cover-dir> <stego-dir> <model-name>\n")
+        if len(sys.argv)<5:
+            print(sys.argv[0], "srnet <cover-dir> <stego-dir> <model-name> [dev] [ES] [valsz] [logdir]\n")
+            print("     dev:     Device: GPU Id or 'CPU' (default='CPU')")
+            print("     ES:      early stopping iterations (default=100)")
+            print("     valsz:   Size of validation set. (default=0.1%)")
+            print("     logdir:  Log directory. (default=log)")
+            print("")
             sys.exit(0)
-
-        print("WARNING! xu-net module is not finished yet!")
 
         cover_dir=sys.argv[2]
         stego_dir=sys.argv[3]
         model_name=sys.argv[4]
 
-        net = models.XuNet()
-        net.train(cover_dir, stego_dir, val_size=0.10, name=model_name)
-        
-        #print("Validation score:", val_score)
+        if len(sys.argv)<6:
+            dev_id = "CPU"
+            print("'dev' not provided, using:", dev_id)
+        else:
+            dev_id = sys.argv[5]
+
+        if len(sys.argv)<7:
+            early_stopping = 100
+            print("'ES' not provided, using:", early_stopping)
+        else:
+            early_stopping = int(sys.argv[6])
+
+        if len(sys.argv)<8:
+            val_size = 0.1
+            print("'valsz' not provided, using:", val_size)
+        else:
+            val_size = int(sys.argv[7])
+
+
+        if len(sys.argv)<9:
+            log_dir = 'log'
+            print("'logdir' not provided, using:", log_dir)
+        else:
+            log_dir = sys.argv[8]
+
+        if dev_id == "CPU":
+            print("Running with CPU. It could be very slow!")
+
+
+        models.nn_configure_device(dev_id)
+
+        from sklearn.model_selection import train_test_split
+        cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
+        stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
+        train_cover_files, valid_cover_files, train_stego_files, valid_stego_files = \
+            train_test_split(cover_files, stego_files, test_size=val_size, random_state=0)
+        print("Using", len(train_cover_files)*2, "samples for training and", 
+                       len(valid_cover_files)*2, "for validation.")
+
+        output_dir = os.path.join(log_dir, 'output')
+        checkpoint_dir = os.path.join(log_dir, 'checkpoint')
+        for d in [output_dir, checkpoint_dir]:
+            try:
+                os.makedirs(d)
+            except:
+                pass
+
+        data = (train_cover_files, train_stego_files,
+                valid_cover_files, valid_stego_files)
+        models.nn_fit(models.SRNet, data, model_name, log_path=output_dir,
+                      load_checkpoint=model_name, checkpoint_path=checkpoint_dir,
+                      batch_size=20, optimizer=models.AdamaxOptimizer(0.001), 
+                      early_stopping=early_stopping, valid_interval=1000)
     # }}}
 
 
@@ -744,17 +835,79 @@ def main():
     # }}}
 
 
+    # -- TOOLS --
+
+    # {{{ prepare-ml-experiment
+    elif sys.argv[1]=="prep-ml-exp":
+
+        if len(sys.argv)<6:
+            #print(sys.argv[0], "prep-ml-exp <cover dir> <output dir> <test size> <sim> <payload> [transf]\n")
+            print(sys.argv[0], "prep-ml-exp <cover dir> <output dir> <test size> <sim> <payload>\n")
+            #print("   transf: list of transformations separated by '|' to apply before hidding data.")
+            #print("         - cropNxN: Crop a centered NxN patch")
+            #print("         - resizeNxN: Resize the image to NxN")
+            #print("")
+            print("Example:")
+            #print("", sys.argv[0], " prep-ml-exp cover/ out/ 0.1 hill-sim 0.4 crop512x512|BLUR|SHARP")
+            print("", sys.argv[0], " prep-ml-exp cover/ out/ 0.1 hill-sim 0.4")
+            print("")
+            sys.exit(0)
+
+        cover_dir = sys.argv[2]
+        output_dir = sys.argv[3]
+        test_size = float(sys.argv[4])
+        emb_sim = sys.argv[5]
+        payload = float(sys.argv[6])
+
+        trn_cover = os.path.join(output_dir, 'trnset', 'cover')
+        trn_stego = os.path.join(output_dir, 'trnset', 'stego')
+        tst_cover = os.path.join(output_dir, 'tstset', 'cover')
+        tst_stego = os.path.join(output_dir, 'tstset', 'stego')
+        tst_cover_to_stego = os.path.join(output_dir, 'tstset', '_cover_to_stego')
+        fn_sim=stegosim.embedding_fn(emb_sim)
+
+        files = sorted(glob.glob(os.path.join(cover_dir, '*')))
+        random.seed(0)
+        random.shuffle(files)
+
+        test_files = files[:int(len(files)*test_size)]
+        train_files = files[int(len(files)*test_size):]
+        print("Using", len(train_files)*2, "files for training and", len(test_files), "for testing.")
+
+        for d in [trn_cover, trn_stego, tst_cover, tst_stego, tst_cover_to_stego]:
+            try:
+                os.makedirs(d)
+            except:
+                pass
+
+        for f in train_files:
+            shutil.copy(f, trn_cover)
+        stegosim.embed_message(fn_sim, trn_cover, payload, trn_stego)
+
+
+        # to avoid leaks we do not use the same images as cover and stego
+        cover_test_files = test_files[:int(len(test_files)*0.5)]
+        cover_to_stego_test_files = test_files[int(len(test_files)*0.5):]
+        for f in cover_test_files:
+            shutil.copy(f, tst_cover)
+        for f in cover_to_stego_test_files:
+            shutil.copy(f, tst_cover_to_stego)
+        stegosim.embed_message(fn_sim, tst_cover_to_stego, payload, tst_stego)
+        shutil.rmtree(tst_cover_to_stego)
+
+    # }}}
+
 
 
     else:
         print("Wrong command!")
 
-    if sys.argv[1]=="train-models":
-        train_models()
 
 
 if __name__ == "__main__":
     main()
+
+
 
 
 
