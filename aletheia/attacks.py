@@ -260,15 +260,67 @@ def imgdiff_pixels(image1, image2):
         D3 = I1[:,:,2] - I2[:,:,2]
         print("Channel 1:")
         pairs = list(zip(I1[:,:,0].ravel(), D1.ravel()))
-        print(np.array(pairs, dtype=('i4,i4')).reshape(I1[:,:,0].shape))
+        pairs_diff = [p for p in pairs if p[1]!=0]
+        #print(np.array(pairs, dtype=('i4,i4')).reshape(I1[:,:,0].shape))
+        print(pairs_diff)
         print("Channel 2:")
         pairs = list(zip(I1[:,:,1].ravel(), D2.ravel()))
-        print(np.array(pairs, dtype=('i4,i4')).reshape(I1[:,:,1].shape))
+        pairs_diff = [p for p in pairs if p[1]!=0]
+        #print(np.array(pairs, dtype=('i4,i4')).reshape(I1[:,:,1].shape))
+        print(pairs_diff)
         print("Channel 3:")
         pairs = list(zip(I1[:,:,2].ravel(), D3.ravel()))
-        print(np.array(pairs, dtype=('i4,i4')).reshape(I1[:,:,2].shape))
+        pairs_diff = [p for p in pairs if p[1]!=0]
+        #print(np.array(pairs, dtype=('i4,i4')).reshape(I1[:,:,2].shape))
+        print(pairs_diff)
     else:
         print("Error, too many dimensions:", I1.shape)
+
+
+
+# }}}
+
+# {{{ print_diffs()
+def print_diffs(cover, stego): 
+
+    def print_list(l, ln):
+        for i in range(0, len(l), ln):
+            print(l[i:i+ln])
+
+
+    C = misc.imread(cover).astype('int16')
+    S = misc.imread(stego).astype('int16')
+    np.set_printoptions(threshold=sys.maxsize)
+
+    if len(C.shape) != len(S.shape):
+        print("Error, both images must have the same dimensionality")
+        sys.exit(0)
+
+    if len(C.shape) == 2:
+        D = S - C
+        pairs = list(zip(C.ravel(), S.ravel(), D.ravel()))
+        pairs_diff = [p for p in pairs if p[2]!=0]
+        print_list(pairs_diff, 5)
+
+
+    elif len(C.shape) == 3:
+        D1 = S[:,:,0] - C[:,:,0]
+        D2 = S[:,:,1] - C[:,:,1]
+        D3 = S[:,:,2] - C[:,:,2]
+        print("\nChannel 1:")
+        pairs = list(zip(C[:,:,0].ravel(), S[:,:,0].ravel(), D1.ravel()))
+        pairs_diff = [p for p in pairs if p[2]!=0]
+        print_list(pairs_diff, 5)
+        print("\nChannel 2:")
+        pairs = list(zip(C[:,:,0].ravel(), S[:,:,0].ravel(), D1.ravel()))
+        pairs_diff = [p for p in pairs if p[2]!=0]
+        print_list(pairs_diff, 5)
+        print("\nChannel 3:")
+        pairs = list(zip(C[:,:,0].ravel(), S[:,:,0].ravel(), D1.ravel()))
+        pairs_diff = [p for p in pairs if p[2]!=0]
+        print_list(pairs_diff, 5)
+    else:
+        print("Error, too many dimensions:", C.shape)
 
 
 

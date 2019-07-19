@@ -71,19 +71,13 @@ def main():
     "  Unsupervised attacks:\n" \
     "  - ats:      Artificial Training Sets."
 
-    naive_doc="\n" \
-    "  Naive attacks:\n" \
-    "  - brute-force:       Brute force attack using a list of passwords.\n" \
-    "  - hpf:               High-pass filter.\n" \
-    "  - imgdiff:           Differences between two images.\n" \
-    "  - imgdiff-pixels:    Differences between two images (show pixel values).\n" \
-    "  - rm-alpha:          Opacity of the alpha channel to 255."
-
     tools_doc="\n" \
     "  Tools:\n" \
+    "  - brute-force:       Brute force attack using a list of passwords.\n" \
+    "  - hpf:               High-pass filter.\n" \
+    "  - print-diffs:       Differences between two images.\n" \
+    "  - rm-alpha:          Opacity of the alpha channel to 255.\n" \
     "  - prep-ml-exp:     Prepare an experiment for testing ML tools."
-
-
 
 
 
@@ -96,7 +90,6 @@ def main():
         print(embsim_doc)
         print(model_doc)
         print(auto_doc)
-        print(naive_doc)
         print(tools_doc)
         print("\n")
         sys.exit(0)
@@ -801,26 +794,15 @@ def main():
         attacks.high_pass_filter(sys.argv[2], sys.argv[3])
     # }}}
 
-    # {{{ imgdiff
-    elif sys.argv[1]=="imgdiff":
+    # {{{ print-diffs
+    elif sys.argv[1]=="print-diffs":
 
         if len(sys.argv)!=4:
-            print(sys.argv[0], "imgdiff <image1> <image2>\n")
+            print(sys.argv[0], "print-diffs <cover image> <stego image>\n")
             print("")
             sys.exit(0)
 
-        attacks.imgdiff(sys.argv[2], sys.argv[3])
-    # }}}
-
-    # {{{ imgdiff-pixels
-    elif sys.argv[1]=="imgdiff-pixels":
-
-        if len(sys.argv)!=4:
-            print(sys.argv[0], "imgdiff-pixels <image1> <image2>\n")
-            print("")
-            sys.exit(0)
-
-        attacks.imgdiff_pixels(sys.argv[2], sys.argv[3])
+        attacks.print_diffs(sys.argv[2], sys.argv[3])
     # }}}
 
     # {{{ rm-alpha
