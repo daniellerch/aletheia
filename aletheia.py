@@ -76,6 +76,7 @@ def main():
     "  - brute-force:       Brute force attack using a list of passwords.\n" \
     "  - hpf:               High-pass filter.\n" \
     "  - print-diffs:       Differences between two images.\n" \
+    "  - print-dct-diffs:   Differences between the DCT coefficients of two JPEG images.\n" \
     "  - rm-alpha:          Opacity of the alpha channel to 255.\n" \
     "  - prep-ml-exp:     Prepare an experiment for testing ML tools."
 
@@ -804,6 +805,13 @@ def main():
 
         cover = utils.absolute_path(sys.argv[2])
         stego = utils.absolute_path(sys.argv[3])
+        if not os.path.isfile(cover):
+            print("Cover file not found:", cover)
+            sys.exit(0)
+        if not os.path.isfile(stego):
+            print("Stego file not found:", stego)
+            sys.exit(0)
+
         attacks.print_diffs(cover, stego)
     # }}}
 
@@ -817,6 +825,14 @@ def main():
 
         cover = utils.absolute_path(sys.argv[2])
         stego = utils.absolute_path(sys.argv[3])
+        if not os.path.isfile(cover):
+            print("Cover file not found:", cover)
+            sys.exit(0)
+        if not os.path.isfile(stego):
+            print("Stego file not found:", stego)
+            sys.exit(0)
+
+
         attacks.print_dct_diffs(cover, stego)
     # }}}
 
