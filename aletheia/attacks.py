@@ -6,6 +6,8 @@ import ntpath
 import tempfile
 import subprocess
 
+from aletheia import stegosim
+
 import numpy as np
 from scipy import ndimage, misc
 from cmath import sqrt
@@ -13,6 +15,7 @@ from cmath import sqrt
 from PIL import Image
 from PIL.ExifTags import TAGS
 
+from aletheia.jpeg import JPEG
 
 import multiprocessing
 from multiprocessing.dummy import Pool as ThreadPool 
@@ -322,6 +325,27 @@ def print_diffs(cover, stego):
     else:
         print("Error, too many dimensions:", C.shape)
 
+
+
+# }}}
+
+# {{{ print_dct_diffs()
+def print_dct_diffs(cover, stego): 
+
+    def print_list(l, ln):
+        for i in range(0, len(l), ln):
+            print(l[i:i+ln])
+
+    C_jpeg = JPEG(cover)
+    S_jpeg = JPEG(stego)
+    for i in range(C_jpeg.components()):
+        C = C_jpeg.coeffs(i)
+        S = S_jpeg.coeffs(i)
+        D = S-C
+        print("\nChannel "+str(i)+":")
+        pairs = list(zip(C.ravel(), S.ravel(), D.ravel()))
+        pairs_diff = [p for p in pairs if p[2]!=0]
+        print_list(pairs_diff, 5)
 
 
 # }}}

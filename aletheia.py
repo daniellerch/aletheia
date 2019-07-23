@@ -802,7 +802,22 @@ def main():
             print("")
             sys.exit(0)
 
-        attacks.print_diffs(sys.argv[2], sys.argv[3])
+        cover = utils.absolute_path(sys.argv[2])
+        stego = utils.absolute_path(sys.argv[3])
+        attacks.print_diffs(cover, stego)
+    # }}}
+
+    # {{{ print-dct-diffs
+    elif sys.argv[1]=="print-dct-diffs":
+
+        if len(sys.argv)!=4:
+            print(sys.argv[0], "print-dtc-diffs <cover image> <stego image>\n")
+            print("")
+            sys.exit(0)
+
+        cover = utils.absolute_path(sys.argv[2])
+        stego = utils.absolute_path(sys.argv[3])
+        attacks.print_dct_diffs(cover, stego)
     # }}}
 
     # {{{ rm-alpha
