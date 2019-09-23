@@ -14,7 +14,7 @@ Aletheia is an open source image steganalysis tool for the detection of hidden m
 - [Brute-force password attack](/doc/BRUTE-FORCE.md)
 - Examples:
 	* [Steganalysis of OpenPuff](/doc/OPENPUFF.md)
-	* [Steganalysis od OpenStego](/doc/OPENSTEGO.md)
+	* [Steganalysis of OpenStego](/doc/OPENSTEGO.md)
 - [References](/doc/REFERENCES.md)
 
 
