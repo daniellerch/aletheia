@@ -7,7 +7,7 @@ setup(
     author='Daniel Lerch Hostalot',
     author_email='dlerch@gmail.com',
     download_url='https://github.com/daniellerch/aletheia',
-    packages=['aletheia'],
+    packages=['aletheialib'],
     version='0.1',
     scripts=['aletheia.py'],
     install_requires=['numpy', 'scipy', 'tensorflow', 'keras', 'scikit-learn',
