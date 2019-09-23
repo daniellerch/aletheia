@@ -6,7 +6,7 @@ import ntpath
 import tempfile
 import subprocess
 
-from aletheia import stegosim
+from aletheialib import stegosim
 
 import numpy as np
 from scipy import ndimage, misc
@@ -15,7 +15,7 @@ from cmath import sqrt
 from PIL import Image
 from PIL.ExifTags import TAGS
 
-from aletheia.jpeg import JPEG
+from aletheialib.jpeg import JPEG
 
 import multiprocessing
 from multiprocessing.dummy import Pool as ThreadPool 

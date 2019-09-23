@@ -8,8 +8,8 @@ import subprocess
 from PIL import Image
 from scipy.io import loadmat
 
-from aletheia import utils
-from aletheia.octave_interface import _extract
+from aletheialib import utils
+from aletheialib.octave_interface import _extract
 
 
 import multiprocessing

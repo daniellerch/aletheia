@@ -9,8 +9,8 @@ import numpy
 import subprocess
 import random
 
-from aletheia import utils
-from aletheia.octave_interface import _jpeg
+from aletheialib import utils
+from aletheialib.octave_interface import _jpeg
 
 
 

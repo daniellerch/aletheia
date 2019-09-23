@@ -15,8 +15,8 @@ import subprocess
 
 from scipy import misc
 
-from aletheia import attacks, utils
-from aletheia import stegosim, feaext, models
+from aletheialib import attacks, utils
+from aletheialib import stegosim, feaext, models
 #from cnn import net as cnn
 
 

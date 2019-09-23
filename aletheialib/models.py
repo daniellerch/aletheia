@@ -8,7 +8,7 @@ import subprocess
 import glob
 import sys
 
-from aletheia import utils
+from aletheialib import utils
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score

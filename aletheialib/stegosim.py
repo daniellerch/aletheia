@@ -13,8 +13,8 @@ from scipy.io import savemat, loadmat
 from scipy import misc
 from PIL import Image
 
-from aletheia import utils
-from aletheia.octave_interface import _embed
+from aletheialib import utils
+from aletheialib.octave_interface import _embed
 
 import multiprocessing
 from multiprocessing.dummy import Pool as ThreadPool 
