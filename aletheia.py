@@ -78,7 +78,7 @@ def main():
     "  - print-diffs:       Differences between two images.\n" \
     "  - print-dct-diffs:   Differences between the DCT coefficients of two JPEG images.\n" \
     "  - rm-alpha:          Opacity of the alpha channel to 255.\n" \
-    "  - prep-ml-exp:     Prepare an experiment for testing ML tools."
+    "  - prep-ml-exp:       Prepare an experiment for testing ML tools."
 
 
 
