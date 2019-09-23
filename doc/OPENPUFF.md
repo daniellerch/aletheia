@@ -1,5 +1,5 @@
 
-### Case of study: OpenPuff
+### Steganalysis of OpenPuff
 
 [OpenPuff](https://embeddedsw.net/OpenPuff_Steganography_Home.html) is a proprietary tool for hiding information. At the moment of writing these lines the las version available is v4.0.1.
 
