@@ -12,9 +12,9 @@ Aletheia is an open source image steganalysis tool for the detection of hidden m
 - [Using pre-built models](#using-pre-built-models)
 - [The ATS attack](#the-ats-attack)
 - [Brute-force password attack](#brute-force-password-attack)
-- [Case of study: OpenPuff](#case-of-study-openpuff)
-- [Case of study: OpenStego](#case-of-study-openstego)
-- [References](#references)
+- [Case of study: OpenPuff](/doc/OPENPUFF.md)
+- [Case of study: OpenStego](/doc/OPENSTEGO.md)
+- [References](/doc/REFERENCES.md)
 
 
 
@@ -103,7 +103,7 @@ You can find some information about the pre-built models [here](/models/README.m
 
 ### The ATS attack
 
-The ATS attack [[4](#references)] provides a mechanism to deal with Cover Source Mismatch. This is a problem produced by training with an incomplete dataset. Our database, no matter how big it is, does not contains a representation of all the types of images that exist. As a consequence, if the image we want to test is not well represented in our training set, the results are going to be wrong.
+The ATS attack [[4](/doc/REFERENCES.md)] provides a mechanism to deal with Cover Source Mismatch. This is a problem produced by training with an incomplete dataset. Our database, no matter how big it is, does not contains a representation of all the types of images that exist. As a consequence, if the image we want to test is not well represented in our training set, the results are going to be wrong.
 
 The ATS attack is unsupervised, that means that does not need a training database. This attack use the images we want to test (we need a number of images, this method can not be applied to only one image) to create an artificial training set that is used to train the classifier. But this method has an important drawback: we can only use it if we know the training set has some cover and some stego images. The method does not work if all the images are cover or all the images are stego.
 
@@ -216,7 +216,7 @@ Channel 3:
 ```
 
 
-As you can see in the results, when a pixel of the cover image is even the performed operation is +1 and when a pixel of the cover image is odd the performed operation is -1. This is what happens when the embedding operation is LSB replacement. This anomaly has been exploited by several attacks [[1, 2, 3](#references)].
+As you can see in the results, when a pixel of the cover image is even the performed operation is +1 and when a pixel of the cover image is odd the performed operation is -1. This is what happens when the embedding operation is LSB replacement. This anomaly has been exploited by several attacks [[1, 2, 3](/doc/REFERENCES.md)].
 
 Let's try the SPA attack:
 
@@ -281,7 +281,7 @@ Channel 3:
 ```
 
 
-As you can see in the results, when a pixel of the cover image is even the performed operation is +1 and when a pixel of the cover image is odd the performed operation is -1. This is what happens when the embedding operation is LSB replacement. This anomaly has been exploited by several attacks [[1, 2, 3](#references)].
+As you can see in the results, when a pixel of the cover image is even the performed operation is +1 and when a pixel of the cover image is odd the performed operation is -1. This is what happens when the embedding operation is LSB replacement. This anomaly has been exploited by several attacks [[1, 2, 3](/doc/REFERENCES.md)].
 
 Let's try a RS attack:
 
@@ -310,20 +310,6 @@ $ ./aletheia.py rs lena.png
 No hiden data found
 ```
 
-
-
-
-
-
-## References
-[1]. Attacks on Steganographic Systems. A. Westfeld and A. Pfitzmann. Lecture Notes in Computer Science, vol.1768, Springer-Verlag, Berlin, 2000, pp. 61−75. 
-
-[2]. Reliable Detection of LSB Steganography in Color and Grayscale Images. Jessica Fridrich, Miroslav Goljan and Rui Du.
-Proc. of the ACM Workshop on Multimedia and Security, Ottawa, Canada, October 5, 2001, pp. 27-30. 
-
-[3]. Detection of LSB steganography via sample pair analysis. S. Dumitrescu, X. Wu and Z. Wang. IEEE Transactions on Signal Processing, 51 (7), 1995-2007.
-
-[4]. Unsupervised Steganalysis Based on Artificial Training Sets. Daniel Lerch-Hostalot and David Megías. Engineering Applications of Artificial Intelligence, Volume 50, 2016, Pages 45-59.
 
 
 
