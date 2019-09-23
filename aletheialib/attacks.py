@@ -2,11 +2,12 @@
 
 import os
 import sys
+import shutil
 import ntpath
 import tempfile
 import subprocess
 
-from aletheialib import stegosim
+from aletheialib import stegosim, utils
 
 import numpy as np
 from scipy import ndimage, misc
@@ -155,6 +156,44 @@ def rs(filename, channel=0):
         z = p1
 
     return z / (z-0.5)
+# }}}
+
+# -- CALIBRATION --
+
+# {{{ calibration()
+def calibration(filename): 
+
+    if not utils.which("convert"):
+        print("Error: 'convert' tool not found, please install it.\n")
+        sys.exit(0)
+
+    tmpdir = tempfile.mkdtemp()
+    predfile = os.path.join(tempfile.mkdtemp(), 'pred.jpg')
+    os.system("convert -chop 2x2 "+filename+" "+predfile)
+ 
+    im_jpeg = JPEG(filename)
+    impred_jpeg = JPEG(predfile)
+    found = False
+    for i in range(im_jpeg.components()):
+        dct = np.abs(im_jpeg.coeffs(i).flatten())
+        dctpred = np.abs(impred_jpeg.coeffs(i).flatten())
+        Hs0 = sum(dct==0)
+        Hs1 = sum(dct==1)
+        Hp0 = sum(dctpred==0)
+        Hp1 = sum(dctpred==1)
+        Hp2 = sum(dctpred==2)
+
+        beta = (Hp1*(Hs0-Hp0) + (Hs1-Hp1)*(Hp2-Hp1)) / (Hp1**2 + (Hp2-Hp1)**2)
+        # XXX: Incomplete implementation. Check http://www.ws.binghamton.edu/fridrich/Research/mms100.pdf
+
+        if beta > 0.05:
+            print("Hiden data found in channel "+str(i)+":", beta)
+            found = True
+
+    if not found:
+        print("No hiden data found")
+
+    shutil.rmtree(tmpdir)
 # }}}
 
 

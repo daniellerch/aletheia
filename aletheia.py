@@ -26,9 +26,10 @@ from aletheialib import stegosim, feaext, models
 def main():
 
     attacks_doc="\n" \
-    "  Attacks to LSB replacement:\n" \
-    "  - spa:   Sample Pairs Analysis.\n" \
-    "  - rs:    RS attack."
+    "  Statistical attacks:\n" \
+    "  - spa:           Sample Pairs Analysis.\n" \
+    "  - rs:            RS attack.\n" \
+    "  - calibration:   Calibration attack to JPEG images."
 
     embsim_doc="\n" \
     "  Embedding simulators:\n" \
@@ -178,6 +179,22 @@ def main():
                 print("Hiden data found in channel B", bitrate_B)
             sys.exit(0)
     # }}}
+
+    # {{{ calibration
+    elif sys.argv[1]=="calibration":
+
+        if len(sys.argv)!=3:
+            print(sys.argv[0], "calibration <image>\n")
+            sys.exit(0)
+
+        if not utils.is_valid_image(sys.argv[2]):
+            print("Please, provide a valid image")
+            sys.exit(0)
+
+        fn = utils.absolute_path(sys.argv[2])
+        attacks.calibration(fn)
+    # }}}
+
 
 
     # -- ML-BASED DETECTORS --
