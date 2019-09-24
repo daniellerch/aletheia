@@ -40,7 +40,7 @@ The maxSRM feature extractor:
 $ cd external/maxSRM
 $ make
 $ cd ..
-
+```
 
 
 After that, you can execute Aletheia with:
