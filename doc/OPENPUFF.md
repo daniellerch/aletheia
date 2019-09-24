@@ -48,6 +48,6 @@ Obviously, with the original Lena image, the tool does not detect any hidden dat
 
 ```bash
 $ ./aletheia.py spa lena.png 
-No hiden data found
+No hidden data found
 ```
 

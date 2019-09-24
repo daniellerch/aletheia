@@ -191,7 +191,7 @@ def calibration(filename):
             found = True
 
     if not found:
-        print("No hiden data found")
+        print("No hidden data found")
 
     shutil.rmtree(tmpdir)
 # }}}

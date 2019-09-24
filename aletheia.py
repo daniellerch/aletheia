@@ -119,7 +119,7 @@ def main():
         if len(I.shape)==2:
             bitrate=attacks.spa(sys.argv[2], None)
             if bitrate<threshold:
-                print("No hiden data found")
+                print("No hidden data found")
             else:
                 print("Hiden data found"), bitrate
         else:
@@ -128,7 +128,7 @@ def main():
             bitrate_B=attacks.spa(sys.argv[2], 2)
 
             if bitrate_R<threshold and bitrate_G<threshold and bitrate_B<threshold:
-                print("No hiden data found")
+                print("No hidden data found")
                 sys.exit(0)
 
             if bitrate_R>=threshold:
@@ -159,7 +159,7 @@ def main():
         if len(I.shape)==2:
             bitrate=attacks.rs(sys.argv[2], None)
             if bitrate<threshold:
-                print("No hiden data found")
+                print("No hidden data found")
             else:
                 print("Hiden data found", bitrate)
         else:
@@ -168,7 +168,7 @@ def main():
             bitrate_B=attacks.rs(sys.argv[2], 2)
 
             if bitrate_R<threshold and bitrate_G<threshold and bitrate_B<threshold:
-                print("No hiden data found")
+                print("No hidden data found")
                 sys.exit(0)
 
             if bitrate_R>=threshold:
