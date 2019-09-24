@@ -232,8 +232,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
        (JDIMENSION) compptr->v_samp_factor);
   }
 
-  cinfo.jpeg_width = cinfo.image_width;
-  cinfo.jpeg_height = cinfo.image_height;
+  //cinfo.jpeg_width = cinfo.image_width;
+  //cinfo.jpeg_height = cinfo.image_height;
 
   /* realize virtual block arrays */
   jpeg_write_coefficients(&cinfo,coef_arrays);

@@ -18,6 +18,31 @@ Aletheia uses Octave so you need to install it and some dependencies. You will f
 $ sudo apt-get install octave octave-image octave-signal
 ```
 
+You can find other dependencies in the other-requirements.txt.
+
+```bash
+$ sudo apt-get install liboctave-dev imagemagick
+```
+
+There are some functionalities that require native code. At this moment, you have to make the compilation manually.
+
+The JPEG toolbox:
+
+```bash
+$ cd external/jpeg_toolbox
+$ make
+$ cd ..
+```
+
+The maxSRM feature extractor:
+
+```bash
+$ cd external/maxSRM
+$ make
+$ cd ..
+
+
+
 After that, you can execute Aletheia with:
 
 ```bash
@@ -27,9 +52,10 @@ $ ./aletheia.py
 
 COMMANDS:
 
-  Attacks to LSB replacement:
-  - spa:   Sample Pairs Analysis.
-  - rs:    RS attack.
+  Statistical attacks:
+  - spa:           Sample Pairs Analysis.
+  - rs:            RS attack.
+  - calibration:   Calibration attack to JPEG images.
 
   ML-based detectors:
   - esvm-predict:   Predict using eSVM.
@@ -67,17 +93,18 @@ COMMANDS:
   Unsupervised attacks:
   - ats:      Artificial Training Sets.
 
-  Naive attacks:
+  Tools:
   - brute-force:       Brute force attack using a list of passwords.
   - hpf:               High-pass filter.
-  - imgdiff:           Differences between two images.
-  - imgdiff-pixels:    Differences between two images (show pixel values).
+  - print-diffs:       Differences between two images.
+  - print-dct-diffs:   Differences between the DCT coefficients of two JPEG images.
   - rm-alpha:          Opacity of the alpha channel to 255.
-
-  Tools:
-  - prep-ml-exp:     Prepare an experiment for testing ML tools.
+  - prep-ml-exp:       Prepare an experiment for testing ML tools.
 
 
 ```
+
+
+
 
 
