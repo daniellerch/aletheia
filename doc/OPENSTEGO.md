@@ -51,9 +51,9 @@ Let's try a RS attack:
 
 ```bash
 $ ./aletheia.py rs stego.png 
-Hiden data found in channel R 0.25
-Hiden data found in channel G 0.24
-Hiden data found in channel B 0.27
+Hidden data found in channel R 0.25
+Hidden data found in channel G 0.24
+Hidden data found in channel B 0.27
 ```
 
 Let's try now with less data:
@@ -62,9 +62,9 @@ Let's try now with less data:
 $ head -100 /dev/urandom | tr -dc A-Za-z0-9 > secret.txt
 $ openstego embed -mf secret.txt -cf lena.png -sf stego.png
 $ ./aletheia.py rs stego.png 
-Hiden data found in channel R 0.06
-Hiden data found in channel G 0.06
-Hiden data found in channel B 0.07
+Hidden data found in channel R 0.06
+Hidden data found in channel G 0.06
+Hidden data found in channel B 0.07
 ```
 
 Obviously, with the original Lena image, the tool does not detect any hidden data:

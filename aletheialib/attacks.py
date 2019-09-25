@@ -187,7 +187,7 @@ def calibration(filename):
         # XXX: Incomplete implementation. Check http://www.ws.binghamton.edu/fridrich/Research/mms100.pdf
 
         if beta > 0.05:
-            print("Hiden data found in channel "+str(i)+":", beta)
+            print("Hidden data found in channel "+str(i)+":", beta)
             found = True
 
     if not found:

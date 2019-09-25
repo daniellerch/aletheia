@@ -39,9 +39,9 @@ Let's try the SPA attack:
 
 ```bash
 $ ./aletheia.py spa stego.png 
-Hiden data found in channel R 0.15
-Hiden data found in channel G 0.15
-Hiden data found in channel B 0.14
+Hidden data found in channel R 0.15
+Hidden data found in channel G 0.15
+Hidden data found in channel B 0.14
 ```
 
 Obviously, with the original Lena image, the tool does not detect any hidden data:

@@ -7,18 +7,18 @@ To execute the SPA attack to an included image with LSB replacement data hidden,
 
 ```bash
 $./aletheia.py spa sample_images/lena_lsbr.png 
-Hiden data found in channel R 0.0930809062336
-Hiden data found in channel G 0.0923858529528
-Hiden data found in channel B 0.115466382367
+Hidden data found in channel R 0.0930809062336
+Hidden data found in channel G 0.0923858529528
+Hidden data found in channel B 0.115466382367
 ```
 
 The command used to perform the RS attack is similar:
 
 ```bash
 $./aletheia.py rs sample_images/lena_lsbr.png 
-Hiden data found in channel R 0.215602586771
-Hiden data found in channel G 0.210351910548
-Hiden data found in channel B 0.217878287806
+Hidden data found in channel R 0.215602586771
+Hidden data found in channel G 0.210351910548
+Hidden data found in channel B 0.217878287806
 ```
 
 In both cases the results provides an estimation of the embedding rate. 
