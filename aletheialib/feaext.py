@@ -20,8 +20,6 @@ lock = multiprocessing.Lock()
 
 M_BIN="octave -q --no-gui --eval"
 
-FEAEXT_1CH = ["GFR", "SRM", "SRMQ1", "HILL_MAXSRM", "HILL_sigma_spam_PSRM"]
-FEAEXT_3CH = ["SCRMQ1", "GFR", "SRM"]
 
 
 # {{{ extract_features()
