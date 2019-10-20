@@ -140,6 +140,17 @@ def nsf5_color(path, payload, dst_path):
 def experimental(path, payload):
     return _embed('experimental', path, payload)
 
+def custom(path, command, dst_path):
+    bn = os.path.basename(path)
+    shutil.copyfile(path, dst_path)
+    cmd = command.replace("<IMAGE>", dst_path)
+    FNUL = open(os.devnull, 'w')
+    p=subprocess.Popen(cmd, stdout=FNUL, stderr=FNUL, shell=True)
+    #output, err = p.communicate()
+    status = p.wait()
+
+
+
 # {{{ lsbm()
 def lsbm(path, payload):
     X = misc.imread(path)

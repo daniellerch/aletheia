@@ -11,6 +11,7 @@ import pandas
 import pickle
 import shutil
 import random
+import tempfile
 import subprocess
 
 from scipy import misc
@@ -722,27 +723,45 @@ def main():
     # {{{ ats
     elif sys.argv[1]=="ats":
 
-        if len(sys.argv)!=6:
-            print(sys.argv[0], "ats <embed-sim> <payload> <fea-extract> <images>\n")
+        if len(sys.argv) not in [5, 6]:
+            print(sys.argv[0], "ats <embed-sim> <payload> <fea-extract> <images>")
+            print(sys.argv[0], "ats <custom command> <fea-extract> <images>\n")
             print(embsim_doc)
             print("")
             print(feaextract_doc)
             print("")
+            print("Examples:")
+            print(sys.argv[0], "ats hill-sim 0.40 srm image_dir/")
+            print(sys.argv[0], "ats 'steghide embed -cf <IMAGE> -ef secret.txt -p mypass' srm image_dir/\n")
             sys.exit(0)
 
-        emb_sim=sys.argv[2]
-        payload=sys.argv[3]
-        feaextract=sys.argv[4]
-        A_dir=sys.argv[5]
+        embed_fn_saving=False
 
-        fn_sim=stegosim.embedding_fn(emb_sim)
-        fn_feaextract=feaext.extractor_fn(feaextract)
+        if len(sys.argv) == 6:
+            emb_sim=sys.argv[2]
+            payload=sys.argv[3]
+            feaextract=sys.argv[4]
+            A_dir=sys.argv[5]
+            fn_sim=stegosim.embedding_fn(emb_sim)
+            fn_feaextract=feaext.extractor_fn(feaextract)
+            if emb_sim in ["j-uniward-sim", "j-uniward-color-sim", 
+                           "ued-sim", "ued-color-sim", "ebs-sim", "ebs-color-sim",
+                           "nsf5-sim", "nsf5-color-sim"]:
+                embed_fn_saving = True
+        else:
+            print("custom command")
+            payload=sys.argv[2] # uggly hack
+            feaextract=sys.argv[3]
+            A_dir=sys.argv[4]
+            fn_sim=stegosim.custom
+            embed_fn_saving = True
+            fn_feaextract=feaext.extractor_fn(feaextract)
 
-        import tempfile
+
         B_dir=tempfile.mkdtemp()
         C_dir=tempfile.mkdtemp()
-        stegosim.embed_message(fn_sim, A_dir, payload, B_dir)
-        stegosim.embed_message(fn_sim, B_dir, payload, C_dir)
+        stegosim.embed_message(fn_sim, A_dir, payload, B_dir, embed_fn_saving=embed_fn_saving)
+        stegosim.embed_message(fn_sim, B_dir, payload, C_dir, embed_fn_saving=embed_fn_saving)
  
         fea_dir=tempfile.mkdtemp()
         A_fea=os.path.join(fea_dir, "A.fea")
