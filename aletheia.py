@@ -459,7 +459,7 @@ def main():
  
 
         pred, inc, xaS = inconsistencies.AB_predict(p_aa, p_bb, p_ab, p_ba)
-        print("err:", round(1-score,2) , ", err pred:", round(float(inc)/(2*len(pred)),2), ", xa:")
+        print("err:", round(1-score,2) , ", err pred:", round(float(inc)/(2*len(pred)),2), ", xa:", xaS)
 
 
     # }}}
