@@ -17,7 +17,7 @@ from scipy import misc
 
 from aletheialib import attacks, utils
 from aletheialib import stegosim, feaext, models
-#from cnn import net as cnn
+from aletheialib import inconsistencies
 
 
 
@@ -289,7 +289,7 @@ def main():
         model_dir=sys.argv[2]
         path=utils.absolute_path(sys.argv[3])
 
-        if len(sys.argv)<5:
+        if len(sys.argv)<4:
             dev_id = "CPU"
             print("'dev' not provided, using:", dev_id)
         else:
@@ -318,6 +318,149 @@ def main():
             else:
                 print(os.path.basename(files[i]), "Stego")
     # }}}
+
+    # {{{ srnet-score
+    elif sys.argv[1]=="srnet-err":
+
+        if len(sys.argv)<4:
+            print(sys.argv[0], "srnet-score <model dir> <cover dir> <stego dir> [dev]\n")
+            print("      dev:  Device: GPU Id or 'CPU' (default='CPU')")
+            print("")
+            sys.exit(0)
+
+        model_dir=sys.argv[2]
+        cover_path=utils.absolute_path(sys.argv[3])
+        stego_path=utils.absolute_path(sys.argv[4])
+
+        if len(sys.argv)<5:
+            dev_id = "CPU"
+            print("'dev' not provided, using:", dev_id)
+        else:
+            dev_id = sys.argv[5]
+
+
+        path = cover_path
+        files=[]
+        if os.path.isdir(path):
+            for dirpath,_,filenames in os.walk(path):
+                for f in filenames:
+                    path=os.path.abspath(os.path.join(dirpath, f))
+                    if not utils.is_valid_image(path):
+                        print("Warning, please provide a valid image: ", f)
+                    else:
+                        files.append(path)
+        else:
+            files=[path]
+        cover_files = files
+
+        path = stego_path
+        files=[]
+        if os.path.isdir(path):
+            for dirpath,_,filenames in os.walk(path):
+                for f in filenames:
+                    path=os.path.abspath(os.path.join(dirpath, f))
+                    if not utils.is_valid_image(path):
+                        print("Warning, please provide a valid image: ", f)
+                    else:
+                        files.append(path)
+        else:
+            files=[path]
+        stego_files = files
+
+
+        models.nn_configure_device(dev_id)
+        cover_pred = models.nn_predict(models.SRNet, cover_files, model_dir, batch_size=20)
+        stego_pred = models.nn_predict(models.SRNet, stego_files, model_dir, batch_size=20)
+
+        ok = 0
+        for i in range(len(cover_files)):
+            if cover_pred[i] == 0:
+                ok += 1
+        for i in range(len(stego_files)):
+            if stego_pred[i] == 1:
+                ok += 1
+        print("err:", 1-round(float(ok)/(len(cover_files)+len(stego_files)), 4))
+ 
+    # }}}
+
+    # {{{ srnet-score
+    elif sys.argv[1]=="srnet-err-icd":
+
+        if len(sys.argv)<6:
+            print(sys.argv[0], "srnet-score-icd <A model dir> <B model dir> <A cover dir> <A stego dir> <B cover dir> <B stego dir> [dev]\n")
+            print("      dev:  Device: GPU Id or 'CPU' (default='CPU')")
+            print("")
+            sys.exit(0)
+
+        A_model_dir=sys.argv[2]
+        B_model_dir=sys.argv[3]
+        A_cover_path=utils.absolute_path(sys.argv[4])
+        A_stego_path=utils.absolute_path(sys.argv[5])
+        B_cover_path=utils.absolute_path(sys.argv[6])
+        B_stego_path=utils.absolute_path(sys.argv[7])
+
+        if len(sys.argv)<8:
+            dev_id = "CPU"
+            print("'dev' not provided, using:", dev_id)
+        else:
+            dev_id = sys.argv[8]
+
+
+        def get_files(path):
+            files=[]
+            if os.path.isdir(path):
+                for dirpath,_,filenames in os.walk(path):
+                    for f in filenames:
+                        path=os.path.abspath(os.path.join(dirpath, f))
+                        if not utils.is_valid_image(path):
+                            print("Warning, please provide a valid image: ", f)
+                        else:
+                            files.append(path)
+            else:
+                files=[path]
+            return files
+
+        
+        A_cover_files = get_files(A_cover_path)
+        A_stego_files = get_files(A_stego_path)
+        B_cover_files = get_files(B_cover_path)
+        B_stego_files = get_files(B_stego_path)
+
+        models.nn_configure_device(dev_id)
+
+        p_aa_cover = models.nn_predict(models.SRNet, A_cover_files, A_model_dir, batch_size=20)
+        p_aa_stego = models.nn_predict(models.SRNet, A_stego_files, A_model_dir, batch_size=20)
+        p_aa = p_aa_cover.tolist() + p_aa_stego.tolist()
+
+        p_bb_cover = models.nn_predict(models.SRNet, B_cover_files, B_model_dir, batch_size=20)
+        p_bb_stego = models.nn_predict(models.SRNet, B_stego_files, B_model_dir, batch_size=20)
+        p_bb = p_bb_cover.tolist() + p_bb_stego.tolist()
+
+        p_ab_cover = models.nn_predict(models.SRNet, B_cover_files, A_model_dir, batch_size=20)
+        p_ab_stego = models.nn_predict(models.SRNet, B_stego_files, A_model_dir, batch_size=20)
+        p_ab = p_ab_cover.tolist() + p_ab_stego.tolist()
+
+        p_ba_cover = models.nn_predict(models.SRNet, A_cover_files, B_model_dir, batch_size=20)
+        p_ba_stego = models.nn_predict(models.SRNet, A_stego_files, B_model_dir, batch_size=20)
+        p_ba = p_ba_cover.tolist() + p_ba_stego.tolist()
+
+
+        ok = 0
+        for i in range(len(A_cover_files)):
+            if p_aa_cover[i] == 0:
+                ok += 1
+        for i in range(len(A_stego_files)):
+            if p_aa_stego[i] == 1:
+                ok += 1
+        score = round(float(ok)/(len(A_cover_files)+len(A_stego_files)), 4)
+ 
+
+        pred, inc, xaS = inconsistencies.AB_predict(p_aa, p_bb, p_ab, p_ba)
+        print("err:", round(1-score,2) , ", err pred:", round(float(inc)/(2*len(pred)),2), ", xa:")
+
+
+    # }}}
+     
 
 
     # -- FEATURE EXTRACTORS --
@@ -649,11 +792,12 @@ def main():
     elif sys.argv[1]=="srnet":
 
         if len(sys.argv)<5:
-            print(sys.argv[0], "srnet <cover-dir> <stego-dir> <model-name> [dev] [ES] [valsz] [logdir]\n")
-            print("     dev:     Device: GPU Id or 'CPU' (default='CPU')")
-            print("     ES:      early stopping iterations (default=100)")
-            print("     valsz:   Size of validation set. (default=0.1%)")
-            print("     logdir:  Log directory. (default=log)")
+            print(sys.argv[0], "srnet <cover-dir> <stego-dir> <model-name> [dev] [max_iter] [ES] [valsz] [logdir]\n")
+            print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
+            print("     max_iter:   Number of iterations (default=1000000)")
+            print("     ES:         early stopping iterations x1000 (default=100)")
+            print("     valsz:      Size of validation set. (default=0.1%)")
+            print("     logdir:     Log directory. (default=log)")
             print("")
             sys.exit(0)
 
@@ -668,23 +812,30 @@ def main():
             dev_id = sys.argv[5]
 
         if len(sys.argv)<7:
+            max_iter = 1000000
+            print("'max_iter' not provided, using:", max_iter)
+        else:
+            max_iter = int(sys.argv[6])
+
+
+        if len(sys.argv)<8:
             early_stopping = 100
             print("'ES' not provided, using:", early_stopping)
         else:
-            early_stopping = int(sys.argv[6])
+            early_stopping = int(sys.argv[7])
 
-        if len(sys.argv)<8:
+        if len(sys.argv)<9:
             val_size = 0.1
             print("'valsz' not provided, using:", val_size)
         else:
-            val_size = int(sys.argv[7])
+            val_size = float(sys.argv[8])
 
 
-        if len(sys.argv)<9:
+        if len(sys.argv)<10:
             log_dir = 'log'
             print("'logdir' not provided, using:", log_dir)
         else:
-            log_dir = sys.argv[8]
+            log_dir = sys.argv[9]
 
         if dev_id == "CPU":
             print("Running with CPU. It could be very slow!")
@@ -713,6 +864,7 @@ def main():
         models.nn_fit(models.SRNet, data, model_name, log_path=output_dir,
                       load_checkpoint=model_name, checkpoint_path=checkpoint_dir,
                       batch_size=20, optimizer=models.AdamaxOptimizer(0.001), 
+                      max_iter=max_iter,
                       early_stopping=early_stopping, valid_interval=1000)
     # }}}
 

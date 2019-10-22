@@ -395,9 +395,11 @@ def _train_data_generator(cover_files, stego_files, data_augm=False,
                 if random.random() < 0.5:
                     yield [np.rot90(batch, rot, axes=[1,2]), 
                            np.array([0,1], dtype='uint8')]
+                    continue
                 else:
                     yield [np.flip(np.rot90(batch, rot, axes=[1,2]), axis=2), 
                         np.array([0,1], dtype='uint8')]
+                    continue
 
             yield [batch, labels]
 # }}}        
@@ -770,7 +772,7 @@ def nn_fit(model_class, data, checkpoint_name,
 
                 # log & checkpoint
                 t = round(time.time()-last_val_time)
-                print(i, early_stopping_cnt, "Accuracy:", train_acc, valid_acc, " : ", t, "seconds")
+                print(i, "of", max_iter, ", until ES:", early_stopping_cnt, ", Accuracy:", train_acc, valid_acc, " : ", t, "seconds")
                 last_val_time = time.time()
                 if valid_acc > best_acc:
                     best_acc = valid_acc
@@ -778,6 +780,10 @@ def nn_fit(model_class, data, checkpoint_name,
                                str(round(valid_acc,4))+'_'+str(i)+'.ckpt')
                     saver.save(sess, checkpoint_path+'/'+checkpoint_name+'/model.ckpt')
                     early_stopping_cnt = early_stopping
+
+                if valid_acc >= 1.0:
+                    print(i, "Best accuracy: 1.0 : ", t, "seconds")
+                    return
 
                 # Early stopping
                 if early_stopping_cnt == 0:
@@ -818,13 +824,16 @@ def nn_predict(model_class, files, checkpoint_dir, batch_size=32):
 
     outputs_arr = np.empty([test_ds_size, 
                             model.outputs.get_shape().as_list()[1]])
+
     checkpoint_file = os.path.join(checkpoint_dir, 'model.ckpt')
     with tf.Session() as sess:
         sess.run(init_op)
         saver.restore(sess, checkpoint_file)
         runner.start_threads(sess, 1)
         for j in range(0, test_ds_size, batch_size):
-            outputs_arr[j:j+batch_size] = sess.run(model.outputs)
+            r = sess.run(model.outputs)
+            l = len(outputs_arr[j:j+batch_size])
+            outputs_arr[j:j+batch_size] = r[:l,:]
     pred = np.argmax(outputs_arr, axis=1)
 
     return pred
