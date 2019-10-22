@@ -59,7 +59,9 @@ def main():
     "  ML-based detectors:\n" \
     "  - esvm-predict:   Predict using eSVM.\n" \
     "  - e4s-predict:    Predict using EC.\n" \
-    "  - srnet-predict:  Predict using SRNet."
+    "  - srnet-predict:  Predict using SRNet.\n" \
+    "  - srnet-err:      Score error using SRNet.\n" \
+    "  - srnet-err-icd:  Score ICD error using SRNet."
 
     feaextract_doc="\n" \
     "  Feature extractors:\n" \
