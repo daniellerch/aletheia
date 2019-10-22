@@ -415,7 +415,7 @@ def main():
                 for dirpath,_,filenames in os.walk(path):
                     for f in filenames:
                         path=os.path.abspath(os.path.join(dirpath, f))
-                        if not utils.is_valid_image(path):
+                        if os.path.isdir(path) or not utils.is_valid_image(path):
                             print("Warning, please provide a valid image: ", f)
                         else:
                             files.append(path)

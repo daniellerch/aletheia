@@ -799,6 +799,9 @@ def nn_fit(model_class, data, checkpoint_name,
 # {{{ nn_predict()
 def nn_predict(model_class, files, checkpoint_dir, batch_size=32):
 
+    if len(files)==0:
+        return np.array([])
+
     test_ds_size = len(files)
     gen = partial(_test_data_generator, files)
 
