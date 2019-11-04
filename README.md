@@ -1,5 +1,6 @@
-# Aletheia
+# Deepsteg
 
+Deepsteg is based off of daniellerch's package Aletheia.
 
 Aletheia is an open source image steganalysis tool for the detection of hidden messages in images. To achieve its objectives, Aletheia uses state-of-the-art machine learning techniques. It is capable of detecting several different steganographic methods as for example LSB replacement, LSB matching and some kind of adaptive schemes.
 
