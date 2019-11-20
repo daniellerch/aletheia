@@ -74,11 +74,14 @@ def spa_image(image, channel=0):
         for i in range(width-1):
             r = I[i, j]
             s = I[i+1, j]
-            if (s%2==0 and r<s) or (s%2==1 and r>s):
+            mod_is_zero = s % 2 == 0
+            r_less_than_s = r < s
+            r_greater_than_s = r > s
+            if (mod_is_zero and r_less_than_s) or (not mod_is_zero and r_greater_than_s):
                 x+=1
-            if (s%2==0 and r>s) or (s%2==1 and r<s):
+            if (mod_is_zero and r_greater_than_s) or (not mod_is_zero and r_less_than_s):
                 y+=1
-            if round(s/2)==round(r/2):
+            if s / 2 == r / 2:
                 k+=1
 
     if k==0:
