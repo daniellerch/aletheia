@@ -59,13 +59,14 @@ def exif(filename):
     Return Beta, the detected embedding rate.
 """
 def spa(filename, channel=0): 
+    return spa_image(imread(filename))
 
+def spa_image(image, channel=0):
     if channel!=None:
-        I3d = imread(filename)
-        width, height, channels = I3d.shape
-        I = I3d[:,:,channel]
+        width, height, channels = image.shape
+        I = image[:,:,channel]
     else:
-        I = imread(filename)
+        I = image
         width, height = I.shape
 
     x=0; y=0; k=0

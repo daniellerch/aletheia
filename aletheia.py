@@ -120,15 +120,15 @@ def main():
 
         I = imread(sys.argv[2])
         if len(I.shape)==2:
-            bitrate=attacks.spa(sys.argv[2], None)
+            bitrate=attacks.spa_image(I, None)
             if bitrate<threshold:
                 print("No hidden data found")
             else:
                 print("Hiden data found"), bitrate
         else:
-            bitrate_R=attacks.spa(sys.argv[2], 0)
-            bitrate_G=attacks.spa(sys.argv[2], 1)
-            bitrate_B=attacks.spa(sys.argv[2], 2)
+            bitrate_R=attacks.spa_image(I, 0)
+            bitrate_G=attacks.spa_image(I, 1)
+            bitrate_B=attacks.spa_image(I, 2)
 
             if bitrate_R<threshold and bitrate_G<threshold and bitrate_B<threshold:
                 print("No hidden data found")
