@@ -69,20 +69,24 @@ def spa_image(image, channel=0):
         I = image
         width, height = I.shape
 
-    x=0; y=0; k=0
-    for j in range(height):
-        for i in range(width-1):
-            r = I[i, j]
-            s = I[i+1, j]
-            mod_is_zero = s % 2 == 0
-            r_less_than_s = r < s
-            r_greater_than_s = r > s
-            if (mod_is_zero and r_less_than_s) or (not mod_is_zero and r_greater_than_s):
-                x+=1
-            if (mod_is_zero and r_greater_than_s) or (not mod_is_zero and r_less_than_s):
-                y+=1
-            if s / 2 == r / 2:
-                k+=1
+    r = I[:-1,:]
+    s = I[1:,:]
+
+    # we only care about the lsb of the next pixel
+    lsb_is_zero = np.equal(np.bitwise_and(s, 1), 0)
+    lsb_non_zero = np.bitwise_and(s, 1)
+    msb = np.bitwise_and(I, 0xFE)
+
+    r_less_than_s = np.less(r, s)
+    r_greater_than_s = np.greater(r, s)
+
+    x = np.sum(np.logical_or(np.logical_and(lsb_is_zero, r_less_than_s),
+                             np.logical_and(lsb_non_zero, r_greater_than_s)).astype(int))
+
+    y = np.sum(np.logical_or(np.logical_and(lsb_is_zero, r_greater_than_s),
+                             np.logical_and(lsb_non_zero, r_less_than_s)).astype(int))
+
+    k = np.sum(np.equal(msb[:-1,:], msb[1:,:]).astype(int))
 
     if k==0:
         print("ERROR")
