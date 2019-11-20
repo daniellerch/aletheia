@@ -14,7 +14,7 @@ import random
 import tempfile
 import subprocess
 
-from scipy import misc
+from imageio import imread
 
 from aletheialib import attacks, utils
 from aletheialib import stegosim, feaext, models
@@ -118,7 +118,7 @@ def main():
 
         threshold=0.05
 
-        I = misc.imread(sys.argv[2])
+        I = imread(sys.argv[2])
         if len(I.shape)==2:
             bitrate=attacks.spa(sys.argv[2], None)
             if bitrate<threshold:
@@ -158,7 +158,7 @@ def main():
         threshold=0.05
 
 
-        I = misc.imread(sys.argv[2])
+        I = imread(sys.argv[2])
         if len(I.shape)==2:
             bitrate=attacks.rs(sys.argv[2], None)
             if bitrate<threshold:

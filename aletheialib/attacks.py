@@ -10,8 +10,9 @@ import subprocess
 from aletheialib import stegosim, utils
 
 import numpy as np
-from scipy import ndimage, misc
+from scipy import ndimage
 from cmath import sqrt
+from imageio import imread
 
 from PIL import Image
 from PIL.ExifTags import TAGS
@@ -30,9 +31,9 @@ def extra_size(filename):
     print("WARNING! not implemented")
 
     name=ntpath.basename(filename)
-    I = misc.imread(filename)
+    I = imread(filename)
 
-    misc.imsave(tempfile.gettempdir()+'/'+name, I)
+    imsave(tempfile.gettempdir()+'/'+name, I)
     return 0
 
 
@@ -60,11 +61,11 @@ def exif(filename):
 def spa(filename, channel=0): 
 
     if channel!=None:
-        I3d = misc.imread(filename)
+        I3d = imread(filename)
         width, height, channels = I3d.shape
         I = I3d[:,:,channel]
     else:
-        I = misc.imread(filename)
+        I = imread(filename)
         width, height = I.shape
 
     x=0; y=0; k=0
@@ -136,7 +137,7 @@ def difference(I, mask):
 
 # {{{ rs()
 def rs(filename, channel=0):
-    I = misc.imread(filename)
+    I = imread(filename)
     if channel!=None:
         I = I[:,:,channel]
     I = I.astype(int)
@@ -202,7 +203,7 @@ def calibration(filename):
 # {{{ high_pass_filter()
 def high_pass_filter(input_image, output_image): 
 
-    I = misc.imread(input_image)
+    I = imread(input_image)
     if len(I.shape)==3:
         kernel = np.array([[[-1, -1, -1],
                             [-1,  8, -1],
@@ -220,13 +221,13 @@ def high_pass_filter(input_image, output_image):
 
 
     If = ndimage.convolve(I, kernel)
-    misc.imsave(output_image, If)
+    imsave(output_image, If)
 # }}}
 
 # {{{ low_pass_filter()
 def low_pass_filter(input_image, output_image): 
 
-    I = misc.imread(input_image)
+    I = imread(input_image)
     if len(I.shape)==3:
         kernel = np.array([[[1, 1, 1],
                             [1, 1, 1],
@@ -244,14 +245,14 @@ def low_pass_filter(input_image, output_image):
 
     kernel = kernel.astype('float32')/9
     If = ndimage.convolve(I, kernel)
-    misc.imsave(output_image, If)
+    imsave(output_image, If)
 # }}}
 
 # {{{ imgdiff()
 def imgdiff(image1, image2): 
 
-    I1 = misc.imread(image1).astype('int16')
-    I2 = misc.imread(image2).astype('int16')
+    I1 = imread(image1).astype('int16')
+    I2 = imread(image2).astype('int16')
     np.set_printoptions(threshold=sys.maxsize)
 
     if len(I1.shape) != len(I2.shape):
@@ -282,8 +283,8 @@ def imgdiff(image1, image2):
 # {{{ imgdiff_pixels()
 def imgdiff_pixels(image1, image2): 
 
-    I1 = misc.imread(image1).astype('int16')
-    I2 = misc.imread(image2).astype('int16')
+    I1 = imread(image1).astype('int16')
+    I2 = imread(image2).astype('int16')
     np.set_printoptions(threshold=sys.maxsize)
 
     if len(I1.shape) != len(I2.shape):
@@ -330,8 +331,8 @@ def print_diffs(cover, stego):
             print(l[i:i+ln])
 
 
-    C = misc.imread(cover).astype('int16')
-    S = misc.imread(stego).astype('int16')
+    C = imread(cover).astype('int16')
+    S = imread(stego).astype('int16')
     np.set_printoptions(threshold=sys.maxsize)
 
     if len(C.shape) != len(S.shape):
@@ -392,9 +393,9 @@ def print_dct_diffs(cover, stego):
 # {{{ remove_alpha_channel()
 def remove_alpha_channel(input_image, output_image): 
 
-    I = misc.imread(input_image)
+    I = imread(input_image)
     I[:,:,3] = 255;
-    misc.imsave(output_image, I)
+    imsave(output_image, I)
 # }}}
 
 # {{{ brute_force()
