@@ -19,7 +19,8 @@ from sklearn import svm
 
 import hdf5storage
 from scipy.io import savemat, loadmat
-from scipy import misc, signal # ndimage
+from scipy import signal # ndimage
+from imageio import imread
 
 from multiprocessing.dummy import Pool as ThreadPool
 from multiprocessing import cpu_count
@@ -275,7 +276,6 @@ import tensorflow as tf
 tf.logging.set_verbosity(tf.logging.ERROR)
 
 
-from scipy import misc
 from functools import partial
 from sklearn.metrics import accuracy_score
 
@@ -379,7 +379,7 @@ def _train_data_generator(cover_files, stego_files, data_augm=False,
             len(cover_list), "!=", len(stego_list))
         sys.exit(0)
 
-    img = misc.imread(cover_list[0])[:crop_size,:crop_size]
+    img = imread(cover_list[0])[:crop_size,:crop_size]
     batch = np.empty((2, img.shape[0], img.shape[1],1), dtype='uint8')
     iterable = list(zip(cover_list, stego_list))
     while True:
@@ -387,8 +387,8 @@ def _train_data_generator(cover_files, stego_files, data_augm=False,
             random.shuffle(iterable)
         for cover_path, stego_path in iterable:
             labels = np.array([0, 1], dtype='uint8')
-            batch[0,:,:,0] = misc.imread(cover_path)[:crop_size,:crop_size]
-            batch[1,:,:,0] = misc.imread(stego_path)[:crop_size,:crop_size]
+            batch[0,:,:,0] = imread(cover_path)[:crop_size,:crop_size]
+            batch[1,:,:,0] = imread(stego_path)[:crop_size,:crop_size]
 
             if data_augm:
                 rot = random.randint(0,3)
@@ -408,12 +408,12 @@ def _train_data_generator(cover_files, stego_files, data_augm=False,
 def _test_data_generator(files, crop_size=256):
 
     nb_data = len(files)
-    img = misc.imread(files[0])[:crop_size,:crop_size]
+    img = imread(files[0])[:crop_size,:crop_size]
     batch = np.empty((1, img.shape[0], img.shape[1],1), dtype='uint8')
     while True:
         for path in files:
             labels = np.array([0], dtype='uint8')
-            batch[0,:,:,0] = misc.imread(path)[:crop_size,:crop_size]
+            batch[0,:,:,0] = imread(path)[:crop_size,:crop_size]
             yield [batch, labels]
 # }}}        
 
