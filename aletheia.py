@@ -19,6 +19,7 @@ import numpy as np
 
 from scipy import misc
 from matplotlib import pyplot as plt
+from imageio import imread
 
 from aletheialib import jpeg
 from aletheialib import attacks, utils
@@ -123,17 +124,17 @@ def main():
 
         threshold=0.05
 
-        I = misc.imread(sys.argv[2])
+        I = imread(sys.argv[2])
         if len(I.shape)==2:
-            bitrate=attacks.spa(sys.argv[2], None)
+            bitrate=attacks.spa_image(I, None)
             if bitrate<threshold:
                 print("No hidden data found")
             else:
                 print("Hiden data found"), bitrate
         else:
-            bitrate_R=attacks.spa(sys.argv[2], 0)
-            bitrate_G=attacks.spa(sys.argv[2], 1)
-            bitrate_B=attacks.spa(sys.argv[2], 2)
+            bitrate_R=attacks.spa_image(I, 0)
+            bitrate_G=attacks.spa_image(I, 1)
+            bitrate_B=attacks.spa_image(I, 2)
 
             if bitrate_R<threshold and bitrate_G<threshold and bitrate_B<threshold:
                 print("No hidden data found")
@@ -163,7 +164,7 @@ def main():
         threshold=0.05
 
 
-        I = misc.imread(sys.argv[2])
+        I = imread(sys.argv[2])
         if len(I.shape)==2:
             bitrate=attacks.rs(sys.argv[2], None)
             if bitrate<threshold:
@@ -247,6 +248,7 @@ def main():
 
     # {{{ e4s-predict
     elif sys.argv[1]=="e4s-predict":
+        from aletheialib import models
 
         if len(sys.argv)!=5:
             print(sys.argv[0], "e4s-predict <model-file> <feature-extractor> <image/dir>\n")
@@ -288,6 +290,7 @@ def main():
 
     # {{{ srnet-predict
     elif sys.argv[1]=="srnet-predict":
+        from aletheialib import models
 
         if len(sys.argv)<4:
             print(sys.argv[0], "srnet-predict <model dir> <image/dir> [dev]\n")
@@ -331,6 +334,7 @@ def main():
 
     # {{{ srnet-score
     elif sys.argv[1]=="srnet-err":
+        from aletheialib import models
 
         if len(sys.argv)<4:
             print(sys.argv[0], "srnet-score <model dir> <cover dir> <stego dir> [dev]\n")
@@ -396,6 +400,7 @@ def main():
 
     # {{{ srnet-score
     elif sys.argv[1]=="srnet-err-icd":
+        from aletheialib import models
 
         if len(sys.argv)<6:
             print(sys.argv[0], "srnet-score-icd <A model dir> <B model dir> <A cover dir> <A stego dir> <B cover dir> <B stego dir> [dev]\n")
@@ -742,6 +747,7 @@ def main():
 
     # {{{ esvm
     elif sys.argv[1]=="esvm":
+        from aletheialib import models
 
         if len(sys.argv)!=5:
             print(sys.argv[0], "esvm <cover-fea> <stego-fea> <model-file>\n")
@@ -773,6 +779,7 @@ def main():
 
     # {{{ e4s
     elif sys.argv[1]=="e4s":
+        from aletheialib import models
 
         if len(sys.argv)!=5:
             print(sys.argv[0], "e4s <cover-fea> <stego-fea> <model-file>\n")
@@ -803,6 +810,7 @@ def main():
 
     # {{{ srnet
     elif sys.argv[1]=="srnet":
+        from aletheialib import models
 
         if len(sys.argv)<5:
             print(sys.argv[0], "srnet <cover-dir> <stego-dir> <model-name> [dev] [max_iter] [ES] [valsz] [logdir]\n")
@@ -887,6 +895,7 @@ def main():
 
     # {{{ ats
     elif sys.argv[1]=="ats":
+        from aletheialib import models
 
         if len(sys.argv) not in [5, 6]:
             print(sys.argv[0], "ats <embed-sim> <payload> <fea-extract> <images>")
