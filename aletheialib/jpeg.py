@@ -17,6 +17,13 @@ from aletheialib.octave_interface import _jpeg
 class JPEG():
     def __init__(self, path):
         self.data = _jpeg('jpeg_read_struct', path)
+        #print(self.data)
+        #numpy.set_printoptions(threshold=sys.maxsize)
+        print(self.data[0][0][7][0].shape)
+        print(self.data[0][0][7][0])
+        #print(self.data[0][0][7][0][0])
+        #print(self.data[0][0][7][0][1])
+        sys.exit(0)
 
     def size(self):
         return (self.data[0][0][0][0][0], self.data[0][0][1][0][0])

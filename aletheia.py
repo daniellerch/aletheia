@@ -11,13 +11,18 @@ import pandas
 import pickle
 import shutil
 import random
+import imageio
 import tempfile
 import subprocess
 
-from scipy import misc
+import numpy as np
 
+from scipy import misc
+from matplotlib import pyplot as plt
+
+from aletheialib import jpeg
 from aletheialib import attacks, utils
-from aletheialib import stegosim, feaext, models
+from aletheialib import stegosim, feaext
 from aletheialib import inconsistencies
 
 
@@ -267,6 +272,7 @@ def main():
             files=[path]
 
 
+        from aletheialib import models
         clf=models.Ensemble4Stego()
         clf.load(model_file)
         for f in files:
@@ -311,6 +317,7 @@ def main():
         else:
             files=[path]
 
+        from aletheialib import models
         models.nn_configure_device(dev_id)
         pred = models.nn_predict(models.SRNet, files, model_dir, batch_size=20)
         #print(pred)
@@ -371,6 +378,7 @@ def main():
         stego_files = files
 
 
+        from aletheialib import models
         models.nn_configure_device(dev_id)
         cover_pred = models.nn_predict(models.SRNet, cover_files, model_dir, batch_size=20)
         stego_pred = models.nn_predict(models.SRNet, stego_files, model_dir, batch_size=20)
@@ -429,6 +437,7 @@ def main():
         B_cover_files = get_files(B_cover_path)
         B_stego_files = get_files(B_stego_path)
 
+        from aletheialib import models
         models.nn_configure_device(dev_id)
 
         p_aa_cover = models.nn_predict(models.SRNet, A_cover_files, A_model_dir, batch_size=20)
@@ -753,6 +762,7 @@ def main():
         y=numpy.hstack(([0]*len(X_cover), [1]*len(X_stego)))
         X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.10)
 
+        from aletheialib import models
         clf=models.EnsembleSVM()
         clf.fit(X_train, y_train)
         val_score=clf.score(X_val, y_val)
@@ -844,6 +854,7 @@ def main():
             print("Running with CPU. It could be very slow!")
 
 
+        from aletheialib import models
         models.nn_configure_device(dev_id)
 
         from sklearn.model_selection import train_test_split
@@ -929,6 +940,7 @@ def main():
         X=numpy.vstack((A, C))
         y=numpy.hstack(([0]*len(A), [1]*len(C)))
 
+        from aletheialib import models
         clf=models.Ensemble4Stego()
         clf.fit(X, y)
 
@@ -1099,6 +1111,104 @@ def main():
         shutil.rmtree(tst_cover_to_stego)
 
     # }}}
+
+
+    # -- PLOT --
+
+    # {{{ plot-histogram
+    elif sys.argv[1]=="plot-histogram":
+
+        if len(sys.argv)<2:
+            print(sys.argv[0], "plot-histogram <image>\n")
+            print("")
+            sys.exit(0)
+
+        fn = utils.absolute_path(sys.argv[2])
+        I = imageio.imread(fn)
+        data = []
+        if len(I.shape) == 1:
+            data.append(I.flatten())
+        else:
+            for i in range(I.shape[2]):
+                data.append(I[:,:,i].flatten())
+
+        plt.hist(data, range(0, 255), color=["r", "g", "b"])
+        plt.show()
+
+    # }}}
+
+    # {{{ plot-histogram-diff
+    elif sys.argv[1]=="plot-histogram-diff":
+
+        if len(sys.argv)<4:
+            print(sys.argv[0], "plot-histogram <image> <L|R|U|D>\n")
+            print("")
+            sys.exit(0)
+
+        fn = utils.absolute_path(sys.argv[2])
+        direction = sys.argv[3]
+        if direction not in ["L", "R", "U", "D"]:
+            print("Please provide the substract direction: L, R, U or D\n")
+            sys.exit(0)
+
+        I = imageio.imread(fn)
+        data = []
+        if len(I.shape) == 1:
+            if direction == "L":
+                D = I[:,1:]-I[:,:-1]
+            if direction == "R":
+                D = I[:,:-1]-I[:,1:]
+            if direction == "U":
+                D = I[:-1,:]-I[1:,:]
+            if direction == "D":
+                D = I[1:,:]-I[:-1,:]
+            
+            data.append(D.flatten())
+        else:
+            for i in range(I.shape[2]):
+                if direction == "L":
+                    D = I[:,1:,i]-I[:,:-1,i]
+                if direction == "R":
+                    D = I[:,:-1,i]-I[:,1:,i]
+                if direction == "U":
+                    D = I[:-1,:,i]-I[1:,:,i]
+                if direction == "D":
+                    D = I[1:,:,i]-I[:-1,:,i]
+
+                data.append(D.flatten())
+
+        plt.hist(data, range(0, 255), color=["r", "g", "b"])
+        plt.show()
+
+    # }}}
+
+    # {{{ plot-dct-histogram
+    elif sys.argv[1]=="plot-dct-histogram":
+
+        if len(sys.argv)<2:
+            print(sys.argv[0], "plot-dct-histogram <image>\n")
+            print("")
+            sys.exit(0)
+
+        fn = utils.absolute_path(sys.argv[2])
+        name, ext = os.path.splitext(fn)
+        if ext.lower() not in [".jpeg", ".jpg"] or not os.path.isfile(fn):
+            print("Please, provide a a JPEG image!\n")
+            sys.exit(0)
+        I = jpeg.JPEG(fn)
+        channels = ["r", "g", "b"]
+        dct_list = []
+        for i in range(I.components()):
+            dct = I.coeffs(i).flatten()
+            dct_list.append(dct)
+            #counts, bins = np.histogram(dct, range(-5, 5))
+            #plt.plot(bins[:-1], counts, channels[i])
+        plt.hist(dct_list, range(-5, 5), rwidth=1, color=["r", "g", "b"])
+
+        plt.show()
+
+    # }}}
+
 
 
 

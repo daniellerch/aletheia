@@ -47,6 +47,20 @@ for q=[1 1.5 2], f = post_processing(all3rd(X,q*3),'f3',q,f); end    % 3rd order
 for q=[1 1.5 2], f = post_processing(all3x3(X,q*4),'f3x3',q,f); end  % 3x3
 for q=[1 1.5 2], f = post_processing(all5x5(X,q*12),'f5x5',q,f); end % 5x5
 
+
+% print submodels / offsets
+% i = 0;
+% e = 0;
+% for [v, k] = f
+% 	e = e + size(v)(2);
+%	printf('%s : %d, %d-%d\n', k, size(v)(2), i, e-1)
+%	i = e;
+% endfor
+
+
+
+
+
 function RESULT = post_processing(DATA,f,q,RESULT)
 
 Ss = fieldnames(DATA);
