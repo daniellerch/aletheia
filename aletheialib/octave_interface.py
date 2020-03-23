@@ -22,8 +22,8 @@ from multiprocessing import cpu_count
 M_BIN="octave -q --no-gui --eval"
 
 
-FEAEXT_1CH = ["GFR", "SRM", "SRMQ1", "HILL_MAXSRM", "HILL_sigma_spam_PSRM"]
-FEAEXT_3CH = ["SCRMQ1", "GFR", "SRM"]
+FEAEXT_1CH = ["GFR", "DCTR", "SRM", "SRMQ1", "HILL_MAXSRM", "HILL_sigma_spam_PSRM"]
+FEAEXT_3CH = ["SCRMQ1", "GFR", "SRM", "DCTR"]
 
 
 # {{{ _embed()
@@ -135,6 +135,9 @@ def _extract(extractor_name, path, params={}):
         if extractor_name=="GFR":
             m_code+="data="+extractor_name+"('"+path+"'," \
                     +str(params["rotations"])+", "+str(params["quality"])+", "+str(channel)+");"
+        elif extractor_name=="DCTR":
+            m_code+="data="+extractor_name+"('"+path+"'," \
+                    +str(params["quality"])+", "+str(channel)+");"
         else:
             m_code+="data="+extractor_name+"('"+path+"', "+str(channel)+");"
         m_code+="save('-mat7-binary', '"+data_path+"','data');"
@@ -146,7 +149,7 @@ def _extract(extractor_name, path, params={}):
         data=loadmat(data_path)
         shutil.rmtree(tmpdir)
 
-        if extractor_name=="GFR":
+        if extractor_name in ["GFR", "DCTR"]:
             X = data["data"][0]
         else:
             for submodel in data["data"][0][0]:
