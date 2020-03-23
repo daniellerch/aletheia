@@ -106,7 +106,15 @@ def SRM_extract(path):
         return  _extract('SRM', path)
 
 def SRMQ1_extract(path):
-    return _extract('SRMQ1', path)
+    im=Image.open(path)
+    if im.mode in ['RGB', 'RGBA', 'RGBX']:
+        C1 = _extract('SRMQ1', path, params={"channel":1})
+        C2 = _extract('SRMQ1', path, params={"channel":2})
+        C3 = _extract('SRMQ1', path, params={"channel":3})
+        X = numpy.hstack((C1, C2, C3))
+        return X
+    else:
+        return _extract('SRMQ1', path)
 
 def SCRMQ1_extract(path):
     return _extract('SCRMQ1', path)
@@ -144,6 +152,43 @@ def GFR_extract(path, quality="auto", rotations=32):
     else:
         return  _extract('GFR', path, params)
 
+
+def DCTR_extract(path, quality="auto"):
+    
+    if quality=="auto":
+        try:
+            p=subprocess.Popen("identify -format '%Q' "+path, \
+                               stdout=subprocess.PIPE, shell=True)
+            quality, err = p.communicate()
+            status = p.wait()
+        except:
+            quality = 95
+
+
+    # suppoted qualities
+    #q = numpy.array([75, 85, 95])
+    params = {
+        #"quality": q[numpy.argmin(numpy.abs(q-int(quality)))]
+        "quality": int(quality)
+    }
+    #print params
+
+    im=Image.open(path)
+    if im.mode in ['RGB', 'RGBA', 'RGBX']:
+        params["channel"] = 1
+        C1 = _extract('DCTR', path, params)
+        params["channel"] = 2
+        C2 = _extract('DCTR', path, params)
+        params["channel"] = 3
+        C3 = _extract('DCTR', path, params)
+        X = numpy.hstack((C1, C2, C3))
+        return X
+    else:
+        return  _extract('DCTR', path, params)
+
+
+
+
 def HILL_sigma_spam_PSRM_extract(path):
     return _extract('HILL_sigma_spam_PSRM', path)
 
@@ -160,6 +205,8 @@ def extractor_fn(name):
         return SCRMQ1_extract
     if name == "gfr": 
         return GFR_extract
+    if name == "dctr": 
+        return dctr_extract
 
     print("Unknown feature extractor:", name)
     sys.exit(0)

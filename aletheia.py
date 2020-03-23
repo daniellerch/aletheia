@@ -554,6 +554,31 @@ def main():
         feaext.extract_features(feaext.GFR_extract, image_path, ofile, params)
     # }}}
 
+    # {{{ dctr
+    elif sys.argv[1]=="dctr":
+
+        if len(sys.argv)<4:
+            print(sys.argv[0], "dctr <image/dir> <output-file> [quality]\n")
+            sys.exit(0)
+
+        image_path=sys.argv[2]
+        ofile=sys.argv[3]
+
+        if len(sys.argv)<5:
+            quality = "auto"
+            print("JPEG quality not provided, using detection via 'identify'")
+        else:
+            quality = sys.argv[4]
+
+
+
+        params = {
+            "quality": quality,
+        }
+            
+        feaext.extract_features(feaext.DCTR_extract, image_path, ofile, params)
+    # }}}
+
     # {{{ hill-sigma-spam-psrm
     elif sys.argv[1]=="hill-sigma-spam-psrm":
 
