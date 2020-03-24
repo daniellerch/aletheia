@@ -16,6 +16,7 @@ Aletheia is an open source image steganalysis tool for the detection of hidden m
 	* [Steganalysis of OpenPuff](/doc/OPENPUFF.md)
 	* [Steganalysis of OpenStego](/doc/OPENSTEGO.md)
 	* [Steganalysis of F5](/doc/F5.md)
+	* [Steganalysis of Steghide](/doc/Steghide.md)
 - [References](/doc/REFERENCES.md)
 
 

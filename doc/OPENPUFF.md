@@ -33,7 +33,7 @@ Channel 3:
 ```
 
 
-As you can see in the results, when a pixel of the cover image is even the performed operation is +1 and when a pixel of the cover image is odd the performed operation is -1. This is what happens when the embedding operation is LSB replacement. This anomaly has been exploited by several attacks [[1, 2, 3](/doc/REFERENCES.md)].
+As you can see in the results, when a pixel of the cover image is even the performed operation is +1 and when a pixel of the cover image is odd the performed operation is -1. This is what happens when the embedding operation is LSB replacement. This anomaly has been exploited by several attacks [[1, 2, 3, 5, 6, 7, 8](/doc/REFERENCES.md)].
 
 Let's try the SPA attack:
 
@@ -50,4 +50,7 @@ Obviously, with the original Lena image, the tool does not detect any hidden dat
 $ ./aletheia.py spa lena.png 
 No hidden data found
 ```
+
+
+
 

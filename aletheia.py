@@ -33,12 +33,12 @@ from aletheialib.octave_interface import _attack
 
 def main():
 
+    #"  - aump:          Adaptive Steganalysis Attack.\n" \
     attacks_doc="\n" \
     "  Statistical attacks:\n" \
     "  - sp:            Sample Pairs Analysis (Octave vesion).\n" \
     "  - ws:            Weighted Stego Attack.\n" \
     "  - triples:       Triples Attack.\n" \
-    #"  - aump:          Adaptive Steganalysis Attack.\n" \
     "  - spa:           Sample Pairs Analysis.\n" \
     "  - rs:            RS attack.\n" \
     "  - calibration:   Calibration attack to JPEG images."

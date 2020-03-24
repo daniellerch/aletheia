@@ -56,7 +56,9 @@ COMMANDS:
   - sp:            Sample Pairs Analysis (Octave vesion).
   - ws:            Weighted Stego Attack.
   - triples:       Triples Attack.
-
+  - spa:           Sample Pairs Analysis.
+  - rs:            RS attack.
+  - calibration:   Calibration attack to JPEG images.
 
   ML-based detectors:
   - esvm-predict:   Predict using eSVM.
