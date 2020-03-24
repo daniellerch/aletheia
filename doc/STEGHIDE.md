@@ -2,7 +2,7 @@
 ### Steganalysis of StegHide
 
 
-[StegHide](http://steghide.sourceforge.net/) Steghide is a steganography program that is able to hide data in various kinds of image and audio-files. The color respectively sample-frequencies are not changed thus making the embedding resistant against first-order statistical tests. At the moment of writing these lines the last version available is v0.5.1.
+[StegHide](http://steghide.sourceforge.net/) is a steganography program that is able to hide data in various kinds of image and audio-files. The color respectively sample-frequencies are not changed thus making the embedding resistant against first-order statistical tests. At the moment of writing these lines the last version available is v0.5.1.
 
 If we hide a message in a JPEG image we can see that, there are no anomalies in the DCT coefficients produced by LSB replacement.
 
