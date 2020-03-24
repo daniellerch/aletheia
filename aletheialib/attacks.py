@@ -170,39 +170,43 @@ def rs(filename, channel=0):
 # -- CALIBRATION --
 
 # {{{ calibration()
-def calibration(filename): 
+def H_i(dct, k, l, i):
+    dct_kl = dct[::k+1,::l+1].flatten()
+    return sum(np.abs(dct_kl) == i)
 
-    if not utils.which("convert"):
-        print("Error: 'convert' tool not found, please install it.\n")
-        sys.exit(0)
+def beta_kl(dct_0, dct_b, k, l):
+    h00 = H_i(dct_0, k, l, 0)
+    h01 = H_i(dct_0, k, l, 1)
+    h02 = H_i(dct_0, k, l, 2)
+    hb0 = H_i(dct_b, k, l, 0)
+    hb1 = H_i(dct_b, k, l, 1)
+    return (h01*(hb0-h00) + (hb1-h01)*(h02-h01)) / (h01**2 + (h02-h01)**2)
 
+
+def calibration(filename):
     tmpdir = tempfile.mkdtemp()
-    predfile = os.path.join(tempfile.mkdtemp(), 'pred.jpg')
-    os.system("convert -chop 2x2 "+filename+" "+predfile)
- 
+    predfile = os.path.join(tmpdir, 'img.jpg')
+    os.system("convert -chop 4x4 "+filename+" "+predfile)
+
     im_jpeg = JPEG(filename)
     impred_jpeg = JPEG(predfile)
     found = False
     for i in range(im_jpeg.components()):
-        dct = np.abs(im_jpeg.coeffs(i).flatten())
-        dctpred = np.abs(impred_jpeg.coeffs(i).flatten())
-        Hs0 = sum(dct==0)
-        Hs1 = sum(dct==1)
-        Hp0 = sum(dctpred==0)
-        Hp1 = sum(dctpred==1)
-        Hp2 = sum(dctpred==2)
-
-        beta = (Hp1*(Hs0-Hp0) + (Hs1-Hp1)*(Hp2-Hp1)) / (Hp1**2 + (Hp2-Hp1)**2)
-        # XXX: Incomplete implementation. Check http://www.ws.binghamton.edu/fridrich/Research/mms100.pdf
-
-        if beta > 0.05:
+        dct_b = im_jpeg.coeffs(i)
+        dct_0 = impred_jpeg.coeffs(i)
+        b01 = beta_kl(dct_0, dct_b, 0, 1)   
+        b10 = beta_kl(dct_0, dct_b, 1, 0)   
+        b11 = beta_kl(dct_0, dct_b, 1, 1)
+        beta = (b01+b10+b11)/3
+        if beta > 0.02:
             print("Hidden data found in channel "+str(i)+":", beta)
             found = True
 
     if not found:
-        print("No hidden data found")
+        print("No hidden data found", beta)
 
     shutil.rmtree(tmpdir)
+
 # }}}
 
 
