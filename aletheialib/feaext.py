@@ -18,7 +18,6 @@ from multiprocessing import cpu_count
 
 lock = multiprocessing.Lock()
 
-M_BIN="octave -q --no-gui --eval"
 
 
 

@@ -17,6 +17,7 @@ import subprocess
 
 import numpy as np
 
+from PIL import Image
 from scipy import misc
 from matplotlib import pyplot as plt
 from imageio import imread
@@ -25,7 +26,7 @@ from aletheialib import jpeg
 from aletheialib import attacks, utils
 from aletheialib import stegosim, feaext
 from aletheialib import inconsistencies
-
+from aletheialib.octave_interface import _attack
 
 
 
@@ -34,6 +35,10 @@ def main():
 
     attacks_doc="\n" \
     "  Statistical attacks:\n" \
+    "  - sp:            Sample Pairs Analysis (Octave vesion).\n" \
+    "  - ws:            Weighted Stego Attack.\n" \
+    "  - triples:       Triples Attack.\n" \
+    #"  - aump:          Adaptive Steganalysis Attack.\n" \
     "  - spa:           Sample Pairs Analysis.\n" \
     "  - rs:            RS attack.\n" \
     "  - calibration:   Calibration attack to JPEG images."
@@ -111,6 +116,151 @@ def main():
 
     # -- ATTACKS --
 
+    # {{{ sp
+    elif sys.argv[1]=="sp":
+   
+        if len(sys.argv)!=3:
+            print(sys.argv[0], "spa <image>\n")
+            sys.exit(0)
+
+        if not utils.is_valid_image(sys.argv[2]):
+            print("Please, provide a valid image")
+            sys.exit(0)
+
+        threshold=0.05
+        path = utils.absolute_path(sys.argv[2])
+        im=Image.open(path)
+        if im.mode in ['RGB', 'RGBA', 'RGBX']:
+            alpha_R = _attack('SP', path, params={"channel":1})["data"][0][0]
+            alpha_G = _attack('SP', path, params={"channel":2})["data"][0][0]
+            alpha_B = _attack('SP', path, params={"channel":3})["data"][0][0]
+  
+
+            if alpha_R<threshold and alpha_G<threshold and alpha_B<threshold:
+                print("No hidden data found")
+
+            if alpha_R>=threshold:
+                print("Hiden data found in channel R", alpha_R)
+            if alpha_G>=threshold:
+                print("Hiden data found in channel G", alpha_G)
+            if alpha_B>=threshold:
+                print("Hiden data found in channel B", alpha_B)
+
+        else:
+            alpha = _attack('SP', path, params={"channel":1})["data"][0][0]
+            if alpha>=threshold:
+                print("Hiden data found", alpha)
+            else:
+                print("No hidden data found")
+ 
+        sys.exit(0)
+    # }}}
+
+    # {{{ ws
+    elif sys.argv[1]=="ws":
+   
+        if len(sys.argv)!=3:
+            print(sys.argv[0], "ws <image>\n")
+            sys.exit(0)
+
+        if not utils.is_valid_image(sys.argv[2]):
+            print("Please, provide a valid image")
+            sys.exit(0)
+
+        threshold=0.05
+        path = utils.absolute_path(sys.argv[2])
+        im=Image.open(path)
+        if im.mode in ['RGB', 'RGBA', 'RGBX']:
+            alpha_R = _attack('WS', path, params={"channel":1})["data"][0][0]
+            alpha_G = _attack('WS', path, params={"channel":2})["data"][0][0]
+            alpha_B = _attack('WS', path, params={"channel":3})["data"][0][0]
+
+            if alpha_R<threshold and alpha_G<threshold and alpha_B<threshold:
+                print("No hidden data found")
+
+            if alpha_R>=threshold:
+                print("Hiden data found in channel R", alpha_R)
+            if alpha_G>=threshold:
+                print("Hiden data found in channel G", alpha_G)
+            if alpha_B>=threshold:
+                print("Hiden data found in channel B", alpha_B)
+
+        else:
+            alpha = _attack('WS', path, params={"channel":1})["data"][0][0]
+            if alpha>=threshold:
+                print("Hiden data found", alpha)
+            else:
+                print("No hidden data found")
+ 
+        sys.exit(0)
+    # }}}
+
+    # {{{ triples
+    elif sys.argv[1]=="triples":
+   
+        if len(sys.argv)!=3:
+            print(sys.argv[0], "triples <image>\n")
+            sys.exit(0)
+
+        if not utils.is_valid_image(sys.argv[2]):
+            print("Please, provide a valid image")
+            sys.exit(0)
+
+        threshold=0.05
+        path = utils.absolute_path(sys.argv[2])
+        im=Image.open(path)
+        if im.mode in ['RGB', 'RGBA', 'RGBX']:
+            alpha_R = _attack('TRIPLES', path, params={"channel":1})["data"][0][0]
+            alpha_G = _attack('TRIPLES', path, params={"channel":2})["data"][0][0]
+            alpha_B = _attack('TRIPLES', path, params={"channel":3})["data"][0][0]
+  
+
+            if alpha_R<threshold and alpha_G<threshold and alpha_B<threshold:
+                print("No hidden data found")
+
+            if alpha_R>=threshold:
+                print("Hiden data found in channel R", alpha_R)
+            if alpha_G>=threshold:
+                print("Hiden data found in channel G", alpha_G)
+            if alpha_B>=threshold:
+                print("Hiden data found in channel B", alpha_B)
+
+        else:
+            alpha = _attack('TRIPLES', path, params={"channel":1})["data"][0][0]
+            if alpha>=threshold:
+                print("Hiden data found", alpha)
+            else:
+                print("No hidden data found")
+ 
+        sys.exit(0)
+    # }}}
+
+    # {{{ aump
+    elif sys.argv[1]=="aump":
+   
+        if len(sys.argv)!=3:
+            print(sys.argv[0], "aump <image>\n")
+            sys.exit(0)
+
+        if not utils.is_valid_image(sys.argv[2]):
+            print("Please, provide a valid image")
+            sys.exit(0)
+
+        path = utils.absolute_path(sys.argv[2])
+        im=Image.open(path)
+        if im.mode in ['RGB', 'RGBA', 'RGBX']:
+            beta_R = _attack('AUMP', path, params={"channel":1})["data"][0][0]
+            beta_G = _attack('AUMP', path, params={"channel":2})["data"][0][0]
+            beta_B = _attack('AUMP', path, params={"channel":3})["data"][0][0]
+            # XXX: How to use beta?
+
+        else:
+            beta = _attack('AUMP', path, params={"channel":1})["data"][0][0]
+            # XXX: How to use beta?
+ 
+        sys.exit(0)
+    # }}}
+
     # {{{ spa
     elif sys.argv[1]=="spa":
    
@@ -146,7 +296,6 @@ def main():
                 print("Hiden data found in channel G", bitrate_G)
             if bitrate_B>=threshold:
                 print("Hiden data found in channel B", bitrate_B)
-
         sys.exit(0)
     # }}}
 

@@ -212,4 +212,45 @@ def _jpeg(fn_name, path):
     return
 # }}}
 
+# {{{ _attack()
+def _attack(attack_name, path, params={}):
+    fdir=os.path.dirname(__file__)
+    basedir=os.path.abspath(os.path.join(fdir, os.pardir))
+    m_path=os.path.join(basedir, 'external', 'octave')
+
+    X=numpy.array([])
+    im=Image.open(path)
+    tmpdir=tempfile.mkdtemp()
+    try:
+        os.chdir(tmpdir)
+    except Exception as e:
+        print("chdir:", str(e))
+
+    channel = 1
+    if "channel" in params:
+        channel = params["channel"]
+
+    data_path=tmpdir+"/data.mat"
+    m_code=""
+    m_code+="cd "+tmpdir+";"
+    m_code+="addpath('"+m_path+"');"
+    m_code+="warning('off');"
+    m_code+="pkg load image;"
+    m_code+="pkg load signal;"
+    m_code+="data="+attack_name+"('"+path+"', "+str(channel)+");"
+    m_code+="save('-mat7-binary', '"+data_path+"','data');"
+    m_code+="exit"
+    p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
+    #output, err = p.communicate()
+    #print(output)
+    status = p.wait()
+
+    data=loadmat(data_path)
+    shutil.rmtree(tmpdir)
+
+    im.close()
+
+    return data
+# }}}
+
 

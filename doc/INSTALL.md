@@ -53,14 +53,17 @@ $ ./aletheia.py
 COMMANDS:
 
   Statistical attacks:
-  - spa:           Sample Pairs Analysis.
-  - rs:            RS attack.
-  - calibration:   Calibration attack to JPEG images.
+  - sp:            Sample Pairs Analysis (Octave vesion).
+  - ws:            Weighted Stego Attack.
+  - triples:       Triples Attack.
+
 
   ML-based detectors:
   - esvm-predict:   Predict using eSVM.
   - e4s-predict:    Predict using EC.
   - srnet-predict:  Predict using SRNet.
+  - srnet-err:      Score error using SRNet.
+  - srnet-err-icd:  Score ICD error using SRNet.
 
   Feature extractors:
   - srm:           Full Spatial Rich Models.
@@ -100,6 +103,7 @@ COMMANDS:
   - print-dct-diffs:   Differences between the DCT coefficients of two JPEG images.
   - rm-alpha:          Opacity of the alpha channel to 255.
   - prep-ml-exp:       Prepare an experiment for testing ML tools.
+
 
 
 ```
