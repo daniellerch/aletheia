@@ -171,7 +171,7 @@ def rs(filename, channel=0):
 
 # {{{ calibration()
 def H_i(dct, k, l, i):
-    dct_kl = dct[::k+1,::l+1].flatten()
+    dct_kl = dct[k::8,l::8].flatten()
     return sum(np.abs(dct_kl) == i)
 
 def beta_kl(dct_0, dct_b, k, l):
@@ -385,8 +385,13 @@ def print_diffs(cover, stego):
 def print_dct_diffs(cover, stego): 
 
     def print_list(l, ln):
+        mooc = 0
         for i in range(0, len(l), ln):
-            print(l[i:i+ln])
+            #print(l[i:i+ln])
+            v = l[i:i+ln][0][2]
+            if np.abs(v) > 1:
+                mooc += 1
+        print("mooc:", mooc)
 
     C_jpeg = JPEG(cover)
     S_jpeg = JPEG(stego)
@@ -397,7 +402,8 @@ def print_dct_diffs(cover, stego):
         print("\nChannel "+str(i)+":")
         pairs = list(zip(C.ravel(), S.ravel(), D.ravel()))
         pairs_diff = [p for p in pairs if p[2]!=0]
-        print_list(pairs_diff, 5)
+        #print_list(pairs_diff, 5)
+        print_list(pairs_diff, 1)
 
 
 # }}}
