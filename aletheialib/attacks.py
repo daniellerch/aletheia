@@ -12,7 +12,7 @@ from aletheialib import stegosim, utils
 import numpy as np
 from scipy import ndimage
 from cmath import sqrt
-from imageio import imread
+from imageio import imread, imsave
 
 from PIL import Image
 from PIL.ExifTags import TAGS

@@ -10,7 +10,6 @@ import subprocess
 import random
 
 from scipy.io import savemat, loadmat
-from scipy import misc
 from PIL import Image
 
 from aletheialib import utils
@@ -19,6 +18,8 @@ from aletheialib.octave_interface import _embed
 import multiprocessing
 from multiprocessing.dummy import Pool as ThreadPool 
 from multiprocessing import cpu_count
+
+from imageio import imread, imwrite
 
 
 # {{{ embed_message()
@@ -66,7 +67,7 @@ def embed_message(embed_fn, path, payload, output_dir,
         else:
             X=embed_fn(path, payload)
             try:
-                scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
+                imwrite(dst_path, X.astype('uint8'))
             except Exception as e:
                 print(str(e))
 
@@ -82,22 +83,7 @@ def embed_message(embed_fn, path, payload, output_dir,
         pool.terminate()
         pool.join()
 
-    """
-    for path in files:
-        I=scipy.misc.imread(path)
-        basename=os.path.basename(path)
-        dst_path=os.path.join(output_dir, basename)
-        if embed_fn_saving:
-            print path, payload, dst_path
-            embed_fn(path, payload, dst_path)
-        else:
-            X=embed_fn(path, payload)
-            try:
-                scipy.misc.toimage(X, cmin=0, cmax=255).save(dst_path)
-            except Exception, e:
-                print str(e)
-    """
-   
+
 # }}}
 
 
@@ -153,7 +139,7 @@ def custom(path, command, dst_path):
 
 # {{{ lsbm()
 def lsbm(path, payload):
-    X = misc.imread(path)
+    X = imread(path)
     sign=[1, -1]
     for j in range(X.shape[0]):
         for i in range(X.shape[1]):
@@ -186,7 +172,7 @@ def lsbm(path, payload):
 
 # {{{ lsbr()
 def lsbr(path, payload):
-    X = misc.imread(path)
+    X = imread(path)
     sign=[1, -1]
     for j in range(X.shape[0]):
         for i in range(X.shape[1]):
