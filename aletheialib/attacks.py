@@ -121,25 +121,28 @@ def smoothness(I):
 # {{{ groups()
 def groups(I, mask):
     grp=[]
-    m, n = I.shape 
+    m, n = I.shape
     x, y = np.abs(mask).shape
     for i in range(m-x):
         for j in range(n-y):
-            grp.append(I[i:(i+x), j:(j+y)])
-    return grp
+            yield I[i:(i+x), j:(j+y)]
 # }}}
 
 # {{{ difference()
 def difference(I, mask):
     cmask = - mask
     cmask[(mask > 0)] = 0
-    L = []
+    abs_mask = np.abs(mask)
+    counts = {}
     for g in groups(I, mask):
-        flip = (g + cmask) ^ np.abs(mask) - cmask
-        L.append(np.sign(smoothness(flip) - smoothness(g)))
-    N = len(L)
-    R = float(L.count(1))/N
-    S = float(L.count(-1))/N
+        flip = (g + cmask) ^ abs_mask - cmask
+        result = np.sign(smoothness(flip) - smoothness(g))
+        if result not in counts:
+            counts[result] = 0
+        counts[result] += 1
+    N = sum(counts.values())
+    R = float(counts[1])/N
+    S = float(counts[-1])/N
     return R-S
 # }}}
 
