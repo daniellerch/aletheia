@@ -303,7 +303,7 @@ def main():
     elif sys.argv[1]=="rs":
 
         if len(sys.argv)!=3:
-            print(sys.argv[0], "spa <image>\n")
+            print(sys.argv[0], "rs <image>\n")
             sys.exit(0)
 
         if not utils.is_valid_image(sys.argv[2]):
@@ -315,15 +315,15 @@ def main():
 
         I = imread(sys.argv[2])
         if len(I.shape)==2:
-            bitrate=attacks.rs(sys.argv[2], None)
+            bitrate=attacks.rs_image(I)
             if bitrate<threshold:
                 print("No hidden data found")
             else:
                 print("Hiden data found", bitrate)
         else:
-            bitrate_R=attacks.rs(sys.argv[2], 0)
-            bitrate_G=attacks.rs(sys.argv[2], 1)
-            bitrate_B=attacks.rs(sys.argv[2], 2)
+            bitrate_R=attacks.rs_image(I, 0)
+            bitrate_G=attacks.rs_image(I, 1)
+            bitrate_B=attacks.rs_image(I, 2)
 
             if bitrate_R<threshold and bitrate_G<threshold and bitrate_B<threshold:
                 print("No hidden data found")

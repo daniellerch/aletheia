@@ -59,7 +59,7 @@ def exif(filename):
     Return Beta, the detected embedding rate.
 """
 def spa(filename, channel=0): 
-    return spa_image(imread(filename))
+    return spa_image(imread(filename), channel)
 
 def spa_image(image, channel=0):
     if channel!=None:
@@ -148,9 +148,13 @@ def difference(I, mask):
 
 # {{{ rs()
 def rs(filename, channel=0):
-    I = imread(filename)
+    return rs_image(imread(filename), channel)
+
+def rs_image(image, channel=0):
     if channel!=None:
-        I = I[:,:,channel]
+        I = image[:,:,channel]
+    else:
+        I = image
     I = I.astype(int)
 
     mask = np.array( [[1,0],[0,1]] )
