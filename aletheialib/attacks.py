@@ -114,7 +114,7 @@ def solve(a, b, c):
 
 # {{{ smoothness()
 def smoothness(I):
-    return ( np.sum(np.abs( I[:-1,:] - I[1:,:] )) + 
+    return ( np.sum(np.abs( I[:-1,:] - I[1:,:] )) +
              np.sum(np.abs( I[:,:-1] - I[:,1:] )) )
 # }}}
 
@@ -157,7 +157,7 @@ def rs_image(image, channel=0):
         I = image
     I = I.astype(int)
 
-    mask = np.array( [[1,0],[0,1]] )
+    mask = np.array( [[0, 0, 0], [0, 1, 0], [0, 0, 0]] )
     d0 = difference(I, mask)
     d1 = difference(I^1, mask)
 
@@ -165,10 +165,10 @@ def rs_image(image, channel=0):
     n_d0 = difference(I, mask)
     n_d1 = difference(I^1, mask)
 
-    p0, p1 = solve(2*(d1+d0), (n_d0-n_d1-d1-3*d0), (d0-n_d0)) 
-    if np.abs(p0) < np.abs(p1): 
+    p0, p1 = solve(2*(d1+d0), (n_d0-n_d1-d1-3*d0), (d0-n_d0))
+    if np.abs(p0) < np.abs(p1):
         z = p0
-    else: 
+    else:
         z = p1
 
     return z / (z-0.5)
