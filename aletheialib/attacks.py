@@ -148,7 +148,7 @@ def difference(I, mask):
 
 # {{{ rs()
 def rs(filename, channel=0):
-    return rs_image(imread(filename), channel)
+    return rs_image(np.asarray(imread(filename), channel))
 
 def rs_image(image, channel=0):
     if channel!=None:

@@ -313,7 +313,7 @@ def main():
         threshold=0.05
 
 
-        I = imread(sys.argv[2])
+        I = np.asarray(imread(sys.argv[2]))
         if len(I.shape)==2:
             bitrate=attacks.rs_image(I)
             if bitrate<threshold:
