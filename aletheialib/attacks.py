@@ -20,8 +20,9 @@ from PIL.ExifTags import TAGS
 from aletheialib.jpeg import JPEG
 
 import multiprocessing
-from multiprocessing.dummy import Pool as ThreadPool 
+from multiprocessing.dummy import Pool as ThreadPool
 from multiprocessing import cpu_count
+from multiprocessing import Pool
 
 found = multiprocessing.Value('i', 0)
 
@@ -128,19 +129,30 @@ def groups(I, mask):
             yield I[i:(i+x), j:(j+y)]
 # }}}
 
+class RSAnalysis(object):
+    def __init__(self, mask):
+        self.mask = mask
+        self.cmask = - mask
+        self.cmask[(mask > 0)] = 0
+        self.abs_mask = np.abs(mask)
+
+    def call(self, group):
+        flip = (group + self.cmask) ^ self.abs_mask - self.cmask
+        return  np.sign(smoothness(flip) - smoothness(group))
+
+
 # {{{ difference()
 def difference(I, mask):
-    cmask = - mask
-    cmask[(mask > 0)] = 0
-    abs_mask = np.abs(mask)
-    counts = {}
-    for g in groups(I, mask):
-        flip = (g + cmask) ^ abs_mask - cmask
-        result = np.sign(smoothness(flip) - smoothness(g))
-        if result not in counts:
-            counts[result] = 0
-        counts[result] += 1
-    N = sum(counts.values())
+    pool = Pool(multiprocessing.cpu_count())
+    analysis = pool.map(RSAnalysis(mask).call, groups(I, mask))
+    pool.close()
+    pool.join()
+
+    counts = [0, 0, 0]
+    for v in analysis:
+        counts[v] += 1
+
+    N = sum(counts)
     R = float(counts[1])/N
     S = float(counts[-1])/N
     return R-S
