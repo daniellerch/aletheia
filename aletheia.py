@@ -50,6 +50,7 @@ def main():
     "  - hugo-sim:             Embedding using HUGO simulator.\n" \
     "  - wow-sim:              Embedding using WOW simulator.\n" \
     "  - s-uniward-sim:        Embedding using S-UNIWARD simulator.\n" \
+    "  - s-uniward-color-sim:  Embedding using S-UNIWARD color simulator.\n" \
     "  - j-uniward-sim:        Embedding using J-UNIWARD simulator.\n" \
     "  - j-uniward-color-sim:  Embedding using J-UNIWARD color simulator.\n" \
     "  - hill-sim:             Embedding using HILL simulator.\n" \
@@ -805,6 +806,16 @@ def main():
             sys.exit(0)
 
         stegosim.embed_message(stegosim.s_uniward, sys.argv[2], sys.argv[3], sys.argv[4])
+    # }}}
+
+    # {{{ s-uniward-color-sim
+    elif sys.argv[1]=="s-uniward-color-sim":
+
+        if len(sys.argv)!=5:
+            print(sys.argv[0], "s-uniward-color-sim <image/dir> <payload> <output-dir>\n")
+            sys.exit(0)
+
+        stegosim.embed_message(stegosim.s_uniward_color, sys.argv[2], sys.argv[3], sys.argv[4])
     # }}}
 
     # {{{ hill-sim

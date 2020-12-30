@@ -59,6 +59,8 @@ def _embed(sim, path, payload, dst_path=None):
                 m_code+="X=HUGO('"+path+"',"+payload+");"
             elif sim=='s_uniward':
                 m_code+="X=S_UNIWARD('"+path+"',"+payload+");"
+            elif sim=='s_uniward_color':
+                m_code+="X=S_UNIWARD_COLOR('"+path+"',"+payload+");"
             elif sim=='hill':
                 m_code+="X=HILL('"+path+"',"+payload+");"
             elif sim=='j_uniward':
@@ -87,7 +89,8 @@ def _embed(sim, path, payload, dst_path=None):
             m_code+="exit"
 
             p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
-            #output, err = p.communicate()
+            output, err = p.communicate()
+            #print(output)
             status = p.wait()
 
             if not dst_path:

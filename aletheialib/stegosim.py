@@ -62,10 +62,27 @@ def embed_message(embed_fn, path, payload, output_dir,
         basename=os.path.basename(path)
         dst_path=os.path.join(output_dir, basename)
 
+        print("param payload:", payload)
         if embed_fn_saving:
-            embed_fn(path, payload, dst_path)
+            if "-" in payload:
+                rng = sys.argv[3].split('-')
+                rini = float(rng[0])
+                rend = float(rng[1])
+                rnd_payload = numpy.random.uniform(rini, rend)
+                print("rnd_payload:", rnd_payload)
+                embed_fn(path, rnd_payload, dst_path)
+            else:
+                embed_fn(path, payload, dst_path)
         else:
-            X=embed_fn(path, payload)
+            if "-" in payload:
+                rng = sys.argv[3].split('-')
+                rini = float(rng[0])
+                rend = float(rng[1])
+                rnd_payload = numpy.random.uniform(rini, rend)
+                print("rnd_payload:", rnd_payload)
+                X=embed_fn(path, rnd_payload)
+            else:
+                X=embed_fn(path, payload)
             try:
                 imwrite(dst_path, X.astype('uint8'))
             except Exception as e:
@@ -92,6 +109,9 @@ def wow(path, payload):
 
 def s_uniward(path, payload):
     return _embed('s_uniward', path, payload)
+
+def s_uniward_color(path, payload):
+    return _embed('s_uniward_color', path, payload)
 
 def j_uniward(path, payload, dst_path):
     return _embed('j_uniward', path, payload, dst_path)
@@ -218,6 +238,8 @@ def embedding_fn(name):
         return wow
     if name=="s-uniward-sim":
         return s_uniward
+    if name=="s-uniward-color-sim":
+        return s_uniward_color
     if name=="j-uniward-sim":
         return j_uniward
     if name=="j-uniward-color-sim":
