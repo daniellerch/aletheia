@@ -20,8 +20,9 @@ from PIL.ExifTags import TAGS
 from aletheialib.jpeg import JPEG
 
 import multiprocessing
-from multiprocessing.dummy import Pool as ThreadPool 
+from multiprocessing.dummy import Pool as ThreadPool
 from multiprocessing import cpu_count
+from multiprocessing import Pool
 
 found = multiprocessing.Value('i', 0)
 
@@ -59,7 +60,7 @@ def exif(filename):
     Return Beta, the detected embedding rate.
 """
 def spa(filename, channel=0): 
-    return spa_image(imread(filename))
+    return spa_image(imread(filename), channel)
 
 def spa_image(image, channel=0):
     if channel!=None:
@@ -114,43 +115,61 @@ def solve(a, b, c):
 
 # {{{ smoothness()
 def smoothness(I):
-    return ( np.sum(np.abs( I[:-1,:] - I[1:,:] )) + 
+    return ( np.sum(np.abs( I[:-1,:] - I[1:,:] )) +
              np.sum(np.abs( I[:,:-1] - I[:,1:] )) )
 # }}}
 
 # {{{ groups()
 def groups(I, mask):
     grp=[]
-    m, n = I.shape 
+    m, n = I.shape
     x, y = np.abs(mask).shape
     for i in range(m-x):
         for j in range(n-y):
-            grp.append(I[i:(i+x), j:(j+y)])
-    return grp
+            yield I[i:(i+x), j:(j+y)]
 # }}}
+
+class RSAnalysis(object):
+    def __init__(self, mask):
+        self.mask = mask
+        self.cmask = - mask
+        self.cmask[(mask > 0)] = 0
+        self.abs_mask = np.abs(mask)
+
+    def call(self, group):
+        flip = (group + self.cmask) ^ self.abs_mask - self.cmask
+        return  np.sign(smoothness(flip) - smoothness(group))
+
 
 # {{{ difference()
 def difference(I, mask):
-    cmask = - mask
-    cmask[(mask > 0)] = 0
-    L = []
-    for g in groups(I, mask):
-        flip = (g + cmask) ^ np.abs(mask) - cmask
-        L.append(np.sign(smoothness(flip) - smoothness(g)))
-    N = len(L)
-    R = float(L.count(1))/N
-    S = float(L.count(-1))/N
+    pool = Pool(multiprocessing.cpu_count())
+    analysis = pool.map(RSAnalysis(mask).call, groups(I, mask))
+    pool.close()
+    pool.join()
+
+    counts = [0, 0, 0]
+    for v in analysis:
+        counts[v] += 1
+
+    N = sum(counts)
+    R = float(counts[1])/N
+    S = float(counts[-1])/N
     return R-S
 # }}}
 
 # {{{ rs()
 def rs(filename, channel=0):
-    I = imread(filename)
+    return rs_image(np.asarray(imread(filename), channel))
+
+def rs_image(image, channel=0):
     if channel!=None:
-        I = I[:,:,channel]
+        I = image[:,:,channel]
+    else:
+        I = image
     I = I.astype(int)
 
-    mask = np.array( [[1,0],[0,1]] )
+    mask = np.array( [[0, 0, 0], [0, 1, 0], [0, 0, 0]] )
     d0 = difference(I, mask)
     d1 = difference(I^1, mask)
 
@@ -158,10 +177,10 @@ def rs(filename, channel=0):
     n_d0 = difference(I, mask)
     n_d1 = difference(I^1, mask)
 
-    p0, p1 = solve(2*(d1+d0), (n_d0-n_d1-d1-3*d0), (d0-n_d0)) 
-    if np.abs(p0) < np.abs(p1): 
+    p0, p1 = solve(2*(d1+d0), (n_d0-n_d1-d1-3*d0), (d0-n_d0))
+    if np.abs(p0) < np.abs(p1):
         z = p0
-    else: 
+    else:
         z = p1
 
     return z / (z-0.5)
