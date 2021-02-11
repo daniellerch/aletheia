@@ -935,13 +935,14 @@ def main():
     # {{{ split-sets
     elif sys.argv[1]=="split-sets":
 
-        if len(sys.argv)<7:
+        if len(sys.argv)<8:
             print(sys.argv[0], "split-sets <cover-dir> <stego-dir> <output-dir> <#valid> <#test>\n")
             print("     cover-dir:    Directory containing cover images")
             print("     stego-dir:    Directory containing stego images")
             print("     output-dir:   Output directory. Three sets will be created")
             print("     #valid:       Number of images for the validation set")
             print("     #test:        Number of images for the testing set")
+            print("     seed:         Seed for reproducible results")
             print("")
             sys.exit(0)
 
@@ -950,6 +951,7 @@ def main():
         output_dir=sys.argv[4]
         n_valid=int(sys.argv[5])
         n_test=int(sys.argv[6])
+        seed=int(sys.argv[7])
 
 
         cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
@@ -957,7 +959,8 @@ def main():
 
         from sklearn.model_selection import train_test_split
         trn_C_files, tv_C_files, trn_S_files, tv_S_files = \
-            train_test_split(cover_files, stego_files, test_size=n_valid+n_test*2)
+            train_test_split(cover_files, stego_files, 
+                             test_size=n_valid+n_test*2, random_state=seed)
 
         train_C_files = trn_C_files
         train_S_files = trn_S_files
@@ -1005,14 +1008,15 @@ def main():
     # {{{ split-sets-dci
     elif sys.argv[1]=="split-sets-dci":
 
-        if len(sys.argv)<8:
-            print(sys.argv[0], "split-sets <cover-dir> <stego-dir> <double-dir> <output-dir> <#valid> <#test>\n")
+        if len(sys.argv)<9:
+            print(sys.argv[0], "split-sets <cover-dir> <stego-dir> <double-dir> <output-dir> <#valid> <#test> <seed>\n")
             print("     cover-dir:    Directory containing cover images")
             print("     stego-dir:    Directory containing stego images")
             print("     double-dir:   Directory containing double stego images")
             print("     output-dir:   Output directory. Three sets will be created")
             print("     #valid:       Number of images for the validation set")
             print("     #test:        Number of images for the testing set")
+            print("     seed:         Seed for reproducible results")
             print("")
             sys.exit(0)
 
@@ -1022,6 +1026,7 @@ def main():
         output_dir=sys.argv[5]
         n_valid=int(sys.argv[6])
         n_test=int(sys.argv[7])
+        seed=int(sys.argv[8])
 
 
         cover_files = np.array(sorted(glob.glob(os.path.join(cover_dir, '*'))))
@@ -1033,6 +1038,7 @@ def main():
             sys.exit(0)
 
         indices = list(range(len(cover_files)))
+        random.seed(seed)
         random.shuffle(indices)
 
         valid_indices = indices[:n_valid//2]
@@ -1257,44 +1263,35 @@ def main():
     elif sys.argv[1]=="effnetb0":
         from aletheialib import models
 
-        if len(sys.argv)<5:
-            print(sys.argv[0], "effnetb0 <cover-dir> <stego-dir> <model-name> [dev] [max_iter] [ES] [valsz]\n")
+        if len(sys.argv)<7:
+            print(sys.argv[0], "effnetb0 <trn-cover-dir> <trn-stego-dir> <val-cover-dir> <val-stego-dir> <model-name> [dev] [ES]\n")
+            print("     trn-cover-dir:    Directory containing training cover images")
+            print("     trn-stego-dir:    Directory containing training stego images")
+            print("     val-cover-dir:    Directory containing validation cover images")
+            print("     val-stego-dir:    Directory containing validation stego images")
+            print("     model-name:       A name for the model")
             print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
-            print("     max_iter:   Number of iterations (default=1000000)")
             print("     ES:         early stopping iterations x1000 (default=100)")
-            print("     valsz:      Size of validation set. (default=0.1%)")
             print("")
             sys.exit(0)
 
-        cover_dir=sys.argv[2]
-        stego_dir=sys.argv[3]
-        model_name=sys.argv[4]
+        trn_cover_dir=sys.argv[2]
+        trn_stego_dir=sys.argv[3]
+        val_cover_dir=sys.argv[4]
+        val_stego_dir=sys.argv[5]
+        model_name=sys.argv[6]
 
-        if len(sys.argv)<6:
+        if len(sys.argv)<8:
             dev_id = "CPU"
             print("'dev' not provided, using:", dev_id)
         else:
-            dev_id = sys.argv[5]
-
-        if len(sys.argv)<7:
-            max_iter = 1000000
-            print("'max_iter' not provided, using:", max_iter)
-        else:
-            max_iter = int(sys.argv[6])
-
-
-        if len(sys.argv)<8:
-            early_stopping = 100
-            print("'ES' not provided, using:", early_stopping)
-        else:
-            early_stopping = int(sys.argv[7])
+            dev_id = sys.argv[7]
 
         if len(sys.argv)<9:
-            val_size = 0.1
-            print("'valsz' not provided, using:", val_size)
+            early_stopping = 10
+            print("'ES' not provided, using:", early_stopping)
         else:
-            val_size = float(sys.argv[8])
-
+            early_stopping = int(sys.argv[8])
 
         if dev_id == "CPU":
             print("Running with CPU. It could be very slow!")
@@ -1304,19 +1301,19 @@ def main():
         os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 
-        from sklearn.model_selection import train_test_split
-        cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
-        stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
-        train_cover_files, valid_cover_files, train_stego_files, valid_stego_files = \
-            train_test_split(cover_files, stego_files, test_size=val_size, random_state=0)
-        print("Using", len(train_cover_files)*2, "samples for training and", 
-                       len(valid_cover_files)*2, "for validation.")
+        trn_cover_files = sorted(glob.glob(os.path.join(trn_cover_dir, '*')))
+        trn_stego_files = sorted(glob.glob(os.path.join(trn_stego_dir, '*')))
+        val_cover_files = sorted(glob.glob(os.path.join(val_cover_dir, '*')))
+        val_stego_files = sorted(glob.glob(os.path.join(val_stego_dir, '*')))
 
-
-        models.tf2_prepare_model(train_cover_files, train_stego_files, "testmodel")
+        nn = models.NN("effnetb0", model_name)
+        nn.train(trn_cover_files, trn_stego_files, 16,
+                 val_cover_files, val_stego_files, 10,
+                 100, early_stopping, "models")
 
 
     # }}}
+
 
     # -- AUTOMATED ATTACKS --
 
