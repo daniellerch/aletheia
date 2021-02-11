@@ -63,9 +63,11 @@ def main():
 
     model_doc="\n" \
     "  Model training:\n" \
-    "  - esvm:     Ensemble of Support Vector Machines.\n" \
-    "  - e4s:      Ensemble Classifiers for Steganalysis.\n" \
-    "  - srnet:    Steganalysis Residual Network."
+    "  - split-sets:      Prepare sets for training and testing.\n" \
+    "  - split-sets-dci:  Prepare sets for training and testing (DCI).\n" \
+    "  - esvm:            Ensemble of Support Vector Machines.\n" \
+    "  - e4s:             Ensemble Classifiers for Steganalysis.\n" \
+    "  - srnet:           Steganalysis Residual Network."
 
     mldetect_doc="\n" \
     "  ML-based detectors:\n" \
@@ -930,6 +932,182 @@ def main():
 
     # -- MODEL TRAINING --
 
+    # {{{ split-sets
+    elif sys.argv[1]=="split-sets":
+
+        if len(sys.argv)<7:
+            print(sys.argv[0], "split-sets <cover-dir> <stego-dir> <output-dir> <#valid> <#test>\n")
+            print("     cover-dir:    Directory containing cover images")
+            print("     stego-dir:    Directory containing stego images")
+            print("     output-dir:   Output directory. Three sets will be created")
+            print("     #valid:       Number of images for the validation set")
+            print("     #test:        Number of images for the testing set")
+            print("")
+            sys.exit(0)
+
+        cover_dir=sys.argv[2]
+        stego_dir=sys.argv[3]
+        output_dir=sys.argv[4]
+        n_valid=int(sys.argv[5])
+        n_test=int(sys.argv[6])
+
+
+        cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
+        stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
+
+        from sklearn.model_selection import train_test_split
+        trn_C_files, tv_C_files, trn_S_files, tv_S_files = \
+            train_test_split(cover_files, stego_files, test_size=n_valid+n_test*2)
+
+        train_C_files = trn_C_files
+        train_S_files = trn_S_files
+        valid_C_files = tv_C_files[:n_valid//2]
+        valid_S_files = tv_S_files[:n_valid//2]
+        test_C_files = tv_C_files[n_valid//2:n_valid//2+n_test//2]
+        test_S_files = tv_S_files[n_valid//2+n_test//2:n_valid//2+n_test]
+
+        train_C_dir = os.path.join(output_dir, "train", "cover")
+        train_S_dir = os.path.join(output_dir, "train", "stego")
+        valid_C_dir = os.path.join(output_dir, "valid", "cover")
+        valid_S_dir = os.path.join(output_dir, "valid", "stego")
+        test_C_dir = os.path.join(output_dir, "test", "cover")
+        test_S_dir = os.path.join(output_dir, "test", "stego")
+
+        if not os.path.isdir(output_dir):
+            os.mkdir(output_dir)
+
+        os.makedirs(train_C_dir, exist_ok=True)
+        os.makedirs(train_S_dir, exist_ok=True)
+        os.makedirs(valid_C_dir, exist_ok=True)
+        os.makedirs(valid_S_dir, exist_ok=True)
+        os.makedirs(test_C_dir, exist_ok=True)
+        os.makedirs(test_S_dir, exist_ok=True)
+        
+        for f in train_C_files:
+            shutil.copy(f, train_C_dir)
+
+        for f in train_S_files:
+            shutil.copy(f, train_S_dir)
+
+        for f in valid_C_files:
+            shutil.copy(f, valid_C_dir)
+
+        for f in valid_S_files:
+            shutil.copy(f, valid_S_dir)
+
+        for f in test_C_files:
+            shutil.copy(f, test_C_dir)
+
+        for f in test_S_files:
+            shutil.copy(f, test_S_dir)
+    # }}}
+
+    # {{{ split-sets-dci
+    elif sys.argv[1]=="split-sets-dci":
+
+        if len(sys.argv)<8:
+            print(sys.argv[0], "split-sets <cover-dir> <stego-dir> <double-dir> <output-dir> <#valid> <#test>\n")
+            print("     cover-dir:    Directory containing cover images")
+            print("     stego-dir:    Directory containing stego images")
+            print("     double-dir:   Directory containing double stego images")
+            print("     output-dir:   Output directory. Three sets will be created")
+            print("     #valid:       Number of images for the validation set")
+            print("     #test:        Number of images for the testing set")
+            print("")
+            sys.exit(0)
+
+        cover_dir=sys.argv[2]
+        stego_dir=sys.argv[3]
+        double_dir=sys.argv[4]
+        output_dir=sys.argv[5]
+        n_valid=int(sys.argv[6])
+        n_test=int(sys.argv[7])
+
+
+        cover_files = np.array(sorted(glob.glob(os.path.join(cover_dir, '*'))))
+        stego_files = np.array(sorted(glob.glob(os.path.join(stego_dir, '*'))))
+        double_files = np.array(sorted(glob.glob(os.path.join(double_dir, '*'))))
+
+        if len(cover_files)!=len(stego_files) or len(stego_files)!=len(double_files):
+            print("split-sets-dci error: we expect sets with the same number of images")
+            sys.exit(0)
+
+        indices = list(range(len(cover_files)))
+        random.shuffle(indices)
+
+        valid_indices = indices[:n_valid//2]
+        test_C_indices = indices[n_valid//2:n_valid//2+n_test//2]
+        test_S_indices = indices[n_valid//2+n_test//2:n_valid//2+n_test]
+        train_indices = indices[n_valid//2+n_test:]
+
+
+        A_train_C_dir = os.path.join(output_dir, "A_train", "cover")
+        A_train_S_dir = os.path.join(output_dir, "A_train", "stego")
+        A_valid_C_dir = os.path.join(output_dir, "A_valid", "cover")
+        A_valid_S_dir = os.path.join(output_dir, "A_valid", "stego")
+        A_test_C_dir = os.path.join(output_dir, "A_test", "cover")
+        A_test_S_dir = os.path.join(output_dir, "A_test", "stego")
+        B_train_S_dir = os.path.join(output_dir, "B_train", "stego")
+        B_train_D_dir = os.path.join(output_dir, "B_train", "double")
+        B_valid_S_dir = os.path.join(output_dir, "B_valid", "stego")
+        B_valid_D_dir = os.path.join(output_dir, "B_valid", "double")
+        B_test_S_dir = os.path.join(output_dir, "B_test", "stego")
+        B_test_D_dir = os.path.join(output_dir, "B_test", "double")
+
+
+        if not os.path.isdir(output_dir):
+            os.mkdir(output_dir)
+        os.makedirs(A_train_C_dir, exist_ok=True)
+        os.makedirs(A_train_S_dir, exist_ok=True)
+        os.makedirs(A_valid_C_dir, exist_ok=True)
+        os.makedirs(A_valid_S_dir, exist_ok=True)
+        os.makedirs(A_test_C_dir, exist_ok=True)
+        os.makedirs(A_test_S_dir, exist_ok=True)
+        os.makedirs(B_train_S_dir, exist_ok=True)
+        os.makedirs(B_train_D_dir, exist_ok=True)
+        os.makedirs(B_valid_S_dir, exist_ok=True)
+        os.makedirs(B_valid_D_dir, exist_ok=True)
+        os.makedirs(B_test_S_dir, exist_ok=True)
+        os.makedirs(B_test_D_dir, exist_ok=True)
+
+        for f in cover_files[train_indices]:
+            shutil.copy(f, A_train_C_dir)
+
+        for f in stego_files[train_indices]:
+            shutil.copy(f, A_train_S_dir)
+            shutil.copy(f, B_train_S_dir)
+
+        for f in double_files[train_indices]:
+            shutil.copy(f, B_train_D_dir)
+
+
+        for f in cover_files[valid_indices]:
+            shutil.copy(f, A_valid_C_dir)
+
+        for f in stego_files[valid_indices]:
+            shutil.copy(f, A_valid_S_dir)
+            shutil.copy(f, B_valid_S_dir)
+
+        for f in double_files[valid_indices]:
+            shutil.copy(f, B_valid_D_dir)
+
+
+        for f in cover_files[test_C_indices]:
+            shutil.copy(f, A_test_C_dir)
+
+        for f in stego_files[test_S_indices]:
+            shutil.copy(f, A_test_S_dir)
+
+        for f in stego_files[test_C_indices]:
+            shutil.copy(f, B_test_S_dir)
+
+        for f in double_files[test_S_indices]:
+            shutil.copy(f, B_test_D_dir)
+
+
+
+    # }}}
+
     # {{{ esvm
     elif sys.argv[1]=="esvm":
         from aletheialib import models
@@ -1075,6 +1253,70 @@ def main():
                       early_stopping=early_stopping, valid_interval=1000)
     # }}}
 
+    # {{{ effnet
+    elif sys.argv[1]=="effnetb0":
+        from aletheialib import models
+
+        if len(sys.argv)<5:
+            print(sys.argv[0], "effnetb0 <cover-dir> <stego-dir> <model-name> [dev] [max_iter] [ES] [valsz]\n")
+            print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
+            print("     max_iter:   Number of iterations (default=1000000)")
+            print("     ES:         early stopping iterations x1000 (default=100)")
+            print("     valsz:      Size of validation set. (default=0.1%)")
+            print("")
+            sys.exit(0)
+
+        cover_dir=sys.argv[2]
+        stego_dir=sys.argv[3]
+        model_name=sys.argv[4]
+
+        if len(sys.argv)<6:
+            dev_id = "CPU"
+            print("'dev' not provided, using:", dev_id)
+        else:
+            dev_id = sys.argv[5]
+
+        if len(sys.argv)<7:
+            max_iter = 1000000
+            print("'max_iter' not provided, using:", max_iter)
+        else:
+            max_iter = int(sys.argv[6])
+
+
+        if len(sys.argv)<8:
+            early_stopping = 100
+            print("'ES' not provided, using:", early_stopping)
+        else:
+            early_stopping = int(sys.argv[7])
+
+        if len(sys.argv)<9:
+            val_size = 0.1
+            print("'valsz' not provided, using:", val_size)
+        else:
+            val_size = float(sys.argv[8])
+
+
+        if dev_id == "CPU":
+            print("Running with CPU. It could be very slow!")
+
+
+        os.environ["CUDA_VISIBLE_DEVICES"]=dev_id
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+
+        from sklearn.model_selection import train_test_split
+        cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
+        stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
+        train_cover_files, valid_cover_files, train_stego_files, valid_stego_files = \
+            train_test_split(cover_files, stego_files, test_size=val_size, random_state=0)
+        print("Using", len(train_cover_files)*2, "samples for training and", 
+                       len(valid_cover_files)*2, "for validation.")
+
+
+        models.tf2_prepare_model(train_cover_files, train_stego_files, "testmodel")
+
+
+    # }}}
 
     # -- AUTOMATED ATTACKS --
 
