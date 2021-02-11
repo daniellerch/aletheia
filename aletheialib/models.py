@@ -277,19 +277,19 @@ class NN:
 
     def __init__(self, network, model_name):
         # {{{
+        self.model_dir = 'models'
         self.model_name = model_name
         if network == "effnetb0":
             self.model = self.create_model_effnetb0()
         else:
             print("NN __init__ Error: network not found")
             sys.exit(0)
-        # }}}
 
-    def load(self, path):
-        # {{{
+        path = self.model_dir+'/'+self.model_name+'-best.h5'
         if os.path.exists(path):
             print("Loading", path, "...")
             self.model.load_weights(path)
+
         # }}}
 
     def create_model_effnetb0(self, input_shape=None):
@@ -381,23 +381,43 @@ class NN:
             yield X, Y
         # }}}
 
+    def pred_generator(self, image_list, batch):
+        # {{{
+        images = []
+        for f in image_list:
+            try:
+                img = imread(f)
+                images.append(img)
+            except:
+                print("NN pred_generator warning: cannot read image:", f)
+                continue
+
+            if len(images)==batch:
+                X = np.array(images).astype('float32')/255
+                yield X
+                images = []
+
+        X = np.array(images).astype('float32')/255
+        yield X
+        # }}}
+
     def train(self,
               trn_C_list, trn_S_list, trn_batch,
               val_C_list, val_S_list, val_batch,
-              max_epochs, early_stopping, model_dir):
+              max_epochs, early_stopping):
         # {{{
         opt = optimizers.Adamax(lr=0.001)
         self.model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
 
         cb_checkpoint = callbacks.ModelCheckpoint(
-            model_dir+"/"+self.model_name+'-{epoch:03d}-{accuracy:.4f}-{val_accuracy:.4f}.h5',
+            self.model_dir+"/"+self.model_name+'-{epoch:03d}-{accuracy:.4f}-{val_accuracy:.4f}.h5',
             save_best_only=True,
             monitor='val_accuracy',
             mode='max'
         )
 
         cb_checkpoint_best = callbacks.ModelCheckpoint(
-            model_dir+"/"+self.model_name+'-best.h5',
+            self.model_dir+"/"+self.model_name+'-best.h5',
             save_best_only=True,
             monitor='val_accuracy',
             mode='max'
@@ -426,6 +446,15 @@ class NN:
                   validation_data=g_valid, validation_steps=steps_valid,
                   callbacks=callbacks_list, epochs=max_epochs)
         # }}}
+
+
+    def predict(self, files, batch):
+        # {{{
+        g = self.pred_generator(files, batch)
+        pred = self.model.predict(g, steps=len(files)//batch, verbose=1)[:,-1]
+        return pred
+        # }}}
+ 
 
 # }}}
 

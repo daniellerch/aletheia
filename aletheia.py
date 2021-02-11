@@ -25,7 +25,6 @@ from imageio import imread
 from aletheialib import jpeg
 from aletheialib import attacks, utils
 from aletheialib import stegosim, feaext
-from aletheialib import inconsistencies
 from aletheialib.octave_interface import _attack
 
 
@@ -62,20 +61,21 @@ def main():
     "  - nsf5-color-sim:       Embedding using nsF5 color simulator."
 
     model_doc="\n" \
-    "  Model training:\n" \
-    "  - split-sets:      Prepare sets for training and testing.\n" \
-    "  - split-sets-dci:  Prepare sets for training and testing (DCI).\n" \
-    "  - esvm:            Ensemble of Support Vector Machines.\n" \
-    "  - e4s:             Ensemble Classifiers for Steganalysis.\n" \
-    "  - srnet:           Steganalysis Residual Network."
-
-    mldetect_doc="\n" \
-    "  ML-based detectors:\n" \
-    "  - esvm-predict:   Predict using eSVM.\n" \
-    "  - e4s-predict:    Predict using EC.\n" \
-    "  - srnet-predict:  Predict using SRNet.\n" \
-    "  - srnet-err:      Score error using SRNet.\n" \
-    "  - srnet-err-icd:  Score ICD error using SRNet."
+    "  ML-based steganalysis:\n" \
+    "  - split-sets:            Prepare sets for training and testing.\n" \
+    "  - split-sets-dci:        Prepare sets for training and testing (DCI).\n" \
+    "  - effnetb0:              Train a model with EfficientNet B0.\n" \
+    "  - effnetb0-score:        Score with EfficientNet B0.\n" \
+    "  - effnetb0-predict:      Predict with EfficientNet B0.\n" \
+    "  - effnetb0-dci-score:    DCI Score with EfficientNet B0.\n" \
+    "  - effnetb0-dci-predict:  DCI Predict with EfficientNet B0.\n" \
+    "  - srnet:                 Train a model with SRNet.\n" \
+    "  - esvm:                  Train an ensemble of Support Vector Machines.\n" \
+    "  - e4s:                   Train Ensemble Classifiers for Steganalysis.\n" \
+    "  - esvm-predict:          Predict using eSVM.\n" \
+    "  - e4s-predict:           Predict using EC.\n" \
+    "  - srnet-predict:         Predict using SRNet.\n" \
+    "  - srnet-err:             Score error using SRNet."
 
     feaextract_doc="\n" \
     "  Feature extractors:\n" \
@@ -104,7 +104,6 @@ def main():
         print(sys.argv[0], "<command>\n")
         print("COMMANDS:")
         print(attacks_doc)
-        print(mldetect_doc)
         print(feaextract_doc)
         print(embsim_doc)
         print(model_doc)
@@ -357,279 +356,6 @@ def main():
     # }}}
 
 
-
-    # -- ML-BASED DETECTORS --
-
-    # {{{ esvm-predict
-    elif sys.argv[1]=="esvm-predict":
-
-        if len(sys.argv)!=5:
-            print(sys.argv[0], "esvm-predict <model-file> <feature-extractor> <image/dir>")
-            print(feaextract_doc)
-            sys.exit(0)
-
-        model_file=sys.argv[2]
-        extractor=sys.argv[3]
-        path=utils.absolute_path(sys.argv[4])
-
-        files=[]
-        if os.path.isdir(path):
-            for dirpath,_,filenames in os.walk(path):
-                for f in filenames:
-                    path=os.path.abspath(os.path.join(dirpath, f))
-                    if not utils.is_valid_image(path):
-                        print("Warning, please provide a valid image: ", f)
-                    else:
-                        files.append(path)
-        else:
-            files=[path]
-
-
-        clf=pickle.load(open(model_file, "r"))
-        for f in files:
-            
-            X = feaext.extractor_fn(extractor)(f)
-            X = X.reshape((1, X.shape[0]))
-            p = clf.predict_proba(X)
-            print(p)
-            if p[0][0] > 0.5:
-                print(os.path.basename(f), "Cover, probability:", p[0][0])
-            else:
-                print(os.path.basename(f), "Stego, probability:", p[0][1])
-    # }}}
-
-    # {{{ e4s-predict
-    elif sys.argv[1]=="e4s-predict":
-        from aletheialib import models
-
-        if len(sys.argv)!=5:
-            print(sys.argv[0], "e4s-predict <model-file> <feature-extractor> <image/dir>\n")
-            print("")
-            print(feaextract_doc)
-            print("")
-            sys.exit(0)
-
-        model_file=sys.argv[2]
-        extractor=sys.argv[3]
-        path=utils.absolute_path(sys.argv[4])
-
-        files=[]
-        if os.path.isdir(path):
-            for dirpath,_,filenames in os.walk(path):
-                for f in filenames:
-                    path=os.path.abspath(os.path.join(dirpath, f))
-                    if not utils.is_valid_image(path):
-                        print("Warning, please provide a valid image: ", f)
-                    else:
-                        files.append(path)
-        else:
-            files=[path]
-
-
-        from aletheialib import models
-        clf=models.Ensemble4Stego()
-        clf.load(model_file)
-        for f in files:
-           
-            X = feaext.extractor_fn(extractor)(f)
-            X = X.reshape((1, X.shape[0]))
-            p = clf.predict(X)
-            if p[0] == 0:
-                print(os.path.basename(f), "Cover")
-            else:
-                print(os.path.basename(f), "Stego")
-    # }}}
-
-    # {{{ srnet-predict
-    elif sys.argv[1]=="srnet-predict":
-        from aletheialib import models
-
-        if len(sys.argv)<4:
-            print(sys.argv[0], "srnet-predict <model dir> <image/dir> [dev]\n")
-            print("      dev:  Device: GPU Id or 'CPU' (default='CPU')")
-            print("")
-            sys.exit(0)
-
-        model_dir=sys.argv[2]
-        path=utils.absolute_path(sys.argv[3])
-
-        if len(sys.argv)<4:
-            dev_id = "CPU"
-            print("'dev' not provided, using:", dev_id)
-        else:
-            dev_id = sys.argv[4]
-
-
-        files=[]
-        if os.path.isdir(path):
-            for dirpath,_,filenames in os.walk(path):
-                for f in filenames:
-                    path=os.path.abspath(os.path.join(dirpath, f))
-                    if not utils.is_valid_image(path):
-                        print("Warning, please provide a valid image: ", f)
-                    else:
-                        files.append(path)
-        else:
-            files=[path]
-
-        from aletheialib import models
-        models.nn_configure_device(dev_id)
-        pred = models.nn_predict(models.SRNet, files, model_dir, batch_size=20)
-        #print(pred)
-
-        for i in range(len(files)):
-            if pred[i] == 0:
-                print(os.path.basename(files[i]), "Cover")
-            else:
-                print(os.path.basename(files[i]), "Stego")
-    # }}}
-
-    # {{{ srnet-score
-    elif sys.argv[1]=="srnet-err":
-        from aletheialib import models
-
-        if len(sys.argv)<4:
-            print(sys.argv[0], "srnet-score <model dir> <cover dir> <stego dir> [dev]\n")
-            print("      dev:  Device: GPU Id or 'CPU' (default='CPU')")
-            print("")
-            sys.exit(0)
-
-        model_dir=sys.argv[2]
-        cover_path=utils.absolute_path(sys.argv[3])
-        stego_path=utils.absolute_path(sys.argv[4])
-
-        if len(sys.argv)<5:
-            dev_id = "CPU"
-            print("'dev' not provided, using:", dev_id)
-        else:
-            dev_id = sys.argv[5]
-
-
-        path = cover_path
-        files=[]
-        if os.path.isdir(path):
-            for dirpath,_,filenames in os.walk(path):
-                for f in filenames:
-                    path=os.path.abspath(os.path.join(dirpath, f))
-                    if not utils.is_valid_image(path):
-                        print("Warning, please provide a valid image: ", f)
-                    else:
-                        files.append(path)
-        else:
-            files=[path]
-        cover_files = files
-
-        path = stego_path
-        files=[]
-        if os.path.isdir(path):
-            for dirpath,_,filenames in os.walk(path):
-                for f in filenames:
-                    path=os.path.abspath(os.path.join(dirpath, f))
-                    if not utils.is_valid_image(path):
-                        print("Warning, please provide a valid image: ", f)
-                    else:
-                        files.append(path)
-        else:
-            files=[path]
-        stego_files = files
-
-
-        from aletheialib import models
-        models.nn_configure_device(dev_id)
-        cover_pred = models.nn_predict(models.SRNet, cover_files, model_dir, batch_size=20)
-        stego_pred = models.nn_predict(models.SRNet, stego_files, model_dir, batch_size=20)
-
-        ok = 0
-        for i in range(len(cover_files)):
-            if cover_pred[i] == 0:
-                ok += 1
-        for i in range(len(stego_files)):
-            if stego_pred[i] == 1:
-                ok += 1
-        print("err:", 1-round(float(ok)/(len(cover_files)+len(stego_files)), 4))
- 
-    # }}}
-
-    # {{{ srnet-score
-    elif sys.argv[1]=="srnet-err-icd":
-        from aletheialib import models
-
-        if len(sys.argv)<6:
-            print(sys.argv[0], "srnet-score-icd <A model dir> <B model dir> <A cover dir> <A stego dir> <B cover dir> <B stego dir> [dev]\n")
-            print("      dev:  Device: GPU Id or 'CPU' (default='CPU')")
-            print("")
-            sys.exit(0)
-
-        A_model_dir=sys.argv[2]
-        B_model_dir=sys.argv[3]
-        A_cover_path=utils.absolute_path(sys.argv[4])
-        A_stego_path=utils.absolute_path(sys.argv[5])
-        B_cover_path=utils.absolute_path(sys.argv[6])
-        B_stego_path=utils.absolute_path(sys.argv[7])
-
-        if len(sys.argv)<8:
-            dev_id = "CPU"
-            print("'dev' not provided, using:", dev_id)
-        else:
-            dev_id = sys.argv[8]
-
-
-        def get_files(path):
-            files=[]
-            if os.path.isdir(path):
-                for dirpath,_,filenames in os.walk(path):
-                    for f in filenames:
-                        path=os.path.abspath(os.path.join(dirpath, f))
-                        if os.path.isdir(path) or not utils.is_valid_image(path):
-                            print("Warning, please provide a valid image: ", f)
-                        else:
-                            files.append(path)
-            else:
-                files=[path]
-            return files
-
-        
-        A_cover_files = get_files(A_cover_path)
-        A_stego_files = get_files(A_stego_path)
-        B_cover_files = get_files(B_cover_path)
-        B_stego_files = get_files(B_stego_path)
-
-        from aletheialib import models
-        models.nn_configure_device(dev_id)
-
-        p_aa_cover = models.nn_predict(models.SRNet, A_cover_files, A_model_dir, batch_size=20)
-        p_aa_stego = models.nn_predict(models.SRNet, A_stego_files, A_model_dir, batch_size=20)
-        p_aa = p_aa_cover.tolist() + p_aa_stego.tolist()
-
-        p_bb_cover = models.nn_predict(models.SRNet, B_cover_files, B_model_dir, batch_size=20)
-        p_bb_stego = models.nn_predict(models.SRNet, B_stego_files, B_model_dir, batch_size=20)
-        p_bb = p_bb_cover.tolist() + p_bb_stego.tolist()
-
-        p_ab_cover = models.nn_predict(models.SRNet, B_cover_files, A_model_dir, batch_size=20)
-        p_ab_stego = models.nn_predict(models.SRNet, B_stego_files, A_model_dir, batch_size=20)
-        p_ab = p_ab_cover.tolist() + p_ab_stego.tolist()
-
-        p_ba_cover = models.nn_predict(models.SRNet, A_cover_files, B_model_dir, batch_size=20)
-        p_ba_stego = models.nn_predict(models.SRNet, A_stego_files, B_model_dir, batch_size=20)
-        p_ba = p_ba_cover.tolist() + p_ba_stego.tolist()
-
-
-        ok = 0
-        for i in range(len(A_cover_files)):
-            if p_aa_cover[i] == 0:
-                ok += 1
-        for i in range(len(A_stego_files)):
-            if p_aa_stego[i] == 1:
-                ok += 1
-        score = round(float(ok)/(len(A_cover_files)+len(A_stego_files)), 4)
- 
-
-        pred, inc, xaS = inconsistencies.AB_predict(p_aa, p_bb, p_ab, p_ba)
-        print("err:", round(1-score,2) , ", err pred:", round(float(inc)/(2*len(pred)),2), ", xa:", xaS)
-
-
-    # }}}
-     
 
 
     # -- FEATURE EXTRACTORS --
@@ -1114,6 +840,185 @@ def main():
 
     # }}}
 
+
+    # {{{ effnetb0
+    elif sys.argv[1]=="effnetb0":
+        from aletheialib import models
+
+        if len(sys.argv)<7:
+            print(sys.argv[0], "effnetb0 <trn-cover-dir> <trn-stego-dir> <val-cover-dir> <val-stego-dir> <model-name> [dev] [ES]\n")
+            print("     trn-cover-dir:    Directory containing training cover images")
+            print("     trn-stego-dir:    Directory containing training stego images")
+            print("     val-cover-dir:    Directory containing validation cover images")
+            print("     val-stego-dir:    Directory containing validation stego images")
+            print("     model-name:       A name for the model")
+            print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
+            print("     ES:         early stopping iterations x1000 (default=100)")
+            print("")
+            sys.exit(0)
+
+        trn_cover_dir=sys.argv[2]
+        trn_stego_dir=sys.argv[3]
+        val_cover_dir=sys.argv[4]
+        val_stego_dir=sys.argv[5]
+        model_name=sys.argv[6]
+
+        if len(sys.argv)<8:
+            dev_id = "CPU"
+            print("'dev' not provided, using:", dev_id)
+        else:
+            dev_id = sys.argv[7]
+
+        if len(sys.argv)<9:
+            early_stopping = 10
+            print("'ES' not provided, using:", early_stopping)
+        else:
+            early_stopping = int(sys.argv[8])
+
+        if dev_id == "CPU":
+            print("Running with CPU. It could be very slow!")
+
+
+        os.environ["CUDA_VISIBLE_DEVICES"]=dev_id
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+
+        trn_cover_files = sorted(glob.glob(os.path.join(trn_cover_dir, '*')))
+        trn_stego_files = sorted(glob.glob(os.path.join(trn_stego_dir, '*')))
+        val_cover_files = sorted(glob.glob(os.path.join(val_cover_dir, '*')))
+        val_stego_files = sorted(glob.glob(os.path.join(val_stego_dir, '*')))
+
+        nn = models.NN("effnetb0", model_name)
+        nn.train(trn_cover_files, trn_stego_files, 16,
+                 val_cover_files, val_stego_files, 10,
+                 1000000, early_stopping, "models")
+
+
+    # }}}
+
+    # {{{ effnetb0-score
+    elif sys.argv[1]=="effnetb0-score":
+        from aletheialib import models
+
+        if len(sys.argv)<5:
+            print(sys.argv[0], "effnetb0 <test-cover-dir> <test-stego-dir> <model-name> [dev]\n")
+            print("     test-cover-dir:    Directory containing cover images")
+            print("     test-stego-dir:    Directory containing stego images")
+            print("     model-name:        Name of the model")
+            print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
+            print("")
+            sys.exit(0)
+
+        cover_dir=sys.argv[2]
+        stego_dir=sys.argv[3]
+        model_name=sys.argv[4]
+
+        if len(sys.argv)<6:
+            dev_id = "CPU"
+            print("'dev' not provided, using:", dev_id)
+        else:
+            dev_id = sys.argv[5]
+
+        if dev_id == "CPU":
+            print("Running with CPU. It could be very slow!")
+
+        os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+        cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
+        stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
+
+        nn = models.NN("effnetb0", model_name)
+        pred_cover = nn.predict(cover_files, 10)
+        pred_stego = nn.predict(stego_files, 10)
+
+        ok = np.sum(np.round(pred_cover)==0)+np.sum(np.round(pred_stego)==1)
+        score = ok/(len(pred_cover)+len(pred_stego))
+        print("score:", score)
+
+    # }}}
+
+    # {{{ effnetb0-dci-score
+    elif sys.argv[1]=="effnetb0-dci-score":
+        from aletheialib import models
+        from sklearn.metrics import accuracy_score
+
+        if len(sys.argv)<8:
+            print(sys.argv[0], "effnetb0 <A-test-cover-dir> <A-test-stego-dir> <B-test-stego-dir> <B-test-double-dir> <A-model-name> <B-model-name> [dev]\n")
+            print("     A-test-cover-dir:    Directory containing A-cover images")
+            print("     A-test-stego-dir:    Directory containing A-stego images")
+            print("     B-test-stego-dir:    Directory containing B-stego images")
+            print("     B-test-double-dir:   Directory containing B-double images")
+            print("     A-model-name:        Name of the A-model")
+            print("     B-model-name:        Name of the B-model")
+            print("     dev:                 Device: GPU Id or 'CPU' (default='CPU')")
+            print("")
+            sys.exit(0)
+
+        A_cover_dir=sys.argv[2]
+        A_stego_dir=sys.argv[3]
+        B_stego_dir=sys.argv[4]
+        B_double_dir=sys.argv[5]
+        A_model_name=sys.argv[6]
+        B_model_name=sys.argv[7]
+
+        if len(sys.argv)<9:
+            dev_id = "CPU"
+            print("'dev' not provided, using:", dev_id)
+        else:
+            dev_id = sys.argv[8]
+
+        if dev_id == "CPU":
+            print("Running with CPU. It could be very slow!")
+
+        os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+        A_cover_files = sorted(glob.glob(os.path.join(A_cover_dir, '*')))
+        A_stego_files = sorted(glob.glob(os.path.join(A_stego_dir, '*')))
+        B_stego_files = sorted(glob.glob(os.path.join(B_stego_dir, '*')))
+        B_double_files = sorted(glob.glob(os.path.join(B_double_dir, '*')))
+
+        A_nn = models.NN("effnetb0", A_model_name)
+        B_nn = models.NN("effnetb0", B_model_name)
+
+        A_files = A_cover_files+A_stego_files
+        B_files = B_stego_files+B_double_files
+
+        p_aa = A_nn.predict(A_files, 10)
+        p_ab = A_nn.predict(B_files, 10)
+        p_bb = B_nn.predict(B_files, 10)
+        p_ba = B_nn.predict(A_files, 10)
+
+        p_aa = np.round(p_aa).astype('uint8')
+        p_ab = np.round(p_ab).astype('uint8')
+        p_ba = np.round(p_ba).astype('uint8')
+        p_bb = np.round(p_bb).astype('uint8')
+
+        y_true = np.array([0]*len(A_cover_files) + [1]*len(A_stego_files))
+        inc = ( (p_aa!=p_bb) | (p_ba!=0) | (p_ab!=1) ).astype('uint8')
+        inc1 = (p_aa!=p_bb).astype('uint8')
+        inc2 = ( (p_ba!=0) | (p_ab!=1) ).astype('uint8')
+        inc2c = (p_ab!=1).astype('uint8')
+        inc2s = (p_ba!=0).astype('uint8')
+        C_ok = ( (p_aa==0) & (p_aa==y_true) & (inc==0) ).astype('uint8')
+        S_ok = ( (p_aa==1) & (p_aa==y_true) & (inc==0) ).astype('uint8')
+
+        print("#inc:", np.sum(inc==1), "#incF1:", np.sum(inc1==1), "#incF2:", np.sum(inc2==1),
+               "#incF2C", np.sum(inc2c), "#incF2S:", np.sum(inc2s))
+        print("#no_inc:", len(A_files)-np.sum(inc==1))
+        print("#C-ok:", np.sum(C_ok==1))
+        print("#S-ok:", np.sum(S_ok==1))
+        print("aa-score:", accuracy_score(y_true, p_aa))
+        print("dci-score:", float(np.sum(C_ok==1)+np.sum(S_ok==1))/(len(A_files)-np.sum(inc==1)))
+
+
+
+
+
+    # }}}
+
+
     # {{{ esvm
     elif sys.argv[1]=="esvm":
         from aletheialib import models
@@ -1259,60 +1164,197 @@ def main():
                       early_stopping=early_stopping, valid_interval=1000)
     # }}}
 
-    # {{{ effnet
-    elif sys.argv[1]=="effnetb0":
+    # {{{ esvm-predict
+    elif sys.argv[1]=="esvm-predict":
+
+        if len(sys.argv)!=5:
+            print(sys.argv[0], "esvm-predict <model-file> <feature-extractor> <image/dir>")
+            print(feaextract_doc)
+            sys.exit(0)
+
+        model_file=sys.argv[2]
+        extractor=sys.argv[3]
+        path=utils.absolute_path(sys.argv[4])
+
+        files=[]
+        if os.path.isdir(path):
+            for dirpath,_,filenames in os.walk(path):
+                for f in filenames:
+                    path=os.path.abspath(os.path.join(dirpath, f))
+                    if not utils.is_valid_image(path):
+                        print("Warning, please provide a valid image: ", f)
+                    else:
+                        files.append(path)
+        else:
+            files=[path]
+
+
+        clf=pickle.load(open(model_file, "r"))
+        for f in files:
+            
+            X = feaext.extractor_fn(extractor)(f)
+            X = X.reshape((1, X.shape[0]))
+            p = clf.predict_proba(X)
+            print(p)
+            if p[0][0] > 0.5:
+                print(os.path.basename(f), "Cover, probability:", p[0][0])
+            else:
+                print(os.path.basename(f), "Stego, probability:", p[0][1])
+    # }}}
+
+    # {{{ e4s-predict
+    elif sys.argv[1]=="e4s-predict":
         from aletheialib import models
 
-        if len(sys.argv)<7:
-            print(sys.argv[0], "effnetb0 <trn-cover-dir> <trn-stego-dir> <val-cover-dir> <val-stego-dir> <model-name> [dev] [ES]\n")
-            print("     trn-cover-dir:    Directory containing training cover images")
-            print("     trn-stego-dir:    Directory containing training stego images")
-            print("     val-cover-dir:    Directory containing validation cover images")
-            print("     val-stego-dir:    Directory containing validation stego images")
-            print("     model-name:       A name for the model")
-            print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
-            print("     ES:         early stopping iterations x1000 (default=100)")
+        if len(sys.argv)!=5:
+            print(sys.argv[0], "e4s-predict <model-file> <feature-extractor> <image/dir>\n")
+            print("")
+            print(feaextract_doc)
             print("")
             sys.exit(0)
 
-        trn_cover_dir=sys.argv[2]
-        trn_stego_dir=sys.argv[3]
-        val_cover_dir=sys.argv[4]
-        val_stego_dir=sys.argv[5]
-        model_name=sys.argv[6]
+        model_file=sys.argv[2]
+        extractor=sys.argv[3]
+        path=utils.absolute_path(sys.argv[4])
 
-        if len(sys.argv)<8:
+        files=[]
+        if os.path.isdir(path):
+            for dirpath,_,filenames in os.walk(path):
+                for f in filenames:
+                    path=os.path.abspath(os.path.join(dirpath, f))
+                    if not utils.is_valid_image(path):
+                        print("Warning, please provide a valid image: ", f)
+                    else:
+                        files.append(path)
+        else:
+            files=[path]
+
+
+        from aletheialib import models
+        clf=models.Ensemble4Stego()
+        clf.load(model_file)
+        for f in files:
+           
+            X = feaext.extractor_fn(extractor)(f)
+            X = X.reshape((1, X.shape[0]))
+            p = clf.predict(X)
+            if p[0] == 0:
+                print(os.path.basename(f), "Cover")
+            else:
+                print(os.path.basename(f), "Stego")
+    # }}}
+
+    # {{{ srnet-predict
+    elif sys.argv[1]=="srnet-predict":
+        from aletheialib import models
+
+        if len(sys.argv)<4:
+            print(sys.argv[0], "srnet-predict <model dir> <image/dir> [dev]\n")
+            print("      dev:  Device: GPU Id or 'CPU' (default='CPU')")
+            print("")
+            sys.exit(0)
+
+        model_dir=sys.argv[2]
+        path=utils.absolute_path(sys.argv[3])
+
+        if len(sys.argv)<4:
             dev_id = "CPU"
             print("'dev' not provided, using:", dev_id)
         else:
-            dev_id = sys.argv[7]
+            dev_id = sys.argv[4]
 
-        if len(sys.argv)<9:
-            early_stopping = 10
-            print("'ES' not provided, using:", early_stopping)
+
+        files=[]
+        if os.path.isdir(path):
+            for dirpath,_,filenames in os.walk(path):
+                for f in filenames:
+                    path=os.path.abspath(os.path.join(dirpath, f))
+                    if not utils.is_valid_image(path):
+                        print("Warning, please provide a valid image: ", f)
+                    else:
+                        files.append(path)
         else:
-            early_stopping = int(sys.argv[8])
+            files=[path]
 
-        if dev_id == "CPU":
-            print("Running with CPU. It could be very slow!")
+        from aletheialib import models
+        models.nn_configure_device(dev_id)
+        pred = models.nn_predict(models.SRNet, files, model_dir, batch_size=20)
+        #print(pred)
 
-
-        os.environ["CUDA_VISIBLE_DEVICES"]=dev_id
-        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
-
-        trn_cover_files = sorted(glob.glob(os.path.join(trn_cover_dir, '*')))
-        trn_stego_files = sorted(glob.glob(os.path.join(trn_stego_dir, '*')))
-        val_cover_files = sorted(glob.glob(os.path.join(val_cover_dir, '*')))
-        val_stego_files = sorted(glob.glob(os.path.join(val_stego_dir, '*')))
-
-        nn = models.NN("effnetb0", model_name)
-        nn.train(trn_cover_files, trn_stego_files, 16,
-                 val_cover_files, val_stego_files, 10,
-                 100, early_stopping, "models")
-
-
+        for i in range(len(files)):
+            if pred[i] == 0:
+                print(os.path.basename(files[i]), "Cover")
+            else:
+                print(os.path.basename(files[i]), "Stego")
     # }}}
+
+    # {{{ srnet-score
+    elif sys.argv[1]=="srnet-err":
+        from aletheialib import models
+
+        if len(sys.argv)<4:
+            print(sys.argv[0], "srnet-score <model dir> <cover dir> <stego dir> [dev]\n")
+            print("      dev:  Device: GPU Id or 'CPU' (default='CPU')")
+            print("")
+            sys.exit(0)
+
+        model_dir=sys.argv[2]
+        cover_path=utils.absolute_path(sys.argv[3])
+        stego_path=utils.absolute_path(sys.argv[4])
+
+        if len(sys.argv)<5:
+            dev_id = "CPU"
+            print("'dev' not provided, using:", dev_id)
+        else:
+            dev_id = sys.argv[5]
+
+
+        path = cover_path
+        files=[]
+        if os.path.isdir(path):
+            for dirpath,_,filenames in os.walk(path):
+                for f in filenames:
+                    path=os.path.abspath(os.path.join(dirpath, f))
+                    if not utils.is_valid_image(path):
+                        print("Warning, please provide a valid image: ", f)
+                    else:
+                        files.append(path)
+        else:
+            files=[path]
+        cover_files = files
+
+        path = stego_path
+        files=[]
+        if os.path.isdir(path):
+            for dirpath,_,filenames in os.walk(path):
+                for f in filenames:
+                    path=os.path.abspath(os.path.join(dirpath, f))
+                    if not utils.is_valid_image(path):
+                        print("Warning, please provide a valid image: ", f)
+                    else:
+                        files.append(path)
+        else:
+            files=[path]
+        stego_files = files
+
+
+        from aletheialib import models
+        models.nn_configure_device(dev_id)
+        cover_pred = models.nn_predict(models.SRNet, cover_files, model_dir, batch_size=20)
+        stego_pred = models.nn_predict(models.SRNet, stego_files, model_dir, batch_size=20)
+
+        ok = 0
+        for i in range(len(cover_files)):
+            if cover_pred[i] == 0:
+                ok += 1
+        for i in range(len(stego_files)):
+            if stego_pred[i] == 1:
+                ok += 1
+        print("err:", 1-round(float(ok)/(len(cover_files)+len(stego_files)), 4))
+ 
+    # }}}
+
+ 
 
 
     # -- AUTOMATED ATTACKS --
