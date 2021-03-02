@@ -275,7 +275,7 @@ from tensorflow.keras import callbacks
 
 class NN: 
 
-    def __init__(self, network, model_name):
+    def __init__(self, network, model_name=None):
         # {{{
         self.model_dir = 'models'
         self.model_name = model_name
@@ -285,10 +285,11 @@ class NN:
             print("NN __init__ Error: network not found")
             sys.exit(0)
 
-        path = self.model_dir+'/'+self.model_name+'-best.h5'
-        if os.path.exists(path):
-            print("Loading", path, "...")
-            self.model.load_weights(path)
+        if model_name:
+            path = self.model_dir+'/'+self.model_name+'-best.h5'
+            if os.path.exists(path):
+                print("Loading", path, "...")
+                self.model.load_weights(path)
 
         # }}}
 
@@ -356,29 +357,34 @@ class NN:
             print("NN valid_generator error: wrong batch size")
             sys.exit(0)
 
-        for i in range(len(cover_list)+len(stego_list)):
-            bs = batch//2
-            C, S, y = [], [], []
-            while bs>0:
-                try:
-                    C_path = cover_list[i]
-                    S_path = stego_list[i]
-                    Ic = imread(C_path)
-                    Is = imread(S_path)
-                    if Ic.shape!=(512,512,3) or Is.shape!=(512,512,3):
+        C, S = [], []
+        bs = batch//2
+        while True:
+            for i in range(len(cover_list)):
+                if bs>0:
+                    try:
+                        C_path = cover_list[i]
+                        S_path = stego_list[i]
+                        Ic = imread(C_path)
+                        Is = imread(S_path)
+                        if Ic.shape!=(512,512,3) or Is.shape!=(512,512,3):
+                            print("NN valid_generator warning: wrong shape:", C_path, S_path)
+                            continue
+                        C.append(Ic)
+                        S.append(Is)
+                        bs -= 2
+                    except KeyboardInterrupt:
+                        sys.exit(0)
+                    except:
+                        print("NN valid_generator warning: cannot read image:", C_path, S_path, i)
                         continue
-                    C.append(Ic)
-                    y.append([1, 0])
-                    S.append(Is)
-                    y.append([0, 1])
-                    bs -= 2
-                except:
-                    print("NN valid_generator warning: cannot read image:", C_path, S_path)
-                    raise
-            X = np.vstack((C,S)).astype('float32')/255
-            y = np.hstack(([0]*len(C), [1]*len(S)))
-            Y = to_categorical(y, 2)
-            yield X, Y
+                else:
+                    X = np.vstack((C,S)).astype('float32')/255
+                    y = np.hstack(([0]*len(C), [1]*len(S)))
+                    Y = to_categorical(y, 2)
+                    yield X, Y
+                    C, S = [], []
+                    bs = batch//2
         # }}}
 
     def pred_generator(self, image_list, batch):
@@ -438,6 +444,7 @@ class NN:
 
         steps_train = int((len(trn_C_list)+len(trn_S_list))/trn_batch)
         g_train = self.train_generator(trn_C_list, trn_S_list, trn_batch)
+        #steps_train = 100
 
         steps_valid = int((len(val_C_list)+len(val_S_list))/val_batch)
         g_valid = self.valid_generator(val_C_list, val_S_list, val_batch)
@@ -447,6 +454,13 @@ class NN:
                   callbacks=callbacks_list, epochs=max_epochs)
         # }}}
 
+    
+    def load_model(self, model_path):
+        # {{{
+        if os.path.exists(model_path):
+            print("Loading", model_path, "...")
+            self.model.load_weights(model_path)
+        # }}}
 
     def predict(self, files, batch):
         # {{{

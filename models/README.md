@@ -29,3 +29,24 @@ The Bossbase contains 10000 images and can be downloaded from
 | e4s_srm_bossbase_uniw0.40_gs.model    |   0.77    |
 
 
+
+These models were trained using a randomly selected subset containing 
+1000 images for validations, 1000 images for testing and the remaining images 
+for training.
+
+
+The Alaska2 database contains 75000 images and can be downloaded from 
+[here](https://www.kaggle.com/c/alaska2-image-steganalysis).
+
+The size of the message embedded is a random number between 100 bytes and 
+the maximum capacity according to steghide.
+
+| Model file                            | val score |
+|---------------------------------------|-----------|
+| models/effnetb0-A-alaska2-steghide.h5 |   0.944   |
+| models/effnetb0-B-alaska2-steghide.h5 |   0.762   |
+
+
+
+
+

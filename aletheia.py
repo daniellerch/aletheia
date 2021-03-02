@@ -888,10 +888,13 @@ def main():
         val_cover_files = sorted(glob.glob(os.path.join(val_cover_dir, '*')))
         val_stego_files = sorted(glob.glob(os.path.join(val_stego_dir, '*')))
 
+        print("train:", len(trn_cover_files),"+",len(trn_stego_files))
+        print("valid:", len(val_cover_files),"+",len(val_stego_files))
+
         nn = models.NN("effnetb0", model_name)
         nn.train(trn_cover_files, trn_stego_files, 16,
                  val_cover_files, val_stego_files, 10,
-                 1000000, early_stopping, "models")
+                 1000000, early_stopping)
 
 
     # }}}
@@ -944,7 +947,7 @@ def main():
         from sklearn.metrics import accuracy_score
 
         if len(sys.argv)<8:
-            print(sys.argv[0], "effnetb0 <A-test-cover-dir> <A-test-stego-dir> <B-test-stego-dir> <B-test-double-dir> <A-model-name> <B-model-name> [dev]\n")
+            print(sys.argv[0], "effnetb0-dci-score <A-test-cover-dir> <A-test-stego-dir> <B-test-stego-dir> <B-test-double-dir> <A-model-name> <B-model-name> [dev]\n")
             print("     A-test-cover-dir:    Directory containing A-cover images")
             print("     A-test-stego-dir:    Directory containing A-stego images")
             print("     B-test-stego-dir:    Directory containing B-stego images")
@@ -959,8 +962,8 @@ def main():
         A_stego_dir=sys.argv[3]
         B_stego_dir=sys.argv[4]
         B_double_dir=sys.argv[5]
-        A_model_name=sys.argv[6]
-        B_model_name=sys.argv[7]
+        A_model_file=sys.argv[6]
+        B_model_file=sys.argv[7]
 
         if len(sys.argv)<9:
             dev_id = "CPU"
@@ -979,11 +982,15 @@ def main():
         B_stego_files = sorted(glob.glob(os.path.join(B_stego_dir, '*')))
         B_double_files = sorted(glob.glob(os.path.join(B_double_dir, '*')))
 
-        A_nn = models.NN("effnetb0", A_model_name)
-        B_nn = models.NN("effnetb0", B_model_name)
+        A_nn = models.NN("effnetb0")
+        A_nn.load_model(A_model_file)
+        B_nn = models.NN("effnetb0")
+        B_nn.load_model(B_model_file)
+
 
         A_files = A_cover_files+A_stego_files
         B_files = B_stego_files+B_double_files
+
 
         p_aa = A_nn.predict(A_files, 10)
         p_ab = A_nn.predict(B_files, 10)
@@ -1010,11 +1017,10 @@ def main():
         print("#C-ok:", np.sum(C_ok==1))
         print("#S-ok:", np.sum(S_ok==1))
         print("aa-score:", accuracy_score(y_true, p_aa))
+        print("bb-score:", accuracy_score(y_true, p_bb))
         print("dci-score:", float(np.sum(C_ok==1)+np.sum(S_ok==1))/(len(A_files)-np.sum(inc==1)))
-
-
-
-
+        print("--")
+        print("dci-prediction-score:", 1-float(np.sum(inc==1))/(2*len(p_aa)))
 
     # }}}
 
