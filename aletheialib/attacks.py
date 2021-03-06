@@ -426,27 +426,34 @@ def print_diffs(cover, stego):
 
 # {{{ print_dct_diffs()
 def print_dct_diffs(cover, stego): 
+    import jpeg_toolbox as jt
 
     def print_list(l, ln):
         mooc = 0
         for i in range(0, len(l), ln):
-            #print(l[i:i+ln])
+            print(l[i:i+ln])
             v = l[i:i+ln][0][2]
             if np.abs(v) > 1:
                 mooc += 1
-        print("mooc:", mooc)
 
-    C_jpeg = JPEG(cover)
-    S_jpeg = JPEG(stego)
-    for i in range(C_jpeg.components()):
-        C = C_jpeg.coeffs(i)
-        S = S_jpeg.coeffs(i)
+    #C_jpeg = JPEG(cover)
+    C_jpeg = jt.load(cover)
+    #S_jpeg = JPEG(stego)
+    S_jpeg = jt.load(stego)
+    #for i in range(C_jpeg.components()):
+    for i in range(C_jpeg["jpeg_components"]):
+        #C = C_jpeg.coeffs(i)
+        #S = S_jpeg.coeffs(i)
+        C = C_jpeg["coef_arrays"][i]
+        S = S_jpeg["coef_arrays"][i]
+        if C.shape!=S.shape:
+            print("WARNING! channels with different size. Channel: ", i)
+            continue
         D = S-C
         print("\nChannel "+str(i)+":")
         pairs = list(zip(C.ravel(), S.ravel(), D.ravel()))
         pairs_diff = [p for p in pairs if p[2]!=0]
-        #print_list(pairs_diff, 5)
-        print_list(pairs_diff, 1)
+        print_list(pairs_diff, 5)
 
 
 # }}}
