@@ -12,8 +12,8 @@ function beta_hat = TRIPLES(path, channel)
 %
 
 X = double(imread(path));
-if(size(size(X))==2)
-    X=X(:,:,channel)
+if(size(size(X))!=2)
+    X=X(:,:,channel);
 end
 
 [M N] = size(X);
