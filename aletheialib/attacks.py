@@ -202,14 +202,40 @@ def beta_kl(dct_0, dct_b, k, l):
     return (h01*(hb0-h00) + (hb1-h01)*(h02-h01)) / (h01**2 + (h02-h01)**2)
 
 
-def calibration(filename):
+def calibration(path, only_first_channel=False):
+    """ it used jpeg_toolbox """
+    import jpeg_toolbox as jt
+
+    tmpdir = tempfile.mkdtemp()
+    predfile = os.path.join(tmpdir, 'img.jpg')
+    os.system("convert -chop 4x4 "+path+" "+predfile)
+    im_jpeg = jt.load(path)
+    impred_jpeg = jt.load(predfile)
+    shutil.rmtree(tmpdir)
+
+    beta_list = []
+    for i in range(im_jpeg["jpeg_components"]):
+        dct_b = im_jpeg["coef_arrays"][i]
+        dct_0 = impred_jpeg["coef_arrays"][i]
+        b01 = beta_kl(dct_0, dct_b, 0, 1)   
+        b10 = beta_kl(dct_0, dct_b, 1, 0)   
+        b11 = beta_kl(dct_0, dct_b, 1, 1)
+        beta = (b01+b10+b11)/3
+        if beta > 0.05:
+            print("Hidden data found in channel "+str(i)+":", beta)
+        else:
+            print("No hidden data found in channel "+str(i))
+
+
+
+def calibration2(filename):
+    """ It uses JPEG from octave """
     tmpdir = tempfile.mkdtemp()
     predfile = os.path.join(tmpdir, 'img.jpg')
     os.system("convert -chop 4x4 "+filename+" "+predfile)
 
     im_jpeg = JPEG(filename)
     impred_jpeg = JPEG(predfile)
-    found = False
     for i in range(im_jpeg.components()):
         dct_b = im_jpeg.coeffs(i)
         dct_0 = impred_jpeg.coeffs(i)
@@ -217,12 +243,10 @@ def calibration(filename):
         b10 = beta_kl(dct_0, dct_b, 1, 0)   
         b11 = beta_kl(dct_0, dct_b, 1, 1)
         beta = (b01+b10+b11)/3
-        if beta > 0.02:
+        if beta > 0.05:
             print("Hidden data found in channel "+str(i)+":", beta)
-            found = True
-
-    if not found:
-        print("No hidden data found", beta)
+        else:
+            print("No hidden data found in channel "+str(i))
 
     shutil.rmtree(tmpdir)
 
