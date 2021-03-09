@@ -10,6 +10,7 @@ import subprocess
 from aletheialib import stegosim, utils
 
 import numpy as np
+import scipy.stats
 from scipy import ndimage
 from cmath import sqrt
 from imageio import imread, imsave
@@ -193,6 +194,11 @@ def H_i(dct, k, l, i):
     dct_kl = dct[k::8,l::8].flatten()
     return sum(np.abs(dct_kl) == i)
 
+def H_i_all(dct, i):
+    dct_kl = dct.flatten()
+    return sum(np.abs(dct_kl) == i)
+
+
 def beta_kl(dct_0, dct_b, k, l):
     h00 = H_i(dct_0, k, l, 0)
     h01 = H_i(dct_0, k, l, 1)
@@ -202,14 +208,84 @@ def beta_kl(dct_0, dct_b, k, l):
     return (h01*(hb0-h00) + (hb1-h01)*(h02-h01)) / (h01**2 + (h02-h01)**2)
 
 
-def calibration(filename):
+def calibration_f5(path):
+    """ it used jpeg_toolbox """
+    import jpeg_toolbox as jt
+
+    tmpdir = tempfile.mkdtemp()
+    predfile = os.path.join(tmpdir, 'img.jpg')
+    os.system("convert -chop 4x4 "+path+" "+predfile)
+    im_jpeg = jt.load(path)
+    impred_jpeg = jt.load(predfile)
+    shutil.rmtree(tmpdir)
+
+    beta_list = []
+    for i in range(im_jpeg["jpeg_components"]):
+        dct_b = im_jpeg["coef_arrays"][i]
+        dct_0 = impred_jpeg["coef_arrays"][i]
+        b01 = beta_kl(dct_0, dct_b, 0, 1)   
+        b10 = beta_kl(dct_0, dct_b, 1, 0)   
+        b11 = beta_kl(dct_0, dct_b, 1, 1)
+        beta = (b01+b10+b11)/3
+        if beta > 0.05:
+            print("Hidden data found in channel "+str(i)+":", beta)
+        else:
+            print("No hidden data found in channel "+str(i))
+
+
+
+def calibration_chisquare_x_mode(path):
+    """ it used jpeg_toolbox """
+    import jpeg_toolbox as jt
+
+    tmpdir = tempfile.mkdtemp()
+    predfile = os.path.join(tmpdir, 'img.jpg')
+    os.system("convert -chop 4x4 "+path+" "+predfile)
+    im_jpeg = jt.load(path)
+    impred_jpeg = jt.load(predfile)
+    shutil.rmtree(tmpdir)
+
+    beta_list = []
+    for i in range(im_jpeg["jpeg_components"]):
+        dct = im_jpeg["coef_arrays"][i]
+        dct_estim = impred_jpeg["coef_arrays"][i]
+        
+        p_list = []
+        for k in range(4):
+            for l in range(4):
+                if (k, l) == (0, 0):
+                    continue
+
+                f_exp, f_obs = [], []
+                for j in range(5):
+                    h  = H_i(dct, k, l, j)
+                    h_estim = H_i(dct_estim, k, l, j)
+                    if h<5 or h_estim<5:
+                        break
+                    f_exp.append(h_estim)
+                    f_obs.append(h)
+                #print(f_exp, f_obs)
+
+                chi, p = scipy.stats.chisquare(f_obs, f_exp)
+                p_list.append(p)
+
+        p = np.mean(p_list)
+        if p < 0.05:
+            print("Hidden data found in channel "+str(i)+". p-value:", np.round(p, 6))
+        else:
+            print("No hidden data found in channel "+str(i))
+
+
+
+
+def calibration_f5_octave_jpeg(filename):
+    """ It uses JPEG from octave """
     tmpdir = tempfile.mkdtemp()
     predfile = os.path.join(tmpdir, 'img.jpg')
     os.system("convert -chop 4x4 "+filename+" "+predfile)
 
     im_jpeg = JPEG(filename)
     impred_jpeg = JPEG(predfile)
-    found = False
     for i in range(im_jpeg.components()):
         dct_b = im_jpeg.coeffs(i)
         dct_0 = impred_jpeg.coeffs(i)
@@ -217,12 +293,10 @@ def calibration(filename):
         b10 = beta_kl(dct_0, dct_b, 1, 0)   
         b11 = beta_kl(dct_0, dct_b, 1, 1)
         beta = (b01+b10+b11)/3
-        if beta > 0.02:
+        if beta > 0.05:
             print("Hidden data found in channel "+str(i)+":", beta)
-            found = True
-
-    if not found:
-        print("No hidden data found", beta)
+        else:
+            print("No hidden data found in channel "+str(i))
 
     shutil.rmtree(tmpdir)
 
@@ -402,27 +476,34 @@ def print_diffs(cover, stego):
 
 # {{{ print_dct_diffs()
 def print_dct_diffs(cover, stego): 
+    import jpeg_toolbox as jt
 
     def print_list(l, ln):
         mooc = 0
         for i in range(0, len(l), ln):
-            #print(l[i:i+ln])
+            print(l[i:i+ln])
             v = l[i:i+ln][0][2]
             if np.abs(v) > 1:
                 mooc += 1
-        print("mooc:", mooc)
 
-    C_jpeg = JPEG(cover)
-    S_jpeg = JPEG(stego)
-    for i in range(C_jpeg.components()):
-        C = C_jpeg.coeffs(i)
-        S = S_jpeg.coeffs(i)
+    #C_jpeg = JPEG(cover)
+    C_jpeg = jt.load(cover)
+    #S_jpeg = JPEG(stego)
+    S_jpeg = jt.load(stego)
+    #for i in range(C_jpeg.components()):
+    for i in range(C_jpeg["jpeg_components"]):
+        #C = C_jpeg.coeffs(i)
+        #S = S_jpeg.coeffs(i)
+        C = C_jpeg["coef_arrays"][i]
+        S = S_jpeg["coef_arrays"][i]
+        if C.shape!=S.shape:
+            print("WARNING! channels with different size. Channel: ", i)
+            continue
         D = S-C
         print("\nChannel "+str(i)+":")
         pairs = list(zip(C.ravel(), S.ravel(), D.ravel()))
         pairs_diff = [p for p in pairs if p[2]!=0]
-        #print_list(pairs_diff, 5)
-        print_list(pairs_diff, 1)
+        print_list(pairs_diff, 5)
 
 
 # }}}
