@@ -41,11 +41,13 @@ The Alaska2 database contains 75000 images and can be downloaded from
 The size of the message embedded is a random number between 100 bytes and 
 the maximum capacity according to steghide.
 
-| Model file                            | val score |
-|---------------------------------------|-----------|
-| models/effnetb0-A-alaska2-steghide.h5 |   0.944   |
-| models/effnetb0-B-alaska2-steghide.h5 |   0.762   |
+| Model file                            | val score | test score | 
+|---------------------------------------|-----------|------------|
+| models/effnetb0-A-alaska2-steghide.h5 |   0.944   |   0.945    |
+| models/effnetb0-B-alaska2-steghide.h5 |   0.762   |   0.697    |
 
+DCI prediction on alaska2 test set: 0.777
+DCI prediction on bossbase (q80) test set: 0.83
 
 
 

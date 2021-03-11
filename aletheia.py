@@ -857,7 +857,7 @@ def main():
         from aletheialib import models
 
         if len(sys.argv)<7:
-            print(sys.argv[0], "effnetb0 <trn-cover-dir> <trn-stego-dir> <val-cover-dir> <val-stego-dir> <model-name> [dev] [ES]\n")
+            print(sys.argv[0], "effnetb0 <trn-cover-dir> <trn-stego-dir> <val-cover-dir> <val-stego-dir> <model-file> [dev] [ES]\n")
             print("     trn-cover-dir:    Directory containing training cover images")
             print("     trn-stego-dir:    Directory containing training stego images")
             print("     val-cover-dir:    Directory containing validation cover images")
@@ -915,17 +915,17 @@ def main():
         from aletheialib import models
 
         if len(sys.argv)<5:
-            print(sys.argv[0], "effnetb0 <test-cover-dir> <test-stego-dir> <model-name> [dev]\n")
+            print(sys.argv[0], "effnetb0-score <test-cover-dir> <test-stego-dir> <model-file> [dev]\n")
             print("     test-cover-dir:    Directory containing cover images")
             print("     test-stego-dir:    Directory containing stego images")
-            print("     model-name:        Name of the model")
+            print("     model-file:        Path of the model")
             print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
             print("")
             sys.exit(0)
 
         cover_dir=sys.argv[2]
         stego_dir=sys.argv[3]
-        model_name=sys.argv[4]
+        model_file=sys.argv[4]
 
         if len(sys.argv)<6:
             dev_id = "CPU"
@@ -942,7 +942,9 @@ def main():
         cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
         stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
 
-        nn = models.NN("effnetb0", model_name)
+        nn = models.NN("effnetb0")
+        nn.load_model(model_file)
+
         pred_cover = nn.predict(cover_files, 10)
         pred_stego = nn.predict(stego_files, 10)
 
@@ -952,19 +954,58 @@ def main():
 
     # }}}
 
+    # {{{ effnetb0-predict
+    elif sys.argv[1]=="effnetb0-predict":
+        from aletheialib import models
+
+        if len(sys.argv)<4:
+            print(sys.argv[0], "effnetb0-score <test-dir> <model-file> [dev]\n")
+            print("     test-dir:    Directory containing test images")
+            print("     model-file:        Path of the model")
+            print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
+            print("")
+            sys.exit(0)
+
+        test_dir=sys.argv[2]
+        model_file=sys.argv[3]
+
+        if len(sys.argv)<5:
+            dev_id = "CPU"
+            print("'dev' not provided, using:", dev_id)
+        else:
+            dev_id = sys.argv[4]
+
+        if dev_id == "CPU":
+            print("Running with CPU. It could be very slow!")
+
+        os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+        test_files = sorted(glob.glob(os.path.join(test_dir, '*')))
+
+        nn = models.NN("effnetb0")
+        nn.load_model(model_file)
+
+        pred = nn.predict(test_files, 10)
+
+        for i in range(len(pred)):
+            print(test_files[i], round(pred[i],3))
+
+    # }}}
+
     # {{{ effnetb0-dci-score
     elif sys.argv[1]=="effnetb0-dci-score":
         from aletheialib import models
         from sklearn.metrics import accuracy_score
 
         if len(sys.argv)<8:
-            print(sys.argv[0], "effnetb0-dci-score <A-test-cover-dir> <A-test-stego-dir> <B-test-stego-dir> <B-test-double-dir> <A-model-name> <B-model-name> [dev]\n")
+            print(sys.argv[0], "effnetb0-dci-score <A-test-cover-dir> <A-test-stego-dir> <B-test-stego-dir> <B-test-double-dir> <A-model-file> <B-model-file> [dev]\n")
             print("     A-test-cover-dir:    Directory containing A-cover images")
             print("     A-test-stego-dir:    Directory containing A-stego images")
             print("     B-test-stego-dir:    Directory containing B-stego images")
             print("     B-test-double-dir:   Directory containing B-double images")
-            print("     A-model-name:        Name of the A-model")
-            print("     B-model-name:        Name of the B-model")
+            print("     A-model-file:        Path of the A-model")
+            print("     B-model-file:        Path of the B-model")
             print("     dev:                 Device: GPU Id or 'CPU' (default='CPU')")
             print("")
             sys.exit(0)
@@ -1030,6 +1071,82 @@ def main():
         print("aa-score:", accuracy_score(y_true, p_aa))
         print("bb-score:", accuracy_score(y_true, p_bb))
         print("dci-score:", float(np.sum(C_ok==1)+np.sum(S_ok==1))/(len(A_files)-np.sum(inc==1)))
+        print("--")
+        print("dci-prediction-score:", 1-float(np.sum(inc==1))/(2*len(p_aa)))
+
+    # }}}
+
+    # {{{ effnetb0-dci-predict
+    elif sys.argv[1]=="effnetb0-dci-predict":
+        from aletheialib import models
+        from sklearn.metrics import accuracy_score
+
+        if len(sys.argv)<6:
+            print(sys.argv[0], "effnetb0-dci-predict <A-test-dir> <B-test-dir> <A-model-file> <B-model-file> [dev]\n")
+            print("     A-test-dir:          Directory containing A test images")
+            print("     B-test-dir:          Directory containing B test images")
+            print("     A-model-file:        Path of the A-model")
+            print("     B-model-file:        Path of the B-model")
+            print("     dev:                 Device: GPU Id or 'CPU' (default='CPU')")
+            print("")
+            sys.exit(0)
+
+        A_dir=sys.argv[2]
+        B_dir=sys.argv[3]
+        A_model_file=sys.argv[4]
+        B_model_file=sys.argv[5]
+
+        if len(sys.argv)<7:
+            dev_id = "CPU"
+            print("'dev' not provided, using:", dev_id)
+        else:
+            dev_id = sys.argv[6]
+
+        if dev_id == "CPU":
+            print("Running with CPU. It could be very slow!")
+
+        os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+        A_files = sorted(glob.glob(os.path.join(A_dir, '*')))
+        B_files = sorted(glob.glob(os.path.join(B_dir, '*')))
+
+        A_nn = models.NN("effnetb0")
+        A_nn.load_model(A_model_file)
+        B_nn = models.NN("effnetb0")
+        B_nn.load_model(B_model_file)
+
+
+
+        p_aa = A_nn.predict(A_files, 10)
+        p_ab = A_nn.predict(B_files, 10)
+        p_bb = B_nn.predict(B_files, 10)
+        p_ba = B_nn.predict(A_files, 10)
+
+
+        p_aa = np.round(p_aa).astype('uint8')
+        p_ab = np.round(p_ab).astype('uint8')
+        p_ba = np.round(p_ba).astype('uint8')
+        p_bb = np.round(p_bb).astype('uint8')
+
+        inc = ( (p_aa!=p_bb) | (p_ba!=0) | (p_ab!=1) ).astype('uint8')
+        inc1 = (p_aa!=p_bb).astype('uint8')
+        inc2 = ( (p_ba!=0) | (p_ab!=1) ).astype('uint8')
+        inc2c = (p_ab!=1).astype('uint8')
+        inc2s = (p_ba!=0).astype('uint8')
+
+
+        for i in range(len(p_aa)):
+            r = ""
+            if inc[i]:
+                r = "INC"
+            else:
+                r = round(p_aa[i],3)
+            print(A_files[i], r)
+
+        print("#inc:", np.sum(inc==1), "#incF1:", np.sum(inc1==1), "#incF2:", np.sum(inc2==1),
+               "#incF2C", np.sum(inc2c), "#incF2S:", np.sum(inc2s))
+        print("#no_inc:", len(A_files)-np.sum(inc==1))
         print("--")
         print("dci-prediction-score:", 1-float(np.sum(inc==1))/(2*len(p_aa)))
 
