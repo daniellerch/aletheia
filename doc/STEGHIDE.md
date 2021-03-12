@@ -19,9 +19,9 @@ There are differents attacks that we can perform agains steghide. In this case w
 
 
 ```bash
-./aletheia.py effnetb0-predict test/ models/effnetb0-A-alaska2-steghide-best.h5 0
+./aletheia.py effnetb0-predict test/ models/effnetb0-A-alaska2-steghide.h5 0
 laska2-steghide-best.h5 0
-Loading models/effnetb0-A-alaska2-steghide-best.h5 ...
+Loading models/effnetb0-A-alaska2-steghide.h5 ...
 2/2 [==============================] - 8s 4s/step
 test/lena.jpg 0.0
 test/lena_steghide.jpg 1.0
