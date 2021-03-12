@@ -281,6 +281,7 @@ class NN:
         self.model_name = model_name
         if network == "effnetb0":
             self.model = self.create_model_effnetb0()
+            self.expected_shape = (512,512,3)
         else:
             print("NN __init__ Error: network not found")
             sys.exit(0)
@@ -393,6 +394,11 @@ class NN:
         for f in image_list:
             try:
                 img = imread(f)
+                if img.shape != self.expected_shape:
+                    print("WARNING: image ignored:", f, ", expected shape:", 
+                           self.expected_shape)
+                    continue
+
                 images.append(img)
             except:
                 print("NN pred_generator warning: cannot read image:", f)
@@ -464,6 +470,8 @@ class NN:
 
     def predict(self, files, batch):
         # {{{
+        if len(files)<batch*2:
+            batch=1
         g = self.pred_generator(files, batch)
         pred = self.model.predict(g, steps=len(files)//batch, verbose=1)[:,-1]
         return pred

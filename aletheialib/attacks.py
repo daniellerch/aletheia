@@ -234,7 +234,7 @@ def calibration_f5(path):
 
 
 
-def calibration_chisquare_x_mode(path):
+def calibration_chisquare_mode(path):
     """ it used jpeg_toolbox """
     import jpeg_toolbox as jt
 

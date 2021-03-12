@@ -69,13 +69,10 @@ def main():
     "  - effnetb0-predict:      Predict with EfficientNet B0.\n" \
     "  - effnetb0-dci-score:    DCI Score with EfficientNet B0.\n" \
     "  - effnetb0-dci-predict:  DCI Predict with EfficientNet B0.\n" \
-    "  - srnet:                 Train a model with SRNet.\n" \
     "  - esvm:                  Train an ensemble of Support Vector Machines.\n" \
     "  - e4s:                   Train Ensemble Classifiers for Steganalysis.\n" \
     "  - esvm-predict:          Predict using eSVM.\n" \
-    "  - e4s-predict:           Predict using EC.\n" \
-    "  - srnet-predict:         Predict using SRNet.\n" \
-    "  - srnet-err:             Score error using SRNet."
+    "  - e4s-predict:           Predict using EC."
 
     feaextract_doc="\n" \
     "  Feature extractors:\n" \
@@ -344,10 +341,10 @@ def main():
     elif sys.argv[1]=="calibration":
 
         if len(sys.argv)!=4:
-            print(sys.argv[0], "calibration <f5|chisquare_x_mode> <image>\n")
+            print(sys.argv[0], "calibration <f5|chisquare_mode> <image>\n")
             sys.exit(0)
 
-        if sys.argv[2] not in ["f5", "chisquare_x_mode"]:
+        if sys.argv[2] not in ["f5", "chisquare_mode"]:
             print("Please, provide a valid method")
             sys.exit(0)
 
@@ -362,8 +359,8 @@ def main():
         fn = utils.absolute_path(sys.argv[3])
         if "f5" in sys.argv[2]:
             attacks.calibration_f5(fn)
-        elif "chisquare_x_mode" in sys.argv[2]:
-            attacks.calibration_chisquare_x_mode(fn)
+        elif "chisquare_mode" in sys.argv[2]:
+            attacks.calibration_chisquare_mode(fn)
     # }}}
 
 
@@ -1216,88 +1213,6 @@ def main():
         print("Validation score:", val_score)
     # }}}
 
-    # {{{ srnet
-    elif sys.argv[1]=="srnet":
-        from aletheialib import models
-
-        if len(sys.argv)<5:
-            print(sys.argv[0], "srnet <cover-dir> <stego-dir> <model-name> [dev] [max_iter] [ES] [valsz] [logdir]\n")
-            print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
-            print("     max_iter:   Number of iterations (default=1000000)")
-            print("     ES:         early stopping iterations x1000 (default=100)")
-            print("     valsz:      Size of validation set. (default=0.1%)")
-            print("     logdir:     Log directory. (default=log)")
-            print("")
-            sys.exit(0)
-
-        cover_dir=sys.argv[2]
-        stego_dir=sys.argv[3]
-        model_name=sys.argv[4]
-
-        if len(sys.argv)<6:
-            dev_id = "CPU"
-            print("'dev' not provided, using:", dev_id)
-        else:
-            dev_id = sys.argv[5]
-
-        if len(sys.argv)<7:
-            max_iter = 1000000
-            print("'max_iter' not provided, using:", max_iter)
-        else:
-            max_iter = int(sys.argv[6])
-
-
-        if len(sys.argv)<8:
-            early_stopping = 100
-            print("'ES' not provided, using:", early_stopping)
-        else:
-            early_stopping = int(sys.argv[7])
-
-        if len(sys.argv)<9:
-            val_size = 0.1
-            print("'valsz' not provided, using:", val_size)
-        else:
-            val_size = float(sys.argv[8])
-
-
-        if len(sys.argv)<10:
-            log_dir = 'log'
-            print("'logdir' not provided, using:", log_dir)
-        else:
-            log_dir = sys.argv[9]
-
-        if dev_id == "CPU":
-            print("Running with CPU. It could be very slow!")
-
-
-        from aletheialib import models
-        models.nn_configure_device(dev_id)
-
-        from sklearn.model_selection import train_test_split
-        cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
-        stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
-        train_cover_files, valid_cover_files, train_stego_files, valid_stego_files = \
-            train_test_split(cover_files, stego_files, test_size=val_size, random_state=0)
-        print("Using", len(train_cover_files)*2, "samples for training and", 
-                       len(valid_cover_files)*2, "for validation.")
-
-        output_dir = os.path.join(log_dir, 'output')
-        checkpoint_dir = os.path.join(log_dir, 'checkpoint')
-        for d in [output_dir, checkpoint_dir]:
-            try:
-                os.makedirs(d)
-            except:
-                pass
-
-        data = (train_cover_files, train_stego_files,
-                valid_cover_files, valid_stego_files)
-        models.nn_fit(models.SRNet, data, model_name, log_path=output_dir,
-                      load_checkpoint=model_name, checkpoint_path=checkpoint_dir,
-                      batch_size=20, optimizer=models.AdamaxOptimizer(0.001), 
-                      max_iter=max_iter,
-                      early_stopping=early_stopping, valid_interval=1000)
-    # }}}
-
     # {{{ esvm-predict
     elif sys.argv[1]=="esvm-predict":
 
@@ -1378,117 +1293,6 @@ def main():
                 print(os.path.basename(f), "Stego")
     # }}}
 
-    # {{{ srnet-predict
-    elif sys.argv[1]=="srnet-predict":
-        from aletheialib import models
-
-        if len(sys.argv)<4:
-            print(sys.argv[0], "srnet-predict <model dir> <image/dir> [dev]\n")
-            print("      dev:  Device: GPU Id or 'CPU' (default='CPU')")
-            print("")
-            sys.exit(0)
-
-        model_dir=sys.argv[2]
-        path=utils.absolute_path(sys.argv[3])
-
-        if len(sys.argv)<4:
-            dev_id = "CPU"
-            print("'dev' not provided, using:", dev_id)
-        else:
-            dev_id = sys.argv[4]
-
-
-        files=[]
-        if os.path.isdir(path):
-            for dirpath,_,filenames in os.walk(path):
-                for f in filenames:
-                    path=os.path.abspath(os.path.join(dirpath, f))
-                    if not utils.is_valid_image(path):
-                        print("Warning, please provide a valid image: ", f)
-                    else:
-                        files.append(path)
-        else:
-            files=[path]
-
-        from aletheialib import models
-        models.nn_configure_device(dev_id)
-        pred = models.nn_predict(models.SRNet, files, model_dir, batch_size=20)
-        #print(pred)
-
-        for i in range(len(files)):
-            if pred[i] == 0:
-                print(os.path.basename(files[i]), "Cover")
-            else:
-                print(os.path.basename(files[i]), "Stego")
-    # }}}
-
-    # {{{ srnet-score
-    elif sys.argv[1]=="srnet-err":
-        from aletheialib import models
-
-        if len(sys.argv)<4:
-            print(sys.argv[0], "srnet-score <model dir> <cover dir> <stego dir> [dev]\n")
-            print("      dev:  Device: GPU Id or 'CPU' (default='CPU')")
-            print("")
-            sys.exit(0)
-
-        model_dir=sys.argv[2]
-        cover_path=utils.absolute_path(sys.argv[3])
-        stego_path=utils.absolute_path(sys.argv[4])
-
-        if len(sys.argv)<5:
-            dev_id = "CPU"
-            print("'dev' not provided, using:", dev_id)
-        else:
-            dev_id = sys.argv[5]
-
-
-        path = cover_path
-        files=[]
-        if os.path.isdir(path):
-            for dirpath,_,filenames in os.walk(path):
-                for f in filenames:
-                    path=os.path.abspath(os.path.join(dirpath, f))
-                    if not utils.is_valid_image(path):
-                        print("Warning, please provide a valid image: ", f)
-                    else:
-                        files.append(path)
-        else:
-            files=[path]
-        cover_files = files
-
-        path = stego_path
-        files=[]
-        if os.path.isdir(path):
-            for dirpath,_,filenames in os.walk(path):
-                for f in filenames:
-                    path=os.path.abspath(os.path.join(dirpath, f))
-                    if not utils.is_valid_image(path):
-                        print("Warning, please provide a valid image: ", f)
-                    else:
-                        files.append(path)
-        else:
-            files=[path]
-        stego_files = files
-
-
-        from aletheialib import models
-        models.nn_configure_device(dev_id)
-        cover_pred = models.nn_predict(models.SRNet, cover_files, model_dir, batch_size=20)
-        stego_pred = models.nn_predict(models.SRNet, stego_files, model_dir, batch_size=20)
-
-        ok = 0
-        for i in range(len(cover_files)):
-            if cover_pred[i] == 0:
-                ok += 1
-        for i in range(len(stego_files)):
-            if stego_pred[i] == 1:
-                ok += 1
-        print("err:", 1-round(float(ok)/(len(cover_files)+len(stego_files)), 4))
- 
-    # }}}
-
- 
 
 
     # -- AUTOMATED ATTACKS --
