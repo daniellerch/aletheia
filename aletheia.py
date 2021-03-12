@@ -983,6 +983,7 @@ def main():
         nn = models.NN("effnetb0")
         nn.load_model(model_file)
 
+        test_files = nn.filter_images(test_files)
         pred = nn.predict(test_files, 10)
 
         for i in range(len(pred)):

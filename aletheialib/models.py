@@ -394,13 +394,9 @@ class NN:
         for f in image_list:
             try:
                 img = imread(f)
-                if img.shape != self.expected_shape:
-                    print("WARNING: image ignored:", f, ", expected shape:", 
-                           self.expected_shape)
-                    continue
-
-                images.append(img)
-            except:
+                images.append(img[:self.expected_shape[0], :self.expected_shape[1], :])
+            except Exception as e:
+                #print(e)
                 print("NN pred_generator warning: cannot read image:", f)
                 continue
 
@@ -409,8 +405,9 @@ class NN:
                 yield X
                 images = []
 
-        X = np.array(images).astype('float32')/255
-        yield X
+        if len(images)>0:
+            X = np.array(images).astype('float32')/255
+            yield X
         # }}}
 
     def train(self,
@@ -460,7 +457,25 @@ class NN:
                   callbacks=callbacks_list, epochs=max_epochs)
         # }}}
 
-    
+    def filter_images(self, files):
+        # {{{
+        files_ok = []
+        for f in files:
+            img = imread(f)
+            if len(img.shape)!=3 or img.shape[2] != self.expected_shape[2]:
+                print("WARNING: image ignored:", f, ", expected number of channels:", 
+                       self.expected_shape[2])
+                continue
+
+            if (img.shape[0] < self.expected_shape[0] or 
+                img.shape[1] < self.expected_shape[1]):
+                print("WARNING: image ignored:", f, ", image too small, expected:", 
+                       self.expected_shape[0], "x", self.expected_shape[1])
+                continue
+            files_ok.append(f)
+        return files_ok
+        # }}}
+
     def load_model(self, model_path):
         # {{{
         if os.path.exists(model_path):
@@ -470,11 +485,15 @@ class NN:
 
     def predict(self, files, batch):
         # {{{
-        if len(files)<batch*2:
+        if len(files)<batch:
             batch=1
-        g = self.pred_generator(files, batch)
-        pred = self.model.predict(g, steps=len(files)//batch, verbose=1)[:,-1]
-        return pred
+        steps = len(files)//batch
+        g = self.pred_generator(files[:steps*batch], batch)
+        pred = self.model.predict(g, steps=steps, verbose=1)[:,-1]
+        if steps*batch<len(files):
+            g = self.pred_generator(files[steps*batch:], batch)
+            pred = pred.tolist() + self.model.predict(g, steps=1, verbose=1)[:,-1].tolist()
+        return np.array(pred)
         # }}}
  
 
