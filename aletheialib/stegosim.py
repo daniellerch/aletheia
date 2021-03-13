@@ -9,6 +9,8 @@ import numpy
 import subprocess
 import random
 
+import numpy as np
+
 from scipy.io import savemat, loadmat
 from PIL import Image
 
@@ -176,70 +178,29 @@ def custom(path, command, dst_path):
 
 # {{{ lsbm()
 def lsbm(path, payload):
-    X = imread(path)
-    sign=[1, -1]
-    for j in range(X.shape[0]):
-        for i in range(X.shape[1]):
-            if random.randint(0,99)>int(float(payload)*100):
-                continue
- 
-            if len(X.shape)==2:
-                k=sign[random.randint(0, 1)]
-                if X[i, j]==0: k=1
-                if X[i, j]==255: k=-1
-                if X[i, j]%2!=random.randint(0,1): # message
-                    X[i, j]+=k
-            else:
-                kr=sign[random.randint(0, 1)]
-                kg=sign[random.randint(0, 1)]
-                kb=sign[random.randint(0, 1)]
-                if X[i, j][0]==0: kr=1
-                if X[i, j][1]==0: kg=1
-                if X[i, j][2]==0: kb=1
-                if X[i, j][0]==255: kr=-1
-                if X[i, j][1]==255: kg=-1
-                if X[i, j][2]==255: kb=-1
-                # message
-                if X[i, j][0]%2==random.randint(0,1): kr=0
-                if X[i, j][1]%2==random.randint(0,1): kg=0
-                if X[i, j][2]%2==random.randint(0,1): kb=0
-                X[i, j]=(X[i,j][0]+kr, X[i,j][1]+kg, X[i,j][2]+kb)
-    return X
+    payload = float(payload)
+    X = imread(path).astype('int16')
+    Z = X.copy()
+    prob = np.random.uniform(low=0., high=1, size=X.shape)
+    msg = np.random.randint(0, 2, size=X.shape).astype('uint8')
+    sign = np.random.choice([-1, 1], size=X.shape).astype('int16')
+    sign[X%2==msg] = 0
+    sign[(X==0)&(sign==-1)] = 1
+    sign[(X==255)&(sign==1)] = -1
+    X[prob<payload] += sign[prob<payload]
+    return X.astype('uint8')
 # }}}
 
 # {{{ lsbr()
 def lsbr(path, payload):
+    payload = float(payload)
     X = imread(path)
-    sign=[1, -1]
-    for j in range(X.shape[0]):
-        for i in range(X.shape[1]):
-            if random.randint(0,99)>int(float(payload)*100):
-                continue
- 
-            if len(X.shape)==2:
-                k=sign[random.randint(0, 1)]
-                if X[i, j]==0: k=1
-                if X[i, j]==255: k=-1
-                if X[i, j]%2!=random.randint(0,1): # message
-                    if X[i, j]%2==0: X[i, j]+=1
-                    else: X[i, j]-=1
-            else:
-                # message
-                kr=0; Kg=0; kb=0
-
-                if X[i, j][0]%2==0: kr=1
-                else: kr=-1
-
-                if X[i, j][1]%2==0: kg=1
-                else: kg=-1
-
-                if X[i, j][2]%2==0: kb=1
-                else: kb=-1
-
-                if X[i, j][0]%2==random.randint(0,1): kr=0
-                if X[i, j][1]%2==random.randint(0,1): kg=0
-                if X[i, j][2]%2==random.randint(0,1): kb=0
-                X[i, j]=(X[i,j][0]+kr, X[i,j][1]+kg, X[i,j][2]+kb)
+    Z = X.copy()
+    prob = np.random.uniform(low=0., high=1, size=X.shape)
+    msg = np.random.randint(0, 2, size=X.shape).astype('uint8')
+    X[prob<payload] = X[prob<payload] - X[prob<payload]%2 + msg[prob<payload]
+    #print("->", float(np.sum(Z-X!=0))/(X.shape[0]*X.shape[1]*X.shape[2]))
+    print("->", (X-Z).astype('int8'))
     return X
 # }}}
 
