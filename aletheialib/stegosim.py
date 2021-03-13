@@ -199,8 +199,6 @@ def lsbr(path, payload):
     prob = np.random.uniform(low=0., high=1, size=X.shape)
     msg = np.random.randint(0, 2, size=X.shape).astype('uint8')
     X[prob<payload] = X[prob<payload] - X[prob<payload]%2 + msg[prob<payload]
-    #print("->", float(np.sum(Z-X!=0))/(X.shape[0]*X.shape[1]*X.shape[2]))
-    print("->", (X-Z).astype('int8'))
     return X
 # }}}
 
