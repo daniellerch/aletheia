@@ -16,13 +16,52 @@ from aletheialib import utils
 from aletheialib.octave_interface import _embed
 
 import multiprocessing
-from multiprocessing.dummy import Pool as ThreadPool 
+#from multiprocessing.dummy import Pool as ThreadPool 
+from multiprocessing import Pool as ThreadPool 
 from multiprocessing import cpu_count
 
 from imageio import imread, imwrite
 
 
 # {{{ embed_message()
+
+def embed(params):
+    i, path, output_dir, payload, dst_path, embed_fn_saving, embed_fn = params
+    try:
+        basename=os.path.basename(path)
+        dst_path=os.path.join(output_dir, basename)
+        numpy.random.seed(i)
+
+        print("param payload:", payload)
+        if embed_fn_saving:
+            if "-" in payload:
+                rng = payload.split('-')
+                rini = float(rng[0])
+                rend = float(rng[1])
+                rnd_payload = numpy.random.uniform(rini, rend)
+                print("rnd_payload:", rnd_payload)
+                embed_fn(path, rnd_payload, dst_path)
+            else:
+                embed_fn(path, payload, dst_path)
+        else:
+            if "-" in payload:
+                rng = payload.split('-')
+                rini = float(rng[0])
+                rend = float(rng[1])
+                rnd_payload = numpy.random.uniform(rini, rend)
+                print("rnd_payload:", rnd_payload)
+                X=embed_fn(path, rnd_payload)
+            else:
+                X=embed_fn(path, payload)
+            try:
+                imwrite(dst_path, X.astype('uint8'))
+            except Exception as e:
+                print(str(e))
+
+    except Exception as e:
+        print(str(e))
+
+
 def embed_message(embed_fn, path, payload, output_dir, 
                   embed_fn_saving=False):
 
@@ -58,44 +97,22 @@ def embed_message(embed_fn, path, payload, output_dir,
     files = filtered_files
     del filtered_files
 
-    def embed(path):
-        basename=os.path.basename(path)
-        dst_path=os.path.join(output_dir, basename)
 
-        print("param payload:", payload)
-        if embed_fn_saving:
-            if "-" in payload:
-                rng = sys.argv[3].split('-')
-                rini = float(rng[0])
-                rend = float(rng[1])
-                rnd_payload = numpy.random.uniform(rini, rend)
-                print("rnd_payload:", rnd_payload)
-                embed_fn(path, rnd_payload, dst_path)
-            else:
-                embed_fn(path, payload, dst_path)
-        else:
-            if "-" in payload:
-                rng = sys.argv[3].split('-')
-                rini = float(rng[0])
-                rend = float(rng[1])
-                rnd_payload = numpy.random.uniform(rini, rend)
-                print("rnd_payload:", rnd_payload)
-                X=embed_fn(path, rnd_payload)
-            else:
-                X=embed_fn(path, payload)
-            try:
-                imwrite(dst_path, X.astype('uint8'))
-            except Exception as e:
-                print(str(e))
+    params = []
+    i = 0
+    for f in files:
+        params.append( (i, f, output_dir, payload, dst_path, embed_fn_saving, embed_fn) )
+        i += 1
+
 
     # Process thread pool in batches
     batch=1000
-    for i in range(0, len(files), batch):
-        files_batch = files[i:i+batch]
+    for i in range(0, len(params), batch):
+        params_batch = params[i:i+batch]
         n_core=cpu_count()
         print("Using", n_core, "threads")
         pool = ThreadPool(n_core)
-        results = pool.map(embed, files_batch)
+        results = pool.map(embed, params_batch)
         pool.close()
         pool.terminate()
         pool.join()
