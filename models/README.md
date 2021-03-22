@@ -43,11 +43,12 @@ the maximum capacity according to steghide.
 
 | Model file                            | val score | test score | 
 |---------------------------------------|-----------|------------|
+| models/effnetb0-A-alaska2-lsbr.h5     |   0.925   |   0.913    |
 | models/effnetb0-A-alaska2-steghide.h5 |   0.944   |   0.945    |
 | models/effnetb0-B-alaska2-steghide.h5 |   0.762   |   0.697    |
+| models/effnetb0-A-alaska2-nsf5.h5     |   0.788   |   0.762    |
+| models/effnetb0-B-alaska2-nsf5.h5     |   0.676   |   0.680    |
 
-DCI prediction on alaska2 test set: 0.777
-DCI prediction on bossbase (q80) test set: 0.83
 
 
 
