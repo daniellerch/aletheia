@@ -691,6 +691,10 @@ def main():
         cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
         stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
 
+        if len(cover_files)!=len(stego_files):
+            print("ERROR: we expect the same number of cover and stego files");
+            sys.exit(0)
+
         from sklearn.model_selection import train_test_split
         trn_C_files, tv_C_files, trn_S_files, tv_S_files = \
             train_test_split(cover_files, stego_files, 
@@ -899,8 +903,14 @@ def main():
         print("train:", len(trn_cover_files),"+",len(trn_stego_files))
         print("valid:", len(val_cover_files),"+",len(val_stego_files))
 
+        if (not len(trn_cover_files) or not len(trn_stego_files) or
+            not len(val_cover_files) or not len(val_stego_files)):
+            print("ERROR: directory without files found")
+            sys.exit(0)
+
+
         nn = models.NN("effnetb0", model_name)
-        nn.train(trn_cover_files, trn_stego_files, 16,
+        nn.train(trn_cover_files, trn_stego_files, 36, # 36|40
                  val_cover_files, val_stego_files, 10,
                  1000000, early_stopping)
 
@@ -1149,6 +1159,8 @@ def main():
         print("dci-prediction-score:", 1-float(np.sum(inc==1))/(2*len(p_aa)))
 
     # }}}
+
+
 
 
     # {{{ esvm
