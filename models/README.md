@@ -48,7 +48,7 @@ the maximum capacity according to steghide.
 | models/effnetb0-B-alaska2-steghide.h5 |   0.762   |   0.697    |
 | models/effnetb0-A-alaska2-nsf5.h5     |   0.788   |   0.762    |
 | models/effnetb0-B-alaska2-nsf5.h5     |   0.676   |   0.680    |
-
+| models/effnetb0-A-alaska2-lsbm.h5     |   0.913   |   0.918    |
 
 
 
