@@ -60,13 +60,6 @@ COMMANDS:
   - rs:            RS attack.
   - calibration:   Calibration attack to JPEG images.
 
-  ML-based detectors:
-  - esvm-predict:   Predict using eSVM.
-  - e4s-predict:    Predict using EC.
-  - srnet-predict:  Predict using SRNet.
-  - srnet-err:      Score error using SRNet.
-  - srnet-err-icd:  Score ICD error using SRNet.
-
   Feature extractors:
   - srm:           Full Spatial Rich Models.
   - hill-maxsrm:   Selection-Channel-Aware Spatial Rich Models for HILL.
@@ -80,6 +73,7 @@ COMMANDS:
   - hugo-sim:             Embedding using HUGO simulator.
   - wow-sim:              Embedding using WOW simulator.
   - s-uniward-sim:        Embedding using S-UNIWARD simulator.
+  - s-uniward-color-sim:  Embedding using S-UNIWARD color simulator.
   - j-uniward-sim:        Embedding using J-UNIWARD simulator.
   - j-uniward-color-sim:  Embedding using J-UNIWARD color simulator.
   - hill-sim:             Embedding using HILL simulator.
@@ -90,10 +84,18 @@ COMMANDS:
   - nsf5-sim:             Embedding using nsF5 simulator.
   - nsf5-color-sim:       Embedding using nsF5 color simulator.
 
-  Model training:
-  - esvm:     Ensemble of Support Vector Machines.
-  - e4s:      Ensemble Classifiers for Steganalysis.
-  - srnet:    Steganalysis Residual Network.
+  ML-based steganalysis:
+  - split-sets:            Prepare sets for training and testing.
+  - split-sets-dci:        Prepare sets for training and testing (DCI).
+  - effnetb0:              Train a model with EfficientNet B0.
+  - effnetb0-score:        Score with EfficientNet B0.
+  - effnetb0-predict:      Predict with EfficientNet B0.
+  - effnetb0-dci-score:    DCI Score with EfficientNet B0.
+  - effnetb0-dci-predict:  DCI Predict with EfficientNet B0.
+  - esvm:                  Train an ensemble of Support Vector Machines.
+  - e4s:                   Train Ensemble Classifiers for Steganalysis.
+  - esvm-predict:          Predict using eSVM.
+  - e4s-predict:           Predict using EC.
 
   Unsupervised attacks:
   - ats:      Artificial Training Sets.
