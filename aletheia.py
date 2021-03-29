@@ -966,7 +966,7 @@ def main():
         from aletheialib import models
 
         if len(sys.argv)<4:
-            print(sys.argv[0], "effnetb0-score <test-dir> <model-file> [dev]\n")
+            print(sys.argv[0], "effnetb0-predict <test-dir/image> <model-file> [dev]\n")
             print("     test-dir:    Directory containing test images")
             print("     model-file:        Path of the model")
             print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
@@ -986,14 +986,22 @@ def main():
             print("Running with CPU. It could be very slow!")
 
         os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
-        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
-        test_files = sorted(glob.glob(os.path.join(test_dir, '*')))
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
         nn = models.NN("effnetb0")
         nn.load_model(model_file)
 
+        if os.path.isdir(test_dir):
+            test_files = sorted(glob.glob(os.path.join(test_dir, '*')))
+        else:
+            test_files = [test_dir]
+
         test_files = nn.filter_images(test_files)
+        if len(test_files)==0:
+            print("ERROR: please provice valid files")
+            sys.exit(0)
+
+
         pred = nn.predict(test_files, 10)
 
         for i in range(len(pred)):

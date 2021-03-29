@@ -394,6 +394,9 @@ class NN:
         for f in image_list:
             try:
                 img = imread(f)
+                if img.shape!=(512,512,3):
+                    print("NN pred_generator warning: wrong shape:", f)
+                    continue
                 images.append(img[:self.expected_shape[0], :self.expected_shape[1], :])
             except Exception as e:
                 #print(e)
@@ -488,6 +491,8 @@ class NN:
         if len(files)<batch:
             batch=1
         steps = len(files)//batch
+        #print("steps:", steps, "batch:", batch)
+        #print("files:", files[:steps*batch])
         g = self.pred_generator(files[:steps*batch], batch)
         pred = self.model.predict(g, steps=steps, verbose=1)[:,-1]
         if steps*batch<len(files):
