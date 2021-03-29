@@ -479,22 +479,25 @@ class NN:
         return files_ok
         # }}}
 
-    def load_model(self, model_path):
+    def load_model(self, model_path, quiet=False):
         # {{{
         if os.path.exists(model_path):
-            print("Loading", model_path, "...")
+            if not quiet:
+                print("Loading", model_path, "...")
             self.model.load_weights(model_path)
         # }}}
 
     def predict(self, files, batch):
         # {{{
+        verbose = 1
         if len(files)<batch:
             batch=1
+            verbose = 0
         steps = len(files)//batch
         #print("steps:", steps, "batch:", batch)
         #print("files:", files[:steps*batch])
         g = self.pred_generator(files[:steps*batch], batch)
-        pred = self.model.predict(g, steps=steps, verbose=1)[:,-1]
+        pred = self.model.predict(g, steps=steps, verbose=verbose)[:,-1]
         if steps*batch<len(files):
             g = self.pred_generator(files[steps*batch:], batch)
             pred = pred.tolist() + self.model.predict(g, steps=1, verbose=1)[:,-1].tolist()
