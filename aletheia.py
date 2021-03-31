@@ -32,6 +32,11 @@ from aletheialib.octave_interface import _attack
 
 def main():
 
+    auto_doc="\n" \
+    "  Automatic steganalysis:\n" \
+    "  - auto:      Try different steganalysis methods."
+    #"  - auto-dci:      Try different steganalysis methods with DCI."
+
     #"  - aump:          Adaptive Steganalysis Attack.\n" \
     attacks_doc="\n" \
     "  Statistical attacks:\n" \
@@ -82,7 +87,7 @@ def main():
     "  - scrmq1:        Spatial Color Rich Models with fixed quantization q=1c.\n" \
     "  - gfr:           JPEG steganalysis with 2D Gabor Filters."
 
-    auto_doc="\n" \
+    ats_doc="\n" \
     "  Unsupervised attacks:\n" \
     "  - ats:      Artificial Training Sets."
 
@@ -100,17 +105,120 @@ def main():
     if len(sys.argv)<2:
         print(sys.argv[0], "<command>\n")
         print("COMMANDS:")
+        print(auto_doc)
         print(attacks_doc)
         print(feaextract_doc)
         print(embsim_doc)
         print(model_doc)
-        print(auto_doc)
+        print(ats_doc)
         print(tools_doc)
         print("\n")
         sys.exit(0)
 
 
     if False: pass
+
+
+
+    # -- AUTO --
+
+    # {{{ auto
+    elif sys.argv[1]=="auto":
+   
+        if len(sys.argv)!=3:
+            print(sys.argv[0], "auto <image>\n")
+            sys.exit(0)
+
+        if not utils.is_valid_image(sys.argv[2]):
+            print("Please, provide a valid image")
+            sys.exit(0)
+
+
+        from aletheialib import models
+
+        threshold=0.05
+        path = utils.absolute_path(sys.argv[2])
+        _, ext = os.path.splitext(path)
+        im=Image.open(path)
+        found = False
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+
+
+        os.environ["CUDA_VISIBLE_DEVICES"] = "CPU" # XXX: read from input
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+        if im.mode in ['RGB', 'RGBA', 'RGBX']:
+            channels = [1, 2, 3]
+        else:
+            channels = [1]
+
+        # JPEG
+        if ext.lower() in ['.jpg', '.jpeg']:
+
+            nn = models.NN("effnetb0")
+            test_files = [path]
+            test_files = nn.filter_images(test_files)
+            if len(test_files)==0:
+                print("ERROR: please provice valid files")
+                sys.exit(0)
+
+            print("\nChecking for nsF5 ...")
+            model_path = os.path.join(dir_path, "models/effnetb0-A-alaska2-nsf5.h5")
+            nn.load_model(model_path, quiet=True)
+            pred = nn.predict(test_files, 10)
+            for i in range(len(pred)):
+                print("Probability of being stego:", round(pred[i],3))
+                if pred[i]>0.5:
+                    found = True
+
+            print("\nChecking for Steghide ...")
+            model_path = os.path.join(dir_path, "models/effnetb0-A-alaska2-steghide.h5")
+            nn.load_model(model_path, quiet=True)
+            pred = nn.predict(test_files, 10)
+            for i in range(len(pred)):
+                print("Probability of being stego:", round(pred[i],3))
+                if pred[i]>0.5:
+                    found = True
+
+
+        # Bitmap
+        else:
+            print("\nChecking for LSB replacement ...")
+            for i in channels:
+                beta = _attack('TRIPLES', path, params={"channel":i})["data"][0][0]
+                if beta>threshold:
+                    print(f"channel {i}: hidden data in {round(100*beta,2)}% of the image")
+                    found = True
+
+            print("\nChecking for LSB matching ...")
+            nn = models.NN("effnetb0")
+            model_path = os.path.join(dir_path, "models/effnetb0-A-alaska2-lsbm.h5")
+            nn.load_model(model_path)
+            test_files = [path]
+            test_files = nn.filter_images(test_files)
+            if len(test_files)==0:
+                print("ERROR: please provice valid files")
+            else:
+                pred = nn.predict(test_files, 10)
+                for i in range(len(pred)):
+                    print("Probability of being stego:", round(pred[i],3))
+                    if pred[i]>0.5:
+                        found = True
+
+
+
+
+        if not found:
+            print("\nNo hidden data found\n")
+        else:
+            print("")
+
+
+ 
+        sys.exit(0)
+    # }}}
+
+
 
 
     # -- ATTACKS --
@@ -139,16 +247,16 @@ def main():
                 print("No hidden data found")
 
             if alpha_R>=threshold:
-                print("Hiden data found in channel R", alpha_R)
+                print("Hidden data found in channel R", alpha_R)
             if alpha_G>=threshold:
-                print("Hiden data found in channel G", alpha_G)
+                print("Hidden data found in channel G", alpha_G)
             if alpha_B>=threshold:
-                print("Hiden data found in channel B", alpha_B)
+                print("Hidden data found in channel B", alpha_B)
 
         else:
             alpha = _attack('SP', path, params={"channel":1})["data"][0][0]
             if alpha>=threshold:
-                print("Hiden data found", alpha)
+                print("Hidden data found", alpha)
             else:
                 print("No hidden data found")
  
@@ -178,16 +286,16 @@ def main():
                 print("No hidden data found")
 
             if alpha_R>=threshold:
-                print("Hiden data found in channel R", alpha_R)
+                print("Hidden data found in channel R", alpha_R)
             if alpha_G>=threshold:
-                print("Hiden data found in channel G", alpha_G)
+                print("Hidden data found in channel G", alpha_G)
             if alpha_B>=threshold:
-                print("Hiden data found in channel B", alpha_B)
+                print("Hidden data found in channel B", alpha_B)
 
         else:
             alpha = _attack('WS', path, params={"channel":1})["data"][0][0]
             if alpha>=threshold:
-                print("Hiden data found", alpha)
+                print("Hidden data found", alpha)
             else:
                 print("No hidden data found")
  
@@ -218,16 +326,16 @@ def main():
                 print("No hidden data found")
 
             if alpha_R>=threshold:
-                print("Hiden data found in channel R", alpha_R)
+                print("Hidden data found in channel R", alpha_R)
             if alpha_G>=threshold:
-                print("Hiden data found in channel G", alpha_G)
+                print("Hidden data found in channel G", alpha_G)
             if alpha_B>=threshold:
-                print("Hiden data found in channel B", alpha_B)
+                print("Hidden data found in channel B", alpha_B)
 
         else:
             alpha = _attack('TRIPLES', path, params={"channel":1})["data"][0][0]
             if alpha>=threshold:
-                print("Hiden data found", alpha)
+                print("Hidden data found", alpha)
             else:
                 print("No hidden data found")
  
@@ -279,7 +387,7 @@ def main():
             if bitrate<threshold:
                 print("No hidden data found")
             else:
-                print("Hiden data found"), bitrate
+                print("Hidden data found"), bitrate
         else:
             bitrate_R=attacks.spa_image(I, 0)
             bitrate_G=attacks.spa_image(I, 1)
@@ -290,11 +398,11 @@ def main():
                 sys.exit(0)
 
             if bitrate_R>=threshold:
-                print("Hiden data found in channel R", bitrate_R)
+                print("Hidden data found in channel R", bitrate_R)
             if bitrate_G>=threshold:
-                print("Hiden data found in channel G", bitrate_G)
+                print("Hidden data found in channel G", bitrate_G)
             if bitrate_B>=threshold:
-                print("Hiden data found in channel B", bitrate_B)
+                print("Hidden data found in channel B", bitrate_B)
         sys.exit(0)
     # }}}
 
@@ -318,7 +426,7 @@ def main():
             if bitrate<threshold:
                 print("No hidden data found")
             else:
-                print("Hiden data found", bitrate)
+                print("Hidden data found", bitrate)
         else:
             bitrate_R=attacks.rs_image(I, 0)
             bitrate_G=attacks.rs_image(I, 1)
@@ -329,11 +437,11 @@ def main():
                 sys.exit(0)
 
             if bitrate_R>=threshold:
-                print("Hiden data found in channel R", bitrate_R)
+                print("Hidden data found in channel R", bitrate_R)
             if bitrate_G>=threshold:
-                print("Hiden data found in channel G", bitrate_G)
+                print("Hidden data found in channel G", bitrate_G)
             if bitrate_B>=threshold:
-                print("Hiden data found in channel B", bitrate_B)
+                print("Hidden data found in channel B", bitrate_B)
             sys.exit(0)
     # }}}
 
@@ -691,6 +799,10 @@ def main():
         cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
         stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
 
+        if len(cover_files)!=len(stego_files):
+            print("ERROR: we expect the same number of cover and stego files");
+            sys.exit(0)
+
         from sklearn.model_selection import train_test_split
         trn_C_files, tv_C_files, trn_S_files, tv_S_files = \
             train_test_split(cover_files, stego_files, 
@@ -899,8 +1011,14 @@ def main():
         print("train:", len(trn_cover_files),"+",len(trn_stego_files))
         print("valid:", len(val_cover_files),"+",len(val_stego_files))
 
+        if (not len(trn_cover_files) or not len(trn_stego_files) or
+            not len(val_cover_files) or not len(val_stego_files)):
+            print("ERROR: directory without files found")
+            sys.exit(0)
+
+
         nn = models.NN("effnetb0", model_name)
-        nn.train(trn_cover_files, trn_stego_files, 16,
+        nn.train(trn_cover_files, trn_stego_files, 36, # 36|40
                  val_cover_files, val_stego_files, 10,
                  1000000, early_stopping)
 
@@ -956,7 +1074,7 @@ def main():
         from aletheialib import models
 
         if len(sys.argv)<4:
-            print(sys.argv[0], "effnetb0-score <test-dir> <model-file> [dev]\n")
+            print(sys.argv[0], "effnetb0-predict <test-dir/image> <model-file> [dev]\n")
             print("     test-dir:    Directory containing test images")
             print("     model-file:        Path of the model")
             print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
@@ -976,14 +1094,22 @@ def main():
             print("Running with CPU. It could be very slow!")
 
         os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
-        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
-        test_files = sorted(glob.glob(os.path.join(test_dir, '*')))
+        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
         nn = models.NN("effnetb0")
         nn.load_model(model_file)
 
+        if os.path.isdir(test_dir):
+            test_files = sorted(glob.glob(os.path.join(test_dir, '*')))
+        else:
+            test_files = [test_dir]
+
         test_files = nn.filter_images(test_files)
+        if len(test_files)==0:
+            print("ERROR: please provice valid files")
+            sys.exit(0)
+
+
         pred = nn.predict(test_files, 10)
 
         for i in range(len(pred)):
@@ -1149,6 +1275,8 @@ def main():
         print("dci-prediction-score:", 1-float(np.sum(inc==1))/(2*len(p_aa)))
 
     # }}}
+
+
 
 
     # {{{ esvm

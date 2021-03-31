@@ -38,16 +38,19 @@ for training.
 The Alaska2 database contains 75000 images and can be downloaded from 
 [here](https://www.kaggle.com/c/alaska2-image-steganalysis).
 
-The size of the message embedded is a random number between 100 bytes and 
-the maximum capacity according to steghide.
+For steghide, the size of the message embedded is a random number between 
+100 bytes and the maximum capacity according to steghide. For the other
+algorithms the payload is a random number between 0.05 and 0.50.
 
 | Model file                            | val score | test score | 
 |---------------------------------------|-----------|------------|
+| models/effnetb0-A-alaska2-lsbr.h5     |   0.925   |   0.913    |
 | models/effnetb0-A-alaska2-steghide.h5 |   0.944   |   0.945    |
 | models/effnetb0-B-alaska2-steghide.h5 |   0.762   |   0.697    |
-
-DCI prediction on alaska2 test set: 0.777
-DCI prediction on bossbase (q80) test set: 0.83
+| models/effnetb0-A-alaska2-nsf5.h5     |   0.788   |   0.762    |
+| models/effnetb0-B-alaska2-nsf5.h5     |   0.685   |   0.675    |
+| models/effnetb0-A-alaska2-lsbm.h5     |   0.913   |   0.918    |
+| models/effnetb0-B-alaska2-lsbm.h5     |   0.838   |   0.849    |
 
 
 
