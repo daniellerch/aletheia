@@ -178,11 +178,13 @@ def custom(path, command, dst_path):
 
 # {{{ lsbm()
 def lsbm(path, payload):
+    s = int.from_bytes(os.urandom(4), 'big')
+    numpy.random.seed(s)
     payload = float(payload)
     X = imread(path).astype('int16')
     Z = X.copy()
     prob = np.random.uniform(low=0., high=1, size=X.shape)
-    msg = np.random.randint(0, 2, size=X.shape).astype('uint8')
+    msg = np.random.randint(0, 2, size=X.shape).astype('int16')
     sign = np.random.choice([-1, 1], size=X.shape).astype('int16')
     sign[X%2==msg] = 0
     sign[(X==0)&(sign==-1)] = 1
@@ -193,6 +195,8 @@ def lsbm(path, payload):
 
 # {{{ lsbr()
 def lsbr(path, payload):
+    s = int.from_bytes(os.urandom(4), 'big')
+    numpy.random.seed(s)
     payload = float(payload)
     X = imread(path)
     Z = X.copy()
