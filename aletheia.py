@@ -189,11 +189,13 @@ def main():
                 if beta>threshold:
                     print(f"channel {i}: hidden data in {round(100*beta,2)}% of the image")
                     found = True
+            if not found:
+                print("Hidden data not found")
 
             print("\nChecking for LSB matching ...")
             nn = models.NN("effnetb0")
             model_path = os.path.join(dir_path, "models/effnetb0-A-alaska2-lsbm.h5")
-            nn.load_model(model_path)
+            nn.load_model(model_path, quiet=True)
             test_files = [path]
             test_files = nn.filter_images(test_files)
             if len(test_files)==0:

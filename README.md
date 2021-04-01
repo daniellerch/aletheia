@@ -4,6 +4,31 @@
 Aletheia is an open source image steganalysis tool for the detection of hidden messages in images. To achieve its objectives, Aletheia uses state-of-the-art machine learning techniques. It is capable of detecting several different steganographic methods as for example LSB replacement, LSB matching and some kind of adaptive schemes.
 
 
+## Examples:
+
+### JPEG images
+```bash
+./aletheia.py auto sample_images/lena_f5.jpg
+
+Checking for nsF5 ...
+Probability of being stego: 0.847
+
+Checking for Steghide ...
+Probability of being stego: 0.0
+```
+
+### Bitmap images
+```bash
+./aletheia.py auto sample_images/alaska2/74648_lsbm.png 
+ 
+ Checking for LSB replacement ...
+ Hidden data not found
+
+ Checking for LSB matching ...
+ Probability of being stego: 1.0
+```
+
+
 ## Documentation
 
 - [Install](/doc/INSTALL.md)
