@@ -33,9 +33,7 @@ Probability of being stego: 0.0
 
 - [Install](/doc/INSTALL.md)
 - [Statistical attacks to LSB replacement](/doc/LSBR.md)
-- [Machine Learning based attacks](/doc/ML.md)
-- [Using pre-built models](/doc/PRE-BUILT.md)
-- [The ATS attack](/doc/ATS.md)
+- [Detection using pre-trained models](/doc/MODELS.md)
 - [Brute-force password attack](/doc/BRUTE-FORCE.md)
 - Examples:
 	* [Steganalysis of OpenPuff](/doc/OPENPUFF.md)
