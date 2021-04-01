@@ -42,6 +42,7 @@ Probability of being stego: 0.0
 	* [Steganalysis of OpenStego](/doc/OPENSTEGO.md)
 	* [Steganalysis of F5](/doc/F5.md)
 	* [Steganalysis of Steghide](/doc/STEGHIDE.md)
+- [How to cite Aletheia?](/doc/CITING.md)
 - [References](/doc/REFERENCES.md)
 
 
