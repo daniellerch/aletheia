@@ -6,7 +6,7 @@ Aletheia is an open source image steganalysis tool for the detection of hidden m
 
 ## Examples:
 
-### JPEG images
+#### JPEG images
 ```bash
 ./aletheia.py auto sample_images/lena_f5.jpg
 
@@ -17,7 +17,7 @@ Checking for Steghide ...
 Probability of being stego: 0.0
 ```
 
-### Bitmap images
+#### Bitmap images
 ```bash
 ./aletheia.py auto sample_images/alaska2/74648_lsbm.png 
  
