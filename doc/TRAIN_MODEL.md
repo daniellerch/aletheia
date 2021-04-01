@@ -2,9 +2,9 @@
 
 ### Training new models
 
-Modern steganography methods are very difficult to detect and there is not enough with simple statistical attacks. We need to use deep learning.
+Modern steganography methods are very difficult to detect and simple statistical attacks are not enough. We need to use deep learning.
 
-To use deep learning we need to prepare a training dataset, used to train our classifier. For this example we are going to use the dataset of the Alaska 2 competition, tha you can find [here](https://www.kaggle.com/c/alaska2-image-steganalysis).
+To use deep learning we need to prepare a training dataset, used to train our classifier. For this example we are going to use the dataset of the Alaska 2 competition, that you can find [here](https://www.kaggle.com/c/alaska2-image-steganalysis).
 
 ## Preparing the dataset
 
