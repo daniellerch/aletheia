@@ -2,7 +2,7 @@
 ### How to cite Aletheia?
 
 If you use Aletheia in a publication I would appreciate if you cite it. Please
-refer to the [version-independent Zendo DOI](https://zenodo.org/record/4655810) 
+refer to the [version-independent Zendo DOI](https://zenodo.org/record/4655945) 
 or use directly the folloging BibTeX entry:
 
 ```
