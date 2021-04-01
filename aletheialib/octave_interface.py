@@ -25,10 +25,18 @@ M_BIN="octave -q --no-gui --eval"
 FEAEXT_1CH = ["GFR", "DCTR", "SRM", "SRMQ1", "HILL_MAXSRM", "HILL_sigma_spam_PSRM"]
 FEAEXT_3CH = ["SCRMQ1", "GFR", "SRM", "DCTR"]
 
+# {{{ check_octave()
+def check_octave():
+    if not shutil.which("octave"):
+        print("ERROR: you need to install Octave to run this command!");
+        sys.exit(0)
+# }}}
 
 # {{{ _embed()
 def _embed(sim, path, payload, dst_path=None):
     
+    check_octave()
+
     payload = str(payload)
     for i in range(3):
         try:
@@ -110,6 +118,9 @@ def _embed(sim, path, payload, dst_path=None):
 
 # {{{ _extract()
 def _extract(extractor_name, path, params={}):
+
+    check_octave()
+
     fdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(fdir, os.pardir))
     m_path=os.path.join(basedir, 'external', 'octave')
@@ -170,7 +181,9 @@ def _extract(extractor_name, path, params={}):
 
 # {{{ _jpeg()
 def _jpeg(fn_name, path):
-    
+ 
+    check_octave()
+
     fn_names_with_return = ['jpeg_read_struct']
 
     for i in range(3):
@@ -220,6 +233,9 @@ def _jpeg(fn_name, path):
 
 # {{{ _attack()
 def _attack(attack_name, path, params={}):
+
+    check_octave()
+
     fdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(fdir, os.pardir))
     m_path=os.path.join(basedir, 'external', 'octave')
