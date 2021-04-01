@@ -52,6 +52,9 @@ $ ./aletheia.py
 
 COMMANDS:
 
+  Automatic steganalysis:
+  - auto:      Try different steganalysis methods.
+
   Statistical attacks:
   - sp:            Sample Pairs Analysis (Octave vesion).
   - ws:            Weighted Stego Attack.
@@ -107,7 +110,6 @@ COMMANDS:
   - print-dct-diffs:   Differences between the DCT coefficients of two JPEG images.
   - rm-alpha:          Opacity of the alpha channel to 255.
   - prep-ml-exp:       Prepare an experiment for testing ML tools.
-
 
 
 ```
