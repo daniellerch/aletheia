@@ -8,7 +8,7 @@ or use directly the folloging BibTeX entry:
 ```
 @software{daniel_lerch_hostalot_2021_4655945,
   author       = {Daniel Lerch-Hostalot},
-  title        = {daniellerch/aletheia: Release v0.1},
+  title        = {Aletheia},
   month        = apr,
   year         = 2021,
   publisher    = {Zenodo},
