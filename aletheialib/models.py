@@ -292,6 +292,13 @@ class NN:
                 print("Loading", path, "...")
                 self.model.load_weights(path)
 
+        self.replace_method = False
+
+        if self.replace_method:
+            print("WARNING! replace_method enabled")
+            self.replace_base_str = "NSF5"
+            self.replace_list = ['NSF5', 'JUNIW', 'STEGHIDE', 'OUTGUESS']
+
         # }}}
 
     def create_model_effnetb0(self, input_shape=None):
@@ -330,6 +337,11 @@ class NN:
                 try:
                     C_path = random.choice(cover_list)
                     S_path = random.choice(stego_list)
+
+                    if self.replace_method:
+                       S_path = S_path.replace(self.replace_base_str, 
+                                               random.choice(self.replace_list))
+
                     Ic = self.rot_flip(imread(C_path))
                     Is = self.rot_flip(imread(S_path))
                     if Ic.shape!=(512,512,3) or Is.shape!=(512,512,3):
@@ -339,8 +351,9 @@ class NN:
                     S.append(Is)
                     y.append([0, 1])
                     bs -= 2
-                except:
+                except Exception as e:
                     print("NN train_generator Warning: cannot read image:", C_path, S_path)
+                    print(e)
                     continue
 
             X = np.vstack((C,S)).astype('float32')/255
@@ -366,6 +379,11 @@ class NN:
                     try:
                         C_path = cover_list[i]
                         S_path = stego_list[i]
+
+                        if self.replace_method:
+                           S_path = S_path.replace(self.replace_base_str, 
+                                                   random.choice(self.replace_list))
+
                         Ic = imread(C_path)
                         Is = imread(S_path)
                         if Ic.shape!=(512,512,3) or Is.shape!=(512,512,3):
@@ -450,7 +468,7 @@ class NN:
 
         steps_train = int((len(trn_C_list)+len(trn_S_list))/trn_batch)
         g_train = self.train_generator(trn_C_list, trn_S_list, trn_batch)
-        #steps_train = 100
+        steps_train = 1000 # XXX
 
         steps_valid = int((len(val_C_list)+len(val_S_list))/val_batch)
         g_valid = self.valid_generator(val_C_list, val_S_list, val_batch)
