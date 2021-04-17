@@ -275,13 +275,13 @@ from tensorflow.keras import callbacks
 
 class NN: 
 
-    def __init__(self, network, model_name=None):
+    def __init__(self, network, model_name=None, shape=(512,512,3)):
         # {{{
         self.model_dir = 'models'
         self.model_name = model_name
+        self.shape = shape
         if network == "effnetb0":
             self.model = self.create_model_effnetb0()
-            self.expected_shape = (512,512,3)
         else:
             print("NN __init__ Error: network not found")
             sys.exit(0)
@@ -301,10 +301,9 @@ class NN:
 
         # }}}
 
-    def create_model_effnetb0(self, input_shape=None):
+    def create_model_effnetb0(self):
         # {{{
-        if input_shape == None:
-            input_shape = (512, 512, 3)
+        input_shape = self.shape
 
         model = tf.keras.Sequential([
             efn.EfficientNetB0(
@@ -344,7 +343,8 @@ class NN:
 
                     Ic = self.rot_flip(imread(C_path))
                     Is = self.rot_flip(imread(S_path))
-                    if Ic.shape!=(512,512,3) or Is.shape!=(512,512,3):
+                    if Ic.shape!=self.shape or Is.shape!=self.shape:
+                        print("WARNING: wrong shape", Ic.shape)
                         continue
                     C.append(Ic)
                     y.append([1, 0])
@@ -386,7 +386,7 @@ class NN:
 
                         Ic = imread(C_path)
                         Is = imread(S_path)
-                        if Ic.shape!=(512,512,3) or Is.shape!=(512,512,3):
+                        if Ic.shape!=self.shape or Is.shape!=self.shape:
                             print("NN valid_generator warning: wrong shape:", C_path, S_path)
                             continue
                         C.append(Ic)
@@ -412,10 +412,10 @@ class NN:
         for f in image_list:
             try:
                 img = imread(f)
-                if img.shape!=(512,512,3):
+                if img.shape!=self.shape:
                     print("NN pred_generator warning: wrong shape:", f)
                     continue
-                images.append(img[:self.expected_shape[0], :self.expected_shape[1], :])
+                images.append(img[:self.shape[0], :self.shape[1], :])
             except Exception as e:
                 #print(e)
                 print("NN pred_generator warning: cannot read image:", f)
@@ -483,15 +483,15 @@ class NN:
         files_ok = []
         for f in files:
             img = imread(f)
-            if len(img.shape)!=3 or img.shape[2] != self.expected_shape[2]:
+            if len(img.shape)!=3 or img.shape[2] != self.shape[2]:
                 print("WARNING: image ignored:", f, ", expected number of channels:", 
-                       self.expected_shape[2])
+                       self.shape[2])
                 continue
 
-            if (img.shape[0] < self.expected_shape[0] or 
-                img.shape[1] < self.expected_shape[1]):
+            if (img.shape[0] < self.shape[0] or 
+                img.shape[1] < self.shape[1]):
                 print("WARNING: image ignored:", f, ", image too small, expected:", 
-                       self.expected_shape[0], "x", self.expected_shape[1])
+                       self.shape[0], "x", self.shape[1])
                 continue
             files_ok.append(f)
         return files_ok
