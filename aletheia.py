@@ -28,6 +28,10 @@ from aletheialib import stegosim, feaext
 from aletheialib.octave_interface import _attack
 
 
+def check_bin(cmd):
+    if not shutil.which(cmd):
+        print("ERROR: you need to install "+cmd+" to run this command!");
+        sys.exit(0)
 
 
 def main():
