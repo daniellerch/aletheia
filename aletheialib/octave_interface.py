@@ -32,8 +32,8 @@ def check_octave():
         sys.exit(0)
 # }}}
 
-# {{{ _embed()
-def _embed(sim, path, payload, dst_path=None):
+# {{{ embed()
+def embed(sim, path, payload, dst_path=None):
     
     check_octave()
 
@@ -274,5 +274,7 @@ def _attack(attack_name, path, params={}):
 
     return data
 # }}}
+
+
 
 

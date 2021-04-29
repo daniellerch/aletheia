@@ -788,6 +788,34 @@ def main():
         stegosim.embed_message(stegosim.experimental, sys.argv[2], sys.argv[3], sys.argv[4])
     # }}}
 
+    # {{{ steghide-sim
+    elif sys.argv[1]=="steghide-sim":
+
+        if len(sys.argv)!=5:
+            print(sys.argv[0], "steghide-sim <image/dir> <payload> <output-dir>")
+            sys.exit(0)
+
+        check_bin("steghide")
+
+        stegosim.embed_message(stegosim.steghide, sys.argv[2], sys.argv[3], sys.argv[4],
+                      embed_fn_saving=True)
+    # }}}
+
+    # {{{ steganogan-sim
+    elif sys.argv[1]=="steganogan-sim":
+
+        if len(sys.argv)!=5:
+            print(sys.argv[0], "steganogan-sim <image/dir> <payload> <output-dir>")
+            sys.exit(0)
+
+        check_bin("steghide")
+
+        stegosim.embed_message(stegosim.steganogan, sys.argv[2], sys.argv[3], sys.argv[4],
+                      embed_fn_saving=True)
+    # }}}
+
+
+
 
     # -- MODEL TRAINING --
 

@@ -3,6 +3,7 @@ import sys
 import scipy
 import logging
 import numpy
+import string
 import tempfile
 import shutil
 import numpy
@@ -15,7 +16,7 @@ from scipy.io import savemat, loadmat
 from PIL import Image
 
 from aletheialib import utils
-from aletheialib.octave_interface import _embed
+from aletheialib import octave_interface 
 
 import multiprocessing
 #from multiprocessing.dummy import Pool as ThreadPool 
@@ -34,7 +35,6 @@ def embed(params):
         dst_path=os.path.join(output_dir, basename)
         numpy.random.seed(i)
 
-        print("param payload:", payload)
         if embed_fn_saving:
             if "-" in payload:
                 rng = payload.split('-')
@@ -123,47 +123,49 @@ def embed_message(embed_fn, path, payload, output_dir,
 # }}}
 
 
+
+
 def wow(path, payload):
-    return _embed('wow', path, payload)
+    return octave_interface.embed('wow', path, payload)
 
 def s_uniward(path, payload):
-    return _embed('s_uniward', path, payload)
+    return octave_interface.embed('s_uniward', path, payload)
 
 def s_uniward_color(path, payload):
-    return _embed('s_uniward_color', path, payload)
+    return octave_interface.embed('s_uniward_color', path, payload)
 
 def j_uniward(path, payload, dst_path):
-    return _embed('j_uniward', path, payload, dst_path)
+    return octave_interface.embed('j_uniward', path, payload, dst_path)
 
 def j_uniward_color(path, payload, dst_path):
-    return _embed('j_uniward_color', path, payload, dst_path)
+    return octave_interface.embed('j_uniward_color', path, payload, dst_path)
 
 def hugo(path, payload):
-    return _embed('hugo', path, payload)
+    return octave_interface.embed('hugo', path, payload)
 
 def hill(path, payload):
-    return _embed('hill', path, payload)
+    return octave_interface.embed('hill', path, payload)
 
 def ebs(path, payload, dst_path):
-    return _embed('ebs', path, payload, dst_path)
+    return octave_interface.embed('ebs', path, payload, dst_path)
 
 def ebs_color(path, payload, dst_path):
-    return _embed('ebs_color', path, payload, dst_path)
+    return octave_interface.embed('ebs_color', path, payload, dst_path)
 
 def ued(path, payload, dst_path):
-    return _embed('ued', path, payload, dst_path)
+    return octave_interface.embed('ued', path, payload, dst_path)
 
 def ued_color(path, payload, dst_path):
-    return _embed('ued_color', path, payload, dst_path)
+    return octave_interface.embed('ued_color', path, payload, dst_path)
 
 def nsf5(path, payload, dst_path):
-    return _embed('nsf5', path, payload, dst_path)
+    return octave_interface.embed('nsf5', path, payload, dst_path)
 
 def nsf5_color(path, payload, dst_path):
-    return _embed('nsf5_color', path, payload, dst_path)
+    return octave_interface.embed('nsf5_color', path, payload, dst_path)
 
 def experimental(path, payload):
-    return _embed('experimental', path, payload)
+    return octave_interface.embed('experimental', path, payload)
 
 def custom(path, command, dst_path):
     bn = os.path.basename(path)
@@ -205,6 +207,74 @@ def lsbr(path, payload):
     X[prob<payload] = X[prob<payload] - X[prob<payload]%2 + msg[prob<payload]
     return X
 # }}}
+
+# {{{ steghide()
+def steghide(path, payload, dst_path):
+
+    p=subprocess.Popen("steghide info "+path, \
+                       shell=True,  
+                       stdout=subprocess.PIPE,   
+                       stdin=subprocess.PIPE, 
+                       stderr=subprocess.DEVNULL) 
+    output, err = p.communicate(input=b'y')   
+    status = p.wait() 
+    output = output.decode()   
+ 
+    found = False
+    capacity = 0.0
+    for line in output.splitlines():
+        if "capacity" in line:  
+            m = 1 
+            line = line.replace("capacity: ", "") 
+            if "KB" in line: 
+                line = line.replace("KB", "") 
+                m = 1024  
+            elif "MB" in line:  
+                line = line.replace("MB", "") 
+                m = 1024*1024 
+            elif "Byte" in line: 
+                line = line.replace("Byte", "")  
+     
+            capacity = int(float(line)*m) 
+            found = True
+            break
+
+    if not found:
+        print("ERROR: can not get capacity for", path)
+        sys.exit(0)
+
+    nbytes = int(capacity*float(payload));
+
+    password = ''.join(random.sample(string.ascii_letters+string.digits, 8))
+
+    secret = open("/tmp/secret-"+password+".data", "wb")                     
+    secret.write(os.urandom(nbytes))                                         
+    secret.close()     
+
+
+    cmd = "steghide embed -cf "+path+" -ef /tmp/secret-"+password+".data -sf " \
+          +dst_path+" -p "+password+" -Z -q"
+    os.system(cmd)                                                           
+    os.remove("/tmp/secret-"+password+".data")  
+
+# }}}
+
+# {{{ steganogan()
+def steganogan(path, payload, dst_path):
+
+    I = imread(path)
+    capacity = 1
+    for m in I.shape:
+        capacity *= m
+    nbytes = int(capacity*float(payload)/8);
+    #print("nbytes:", nbytes)
+
+    msg = ''.join(random.choice(string.ascii_letters+string.digits) for i in range(nbytes))
+    cmd = "steganogan encode "+path+" "+msg+" -o "+dst_path
+    os.system(cmd)                                                           
+
+# }}}
+
 
 # {{{ embedding_fn()
 def embedding_fn(name):
