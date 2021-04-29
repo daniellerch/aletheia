@@ -9,21 +9,25 @@ Aletheia is an open source image steganalysis tool for the detection of hidden m
 #### JPEG images
 ```bash
 ./aletheia.py auto sample_images/alaska2jpg
+...
 
-                        Outguess  Steghide  nsF5 *
---------------------------------------------------
-08929_nsf5.jpg          0.0       0.0       1.0
-74006.jpg               0.0       0.0       0.2
-76538_steghide.jpg      0.0       1.0       0.2
-04965.jpg               0.0       0.0       0.2
-64639_outguess.jpg      1.0       1.0       0.6
-72950_nsf5.jpg          0.0       0.0       1.0
-09098_steghide.jpg      0.0       1.0       0.4
-35800_outguess.jpg      1.0       1.0       1.0
-08452_outguess.jpg      1.0       1.0       0.6
-23199_steghide.jpg      0.0       0.7       0.6
-27733_nsf5.jpg          0.0       0.0       0.9
-01294.jpg               0.0       0.0       0.3
+                        Outguess  Steghide  nsF5  J-UNIWARD *
+-------------------------------------------------------------
+08929_nsf5.jpg          0.0       0.0       1.0       0.0
+74006.jpg               0.0       0.0       0.3       0.1
+45762_juniw.jpg         0.0       0.0       0.2       0.6
+76538_steghide.jpg      0.0       1.0       0.2       0.7
+04965.jpg               0.0       0.0       0.1       0.1
+35517_juniw.jpg         0.0       0.0       0.1       0.8
+64639_outguess.jpg      1.0       1.0       0.9       0.6
+01497_juniw.jpg         0.0       0.0       0.2       0.7
+72950_nsf5.jpg          0.0       0.0       0.9       0.5
+09098_steghide.jpg      0.0       1.0       0.4       0.0
+35800_outguess.jpg      1.0       1.0       0.8       1.0
+08452_outguess.jpg      1.0       1.0       0.7       1.0
+23199_steghide.jpg      0.0       0.7       0.5       0.2
+27733_nsf5.jpg          0.0       0.0       0.9       0.4
+01294.jpg               0.0       0.0       0.2       0.5
 
 * Probability of being stego using the indicated steganographic method.
 

@@ -180,11 +180,15 @@ def main():
             nn.load_model(model_path, quiet=True)
             nsf5_pred = nn.predict(jpg_files, 10)
 
+            model_path = os.path.join(dir_path, "models/effnetb0-A-alaska2-juniw.h5")
+            nn.load_model(model_path, quiet=True)
+            juniw_pred = nn.predict(jpg_files, 10)
+
 
             mx = 20
             print("")
-            print(' '*mx + "    Outguess  Steghide  nsF5 *")
-            print('-'*mx + "------------------------------")
+            print(' '*mx + "    Outguess  Steghide  nsF5  J-UNIWARD *")
+            print('-'*mx + "-----------------------------------------")
             for i in range(len(jpg_files)):
                 name = os.path.basename(jpg_files[i])
                 if len(name)>mx:
@@ -196,6 +200,7 @@ def main():
                       "  ", round(outguess_pred[i],1), 
                       "     ", round(steghide_pred[i],1), 
                       "     ", round(nsf5_pred[i],1), 
+                      "     ", round(juniw_pred[i],1), 
                       )
 
         # BITMAP
