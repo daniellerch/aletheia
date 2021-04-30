@@ -38,20 +38,20 @@ Aletheia is an open source image steganalysis tool for the detection of hidden m
 $ ./aletheia.py auto sample_images/alaska2
 ...
 
-                        LSBR      LSBM   SteganoGAN   HILL *                                              
-------------------------------------------------------------                                              
-25422.png               0.0       0.0       0.0       0.0                                        
-74051_hill.png          0.0       0.0       0.0       0.9                                        
-04686.png               0.0       0.0       0.0       0.0                                        
-37831_lsbm.png          1.0       1.0       1.0       0.7                                        
-34962_hill.png          0.0       0.0       0.0       0.5                                        
-01502_steganogan.png    0.8       1.0       1.0       1.0                                        
-00839_hill.png          0.0       0.8       0.8       1.0                                        
-22845_steganogan.png    0.8       1.0       1.0       1.0                                        
-46694_steganogan.png    0.7       1.0       1.0       1.0                                        
-74648_lsbm.png          1.0       1.0       1.0       0.6                                        
-74664.png               0.0       0.0       0.0       0.0                                        
-55453_lsbm.png          0.6       0.9       0.9       0.9  
+                        LSBR      LSBM   SteganoGAN   HILL *
+------------------------------------------------------------ 
+25422.png               0.0       0.0       0.0       0.0 
+74051_hill.png          0.0       0.0       0.0       0.9 
+04686.png               0.0       0.0       0.0       0.0 
+37831_lsbm.png          1.0       1.0       1.0       0.7 
+34962_hill.png          0.0       0.0       0.0       0.5 
+01502_steganogan.png    0.8       1.0       1.0       1.0 
+00839_hill.png          0.0       0.8       0.8       1.0 
+22845_steganogan.png    0.8       1.0       1.0       1.0 
+46694_steganogan.png    0.7       1.0       1.0       1.0 
+74648_lsbm.png          1.0       1.0       1.0       0.6 
+74664.png               0.0       0.0       0.0       0.0 
+55453_lsbm.png          0.6       0.9       0.9       0.9
 
 * Probability of being stego using the indicated steganographic method.
 ```
