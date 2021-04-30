@@ -214,6 +214,10 @@ def main():
             nn.load_model(model_path, quiet=True)
             lsbm_pred = nn.predict(bitmap_files, 10)
 
+            model_path = os.path.join(dir_path, "models/effnetb0-A-alaska2-steganogan.h5")
+            nn.load_model(model_path, quiet=True)
+            steganogan_pred = nn.predict(bitmap_files, 10)
+
             model_path = os.path.join(dir_path, "models/effnetb0-A-alaska2-hill.h5")
             nn.load_model(model_path, quiet=True)
             hill_pred = nn.predict(bitmap_files, 10)
@@ -221,8 +225,8 @@ def main():
 
             mx = 20
             print("")
-            print(' '*mx + "    LSBR      LSBM      HILL *")
-            print('-'*mx + "------------------------------")
+            print(' '*mx + "    LSBR      LSBM   SteganoGAN   HILL *")
+            print('-'*mx + "----------------------------------------")
             for i in range(len(bitmap_files)):
                 name = os.path.basename(bitmap_files[i])
                 if len(name)>mx:
@@ -233,6 +237,7 @@ def main():
                 print(name, 
                       "  ", round(lsbr_pred[i],1), 
                       "     ", round(lsbm_pred[i],1), 
+                      "     ", round(steganogan_pred[i],1), 
                       "     ", round(hill_pred[i],1), 
                       )
 
@@ -1072,7 +1077,7 @@ def main():
 
 
         nn = models.NN("effnetb0", model_name=model_name, shape=(512,512,3))
-        nn.train(trn_cover_files, trn_stego_files, 36, # 36|40
+        nn.train(trn_cover_files, trn_stego_files, 16, # 36|40
         #nn = models.NN("effnetb0", model_name=model_name, shape=(32,32,3))
         #nn.train(trn_cover_files, trn_stego_files, 500, # 36|40
                  val_cover_files, val_stego_files, 10,

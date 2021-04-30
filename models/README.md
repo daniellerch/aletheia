@@ -20,13 +20,16 @@ The Alaska2 database contains 75000 images and can be downloaded from
 | models/effnetb0-B-alaska2-juniw.h5    |   0.701   |   0.698    |
 
 
-| Model file (Bitmap)                   | val score | test score | 
-|---------------------------------------|-----------|------------|
-| models/effnetb0-A-alaska2-lsbr.h5     |   0.925   |   0.913    |
-| models/effnetb0-A-alaska2-lsbm.h5     |   0.913   |   0.918    |
-| models/effnetb0-B-alaska2-lsbm.h5     |   0.838   |   0.849    |
-| models/effnetb0-A-alaska2-hill.h5     |   0.942   |   0.923    |
-| models/effnetb0-B-alaska2-hill.h5     |   0.910   |   0.873    |
+
+
+| Model file (Bitmap)                     | val score | test score | 
+|-----------------------------------------|-----------|------------|
+| models/effnetb0-A-alaska2-lsbr.h5       |   0.925   |   0.913    |
+| models/effnetb0-A-alaska2-lsbm.h5       |   0.913   |   0.918    |
+| models/effnetb0-B-alaska2-lsbm.h5       |   0.838   |   0.849    |
+| models/effnetb0-A-alaska2-hill.h5       |   0.942   |   0.923    |
+| models/effnetb0-B-alaska2-hill.h5       |   0.910   |   0.873    |
+| models/effnetb0-A-alaska2-steganogan.h5 |   0.996   |   0.997    |
 
 
 The A models split into cover and stego and the B models split into stego and

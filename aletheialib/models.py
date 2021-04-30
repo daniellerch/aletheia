@@ -350,7 +350,7 @@ class NN:
                     y.append([1, 0])
                     S.append(Is)
                     y.append([0, 1])
-                    bs -= 2
+                    bs -= 1
                 except Exception as e:
                     print("NN train_generator Warning: cannot read image:", C_path, S_path)
                     print(e)
@@ -391,7 +391,7 @@ class NN:
                             continue
                         C.append(Ic)
                         S.append(Is)
-                        bs -= 2
+                        bs -= 1
                     except KeyboardInterrupt:
                         sys.exit(0)
                     except:
