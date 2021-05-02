@@ -1,3 +1,4 @@
+import os
 import sys
 
 doc = "\n" \
@@ -96,7 +97,10 @@ def plot_histogram():
         print("")
         sys.exit(0)
 
+    import imageio
     import aletheialib.utils
+    from matplotlib import pyplot as plt
+
     fn = aletheialib.utils.absolute_path(sys.argv[2])
     I = imageio.imread(fn)
     data = []
@@ -121,6 +125,8 @@ def plot_histogram_diff():
         sys.exit(0)
 
     import aletheialib.utils
+    from matplotlib import pyplot as plt
+
     fn = aletheialib.utils.absolute_path(sys.argv[2])
     direction = sys.argv[3]
     if direction not in ["L", "R", "U", "D"]:

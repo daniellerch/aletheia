@@ -18,7 +18,6 @@ import subprocess
 import numpy as np
 
 from scipy import misc
-from matplotlib import pyplot as plt
 from imageio import imread
 
 import aletheialib.options as options
