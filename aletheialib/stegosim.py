@@ -270,6 +270,7 @@ def steganogan(path, payload, dst_path):
     #print("nbytes:", nbytes)
 
     msg = ''.join(random.choice(string.ascii_letters+string.digits) for i in range(nbytes))
+    #cmd = "steganogan encode --cpu "+path+" "+msg+" -o "+dst_path
     cmd = "steganogan encode "+path+" "+msg+" -o "+dst_path
     os.system(cmd)                                                           
 

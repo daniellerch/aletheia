@@ -55,20 +55,22 @@ COMMANDS:
   Automatic steganalysis:
   - auto:      Try different steganalysis methods.
 
-  Statistical attacks:
+  Structural LSB detectors (Statistical attacks to LSB replacement):
   - sp:            Sample Pairs Analysis (Octave vesion).
   - ws:            Weighted Stego Attack.
   - triples:       Triples Attack.
   - spa:           Sample Pairs Analysis.
   - rs:            RS attack.
+
+  Calibration attacks to JPEG steganography:
   - calibration:   Calibration attack to JPEG images.
 
   Feature extractors:
   - srm:           Full Spatial Rich Models.
-  - hill-maxsrm:   Selection-Channel-Aware Spatial Rich Models for HILL.
   - srmq1:         Spatial Rich Models with fixed quantization q=1c.
   - scrmq1:        Spatial Color Rich Models with fixed quantization q=1c.
   - gfr:           JPEG steganalysis with 2D Gabor Filters.
+  - hill-maxsrm:   Selection-Channel-Aware Spatial Rich Models for HILL.
 
   Embedding simulators:
   - lsbr-sim:             Embedding using LSB replacement simulator.
@@ -86,6 +88,8 @@ COMMANDS:
   - ued-color-sim:        Embedding using UED color simulator.
   - nsf5-sim:             Embedding using nsF5 simulator.
   - nsf5-color-sim:       Embedding using nsF5 color simulator.
+  - steghide-sim:         Embedding using Steghide simulator.
+  - steganogan-sim:       Embedding using SteganoGAN simulator.
 
   ML-based steganalysis:
   - split-sets:            Prepare sets for training and testing.
@@ -100,17 +104,17 @@ COMMANDS:
   - esvm-predict:          Predict using eSVM.
   - e4s-predict:           Predict using EC.
 
-  Unsupervised attacks:
-  - ats:      Artificial Training Sets.
+  Find password by brute force using a list of passwords:
+  - bf-generic:   Generic tool for finding the password using a command tool.
 
   Tools:
-  - brute-force:       Brute force attack using a list of passwords.
-  - hpf:               High-pass filter.
-  - print-diffs:       Differences between two images.
-  - print-dct-diffs:   Differences between the DCT coefficients of two JPEG images.
-  - rm-alpha:          Opacity of the alpha channel to 255.
-  - prep-ml-exp:       Prepare an experiment for testing ML tools.
-
+  - hpf:                   High-pass filter.
+  - print-diffs:           Differences between two images.
+  - print-dct-diffs:       Differences between the DCT coefficients of two JPEG images.
+  - rm-alpha:              Opacity of the alpha channel to 255.
+  - plot-histogram:        Plot histogram.
+  - plot-histogram-diff:   Plot histogram of differences.
+  - plot-dct-histogram:    Plot DCT histogram.
 
 ```
 

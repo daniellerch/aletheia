@@ -52,22 +52,24 @@ def launch():
         else:
             bitmap_files.append(f)
 
+    # TODO: Find model paths
+
     # JPG
     if len(jpg_files)>0:
 
-        model_path = os.path.join(dir_path, "models/effnetb0-A-alaska2-outguess.h5")
+        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-outguess.h5")
         nn.load_model(model_path, quiet=True)
         outguess_pred = nn.predict(jpg_files, 10)
 
-        model_path = os.path.join(dir_path, "models/effnetb0-A-alaska2-steghide.h5")
+        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-steghide.h5")
         nn.load_model(model_path, quiet=True)
         steghide_pred = nn.predict(jpg_files, 10)
 
-        model_path = os.path.join(dir_path, "models/effnetb0-A-alaska2-nsf5.h5")
+        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-nsf5.h5")
         nn.load_model(model_path, quiet=True)
         nsf5_pred = nn.predict(jpg_files, 10)
 
-        model_path = os.path.join(dir_path, "models/effnetb0-A-alaska2-juniw.h5")
+        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-juniw.h5")
         nn.load_model(model_path, quiet=True)
         juniw_pred = nn.predict(jpg_files, 10)
 
@@ -95,19 +97,19 @@ def launch():
     # BITMAP
     if len(bitmap_files)>0:
 
-        model_path = os.path.join(dir_path, "models/effnetb0-A-alaska2-lsbr.h5")
+        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-lsbr.h5")
         nn.load_model(model_path, quiet=True)
         lsbr_pred = nn.predict(bitmap_files, 10)
 
-        model_path = os.path.join(dir_path, "models/effnetb0-A-alaska2-lsbm.h5")
+        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-lsbm.h5")
         nn.load_model(model_path, quiet=True)
         lsbm_pred = nn.predict(bitmap_files, 10)
 
-        model_path = os.path.join(dir_path, "models/effnetb0-A-alaska2-steganogan.h5")
+        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-steganogan.h5")
         nn.load_model(model_path, quiet=True)
         steganogan_pred = nn.predict(bitmap_files, 10)
 
-        model_path = os.path.join(dir_path, "models/effnetb0-A-alaska2-hill.h5")
+        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-hill.h5")
         nn.load_model(model_path, quiet=True)
         hill_pred = nn.predict(bitmap_files, 10)
 
