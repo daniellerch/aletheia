@@ -195,7 +195,7 @@ def main():
 
 
     # Brute force passwords
-    elif sys.argv[1] == "brute-force-generic":
+    elif sys.argv[1] == "bf-generic":
         options.brute_force.generic()
 
 
