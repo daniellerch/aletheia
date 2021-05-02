@@ -51,3 +51,10 @@ def which(program):
 
     return None
 
+def check_bin(cmd):
+    import shutil
+    if not shutil.which(cmd):
+        print("ERROR: you need to install "+cmd+" to run this command!");
+        sys.exit(0)
+
+

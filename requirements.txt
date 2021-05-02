@@ -8,3 +8,4 @@ pandas
 hdf5storage
 h5py
 matplotlib
+steganogan

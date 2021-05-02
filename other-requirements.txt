@@ -1,2 +1,3 @@
 liboctave-dev
 imagemagick
+steghide

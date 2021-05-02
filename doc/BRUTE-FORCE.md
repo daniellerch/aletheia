@@ -5,11 +5,11 @@ Aletheia can find the password used to hide a message using brute force from a l
 
 
 ```bash
-$ ./aletheia.py brute-force
-./aletheia.py brute-force <unhide command> <passw file>
+$ ./aletheia.py bf-generic
+./aletheia.py bf-generic <unhide command> <passw file>
 
 Example:
-./aletheia.py brute-force 'steghide extract -sf image.jpg -xf output.txt -p <PASSWORD> -f' resources/passwords.txt
+./aletheia.py bf-generic 'steghide extract -sf image.jpg -xf output.txt -p <PASSWORD> -f' resources/passwords.txt
 
 ```
 
@@ -28,7 +28,7 @@ writing stego file "image.jpg"... done
 Now, we can find the password using the following command:
 
 ```bash
-$ ./aletheia.py brute-force 'steghide extract -sf image.jpg -xf output.txt -p <PASSWORD> -f' resources/passwords.txt
+$ ./aletheia.py bf-generic 'steghide extract -sf image.jpg -xf output.txt -p <PASSWORD> -f' resources/passwords.txt
 Using 16 processes
 Completed: 4.5%    
 Password found: 12345ab
