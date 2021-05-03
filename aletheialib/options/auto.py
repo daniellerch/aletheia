@@ -14,6 +14,12 @@ doc = "\n" \
 #"  - aump:          Adaptive Steganalysis Attack.\n" \
 
 
+def _format_line(value, length):
+    if value >= 0.5:
+        return ("["+str(round(value,1))+"]").center(length, ' ')
+
+    return str(round(value,1)).center(length, ' ')
+
 def launch():
 
     if len(sys.argv)!=3:
@@ -76,8 +82,8 @@ def launch():
 
         mx = 20
         print("")
-        print(' '*mx + "    Outguess  Steghide  nsF5  J-UNIWARD *")
-        print('-'*mx + "-----------------------------------------")
+        print(' '*mx + " Outguess  Steghide   nsF5  J-UNIWARD *")
+        print('-'*mx + "---------------------------------------")
         for i in range(len(jpg_files)):
             name = os.path.basename(jpg_files[i])
             if len(name)>mx:
@@ -86,11 +92,11 @@ def launch():
                 name = name.ljust(mx, ' ')
             
             print(name, 
-              "  ", round(outguess_pred[i],1), 
-              "     ", round(steghide_pred[i],1), 
-              "     ", round(nsf5_pred[i],1), 
-              "     ", round(juniw_pred[i],1), 
-              )
+                  _format_line(outguess_pred[i], 9),
+                  _format_line(steghide_pred[i], 8),
+                  _format_line(nsf5_pred[i], 8),
+                  _format_line(juniw_pred[i], 8),
+                  )
 
 
 
@@ -117,8 +123,8 @@ def launch():
 
         mx = 20
         print("")
-        print(' '*mx + "    LSBR      LSBM   SteganoGAN   HILL *")
-        print('-'*mx + "----------------------------------------")
+        print(' '*mx + "   LSBR      LSBM  SteganoGAN  HILL *")
+        print('-'*mx + "-------------------------------------")
         for i in range(len(bitmap_files)):
             name = os.path.basename(bitmap_files[i])
             if len(name)>mx:
@@ -127,10 +133,10 @@ def launch():
                 name = name.ljust(mx, ' ')
             
             print(name, 
-                  "  ", round(lsbr_pred[i],1), 
-                  "     ", round(lsbm_pred[i],1), 
-                  "     ", round(steganogan_pred[i],1), 
-                  "     ", round(hill_pred[i],1), 
+                  _format_line(lsbr_pred[i], 10),
+                  _format_line(lsbm_pred[i], 8),
+                  _format_line(steganogan_pred[i], 8),
+                  _format_line(hill_pred[i], 8),
                   )
 
 
