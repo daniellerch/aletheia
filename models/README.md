@@ -30,7 +30,7 @@ The Alaska2 database contains 75000 images and can be downloaded from
 | models/effnetb0-A-alaska2-hill.h5       |   0.942   |   0.923    |
 | models/effnetb0-B-alaska2-hill.h5       |   0.910   |   0.873    |
 | models/effnetb0-A-alaska2-steganogan.h5 |   1.000   |   0.994    |
-| models/effnetb0-B-alaska2-steganogan.h5 |   0.992   |   0.979    |
+| models/effnetb0-B-alaska2-steganogan.h5 |   0.998   |   0.989    |
 
 
 The A models split into cover and stego and the B models split into stego and

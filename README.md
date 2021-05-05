@@ -52,7 +52,7 @@ $ ./aletheia.py auto sample_images/alaska2
 74648_lsbm.png         [1.0]     [1.0]     0.0     [0.6]  
 74664.png               0.0       0.0      0.0      0.0   
 55453_lsbm.png         [0.6]     [0.9]     0.0     [0.9]  
-67104_steganogan.png   [0.9]     [0.9]    [1.0]    [0.8]  
+67104_steganogan.png   [0.9]     [0.9]    [1.0]    [0.8] 
 
 * Probability of being stego using the indicated steganographic method.
 

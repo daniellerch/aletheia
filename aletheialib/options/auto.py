@@ -15,7 +15,7 @@ doc = "\n" \
 
 
 def _format_line(value, length):
-    if value >= 0.5:
+    if value > 0.5:
         return ("["+str(round(value,1))+"]").center(length, ' ')
 
     return str(round(value,1)).center(length, ' ')
