@@ -2,6 +2,7 @@ import os
 import sys
 import glob
 import shutil
+import random
 import numpy as np
 
 doc="\n" \
