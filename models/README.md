@@ -1,14 +1,17 @@
 
+## Color models
+
 The following models were trained using a randomly selected subset containing 
 1000 images for validations, 1000 images for testing and the remaining images 
 for training.
-
 
 The Alaska2 database contains 75000 images and can be downloaded from 
 [here](https://www.kaggle.com/c/alaska2-image-steganalysis).
 
 
-| Model file (JPG)                      | val score | test score | 
+|                          JPEG IMAGES                           |
+|----------------------------------------------------------------|
+| Model file                            | val score | test score | 
 |---------------------------------------|-----------|------------|
 | models/effnetb0-A-alaska2-steghide.h5 |   0.944   |   0.945    |
 | models/effnetb0-B-alaska2-steghide.h5 |   0.762   |   0.697    |
@@ -21,8 +24,9 @@ The Alaska2 database contains 75000 images and can be downloaded from
 
 
 
-
-| Model file (Bitmap)                     | val score | test score | 
+|                         BITMAP IMAGES                            |
+|------------------------------------------------------------------|
+| Model file                              | val score | test score | 
 |-----------------------------------------|-----------|------------|
 | models/effnetb0-A-alaska2-lsbr.h5       |   0.925   |   0.913    |
 | models/effnetb0-A-alaska2-lsbm.h5       |   0.913   |   0.918    |
@@ -38,7 +42,28 @@ double stego. The latter are used for DCI methods.
 
 
 
+### DCI models
 
+The following table contains the score and the DCI prediction score using 
+different databases for training and for testing. A mismatch between the images
+used for training and for testing (CSM) is a usual situation in real world 
+cases. The DCI predictions (made without tags) let us know if the model is 
+reliable to be applied to a set of images.
+
+
+|                              BITMAP IMAGES                            |
+|-----------------------------------------------------------------------|
+| Models                      | Testing        |   Score   | DCI pred * | 
+|----------------------------------------------|-----------|------------|
+| effnetb0-A/B-alaska2-lsbm   | bossbase-color |   0.606   |   0.596    |
+| effnetb0-A/B-alaska2-hill   | bossbase-color |   0.503   |   0.347    |
+
+
+* DCI predictions tell us about the reliability of the model for these images
+
+
+
+## Grayscale models
 
 The following models were trained using a randomly selected subset 
 containing 90% of the images and validated using the remaining 10%.
