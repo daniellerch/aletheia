@@ -10,7 +10,7 @@ The Alaska2 database contains 75000 images and can be downloaded from
 
 
 |----------------------------------------------------------------|
-| Model file                            | val score | test score | 
+| Model file (JPG images)               | val score | test score | 
 |---------------------------------------|-----------|------------|
 | models/effnetb0-A-alaska2-steghide.h5 |   0.944   |   0.945    |
 | models/effnetb0-B-alaska2-steghide.h5 |   0.762   |   0.697    |
@@ -23,9 +23,9 @@ The Alaska2 database contains 75000 images and can be downloaded from
 
 
 
-|                         BITMAP IMAGES                            |
+
 |------------------------------------------------------------------|
-| Model file                              | val score | test score | 
+| Model file (Spatial images)             | val score | test score | 
 |-----------------------------------------|-----------|------------|
 | models/effnetb0-A-alaska2-lsbr.h5       |   0.925   |   0.913    |
 | models/effnetb0-A-alaska2-lsbm.h5       |   0.913   |   0.918    |
