@@ -52,7 +52,7 @@ reliable to be applied to a set of images.
 
 
 
-| Models (JPG images)           | Testing            | Score | DCI pred  |
+| Models (JPG images)           | Testing            | Score | DCI pred* |
 |-------------------------------|--------------------|-------|-----------|
 | effnetb0-A/B-alaska2-steghide | bossbase-q80-color | 0.985 |   0.830   |
 | effnetb0-A/B-alaska2-steghide | bossbase-q95-color | 0.978 |   0.804   |
@@ -62,16 +62,14 @@ reliable to be applied to a set of images.
 
 
 
-| Models  (Spatial images)    | Testing        |   Score   | DCI pred  |
+| Models  (Spatial images)    | Testing        |   Score   | DCI pred* |
 |-----------------------------|----------------|-----------|-----------|
 | effnetb0-A/B-alaska2-lsbm   | bossbase-color |   0.606   |   0.596   |
 | effnetb0-A/B-alaska2-hill   | bossbase-color |   0.503   |   0.583   |
 
 
 
-
-
-DCI predictions tell us about the reliability of the model for these images
+* DCI predictions tell us about the reliability of the model for these images
 
 
 
