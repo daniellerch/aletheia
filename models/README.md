@@ -68,7 +68,8 @@ reliable to be applied to a set of images.
 | effnetb0-A/B-alaska2-hill   | bossbase-color |   0.503   |   0.583   |
 
 
-* DCI predictions tell us about the reliability of the model for these images
+
+DCI predictions tell us about the reliability of the model for these images
 
 
 
