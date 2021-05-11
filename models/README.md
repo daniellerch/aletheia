@@ -41,7 +41,7 @@ double stego. The latter are used for DCI methods.
 
 
 
-### DCI models
+## DCI models
 
 The following table contains the score and the DCI prediction score using 
 different databases for training and for testing. A mismatch between the images
@@ -66,6 +66,8 @@ reliable to be applied to a set of images.
 |----------------------------------------------|-----------|-----------|
 | effnetb0-A/B-alaska2-lsbm   | bossbase-color |   0.606   |   0.596   |
 | effnetb0-A/B-alaska2-hill   | bossbase-color |   0.503   |   0.583   |
+
+
 
 
 
