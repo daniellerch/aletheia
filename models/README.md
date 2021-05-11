@@ -10,7 +10,7 @@ The Alaska2 database contains 75000 images and can be downloaded from
 
 
 
-| Model file (JPG images)               | val score | test score | 
+| Model file (JPG images)               | val score | test score |
 |---------------------------------------|-----------|------------|
 | models/effnetb0-A-alaska2-steghide.h5 |   0.944   |   0.945    |
 | models/effnetb0-B-alaska2-steghide.h5 |   0.762   |   0.697    |
@@ -25,7 +25,7 @@ The Alaska2 database contains 75000 images and can be downloaded from
 
 
 
-| Model file (Spatial images)             | val score | test score | 
+| Model file (Spatial images)             | val score | test score |
 |-----------------------------------------|-----------|------------|
 | models/effnetb0-A-alaska2-lsbr.h5       |   0.925   |   0.913    |
 | models/effnetb0-A-alaska2-lsbm.h5       |   0.913   |   0.918    |
@@ -52,7 +52,7 @@ reliable to be applied to a set of images.
 
 
 
-| Models (JPG images)           | Testing            | Score | DCI pred  | 
+| Models (JPG images)           | Testing            | Score | DCI pred  |
 |----------------------------------------------------|-------|-----------|
 | effnetb0-A/B-alaska2-steghide | bossbase-q80-color | 0.985 |   0.830   |
 | effnetb0-A/B-alaska2-steghide | bossbase-q95-color | 0.978 |   0.804   |
@@ -62,7 +62,7 @@ reliable to be applied to a set of images.
 
 
 
-| Models  (Spatial images)    | Testing        |   Score   | DCI pred  | 
+| Models  (Spatial images)    | Testing        |   Score   | DCI pred  |
 |----------------------------------------------|-----------|-----------|
 | effnetb0-A/B-alaska2-lsbm   | bossbase-color |   0.606   |   0.596   |
 | effnetb0-A/B-alaska2-hill   | bossbase-color |   0.503   |   0.583   |
