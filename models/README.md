@@ -9,7 +9,6 @@ The Alaska2 database contains 75000 images and can be downloaded from
 [here](https://www.kaggle.com/c/alaska2-image-steganalysis).
 
 
-|                          JPEG IMAGES                           |
 |----------------------------------------------------------------|
 | Model file                            | val score | test score | 
 |---------------------------------------|-----------|------------|
