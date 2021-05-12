@@ -37,7 +37,7 @@ The Alaska2 database contains 75000 images and can be downloaded from
 
 
 The A models split into cover and stego and the B models split into stego and
-double stego. The latter are used for DCI methods.
+double stego. The later are used for DCI methods.
 
 
 
@@ -52,20 +52,22 @@ reliable to be applied to a set of images.
 
 
 
-| Models (JPG images)           | Testing            | Score | DCI pred* |
-|-------------------------------|--------------------|-------|-----------|
-| effnetb0-A/B-alaska2-steghide | bossbase-q80-color | 0.985 |   0.830   |
-| effnetb0-A/B-alaska2-steghide | bossbase-q95-color | 0.978 |   0.804   |
-| effnetb0-A/B-alaska2-nsf5     | bossbase-q95-color | 0.716 |   0.696   |
+| Models (JPG images)           | Testing            | Alaska2 | Boss  | DCI pred* |
+|-------------------------------|--------------------|---------|-------|-----------|
+| effnetb0-A/B-alaska2-steghide | bossbase-q80-color |  0.945  | 0.985 |   0.830   |
+| effnetb0-A/B-alaska2-steghide | bossbase-q95-color |  0.945  | 0.978 |   0.804   |
+| effnetb0-A/B-alaska2-nsf5     | bossbase-q95-color |  0.781  | 0.716 |   0.696   |
+| effnetb0-A/B-alaska2-juniward | bossbase-q95-color |  0.759  | 0.700 |   0.685   |
 
 
 
 
 
-| Models  (Spatial images)    | Testing        |   Score   | DCI pred* |
-|-----------------------------|----------------|-----------|-----------|
-| effnetb0-A/B-alaska2-lsbm   | bossbase-color |   0.606   |   0.596   |
-| effnetb0-A/B-alaska2-hill   | bossbase-color |   0.503   |   0.583   |
+| Models  (Bitmap images)     | Testing        | Alaska2 |  Score   | DCI pred* |
+|-----------------------------|----------------|---------|----------|-----------|
+| effnetb0-A/B-alaska2-lsbm   | bossbase-color |  0.918  |  0.606   |   0.596   |
+| effnetb0-A/B-alaska2-hill   | bossbase-color |  0.923  |  0.503   |   0.583   |
+
 
 
 
