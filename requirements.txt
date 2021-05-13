@@ -9,3 +9,4 @@ hdf5storage
 h5py
 matplotlib
 steganogan
+python-magic
