@@ -154,6 +154,11 @@ def main():
     elif sys.argv[1] == "steganogan-sim":
         options.embsim.steganogan()
 
+    elif sys.argv[1] == "adv-lsbm-sim":
+        options.embsim.adv_lsbm()
+
+    elif sys.argv[1] == "adv-pm2-fix":
+        options.embsim.adv_pm2_fix()
 
     # ML base steganaysis
     elif sys.argv[1] == "split-sets":
@@ -194,7 +199,13 @@ def main():
 
 
     # Brute force passwords
-    elif sys.argv[1] == "bf-generic":
+    elif sys.argv[1] == "brute-force-steghide":
+        options.brute_force.steghide()
+
+    elif sys.argv[1] == "brute-force-outguess":
+        options.brute_force.outguess()
+
+    elif sys.argv[1] == "brute-force-generic":
         options.brute_force.generic()
 
 

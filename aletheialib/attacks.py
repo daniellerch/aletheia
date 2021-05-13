@@ -21,11 +21,11 @@ from PIL.ExifTags import TAGS
 from aletheialib.jpeg import JPEG
 
 import multiprocessing
-from multiprocessing.dummy import Pool as ThreadPool
+#from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing import Pool as ThreadPool 
 from multiprocessing import cpu_count
 from multiprocessing import Pool
 
-found = multiprocessing.Value('i', 0)
 
 # -- APPENDED FILES --
 
@@ -516,52 +516,6 @@ def remove_alpha_channel(input_image, output_image):
     imsave(output_image, I)
 # }}}
 
-# {{{ brute_force()
-def brute_force(command, password_file):
-    
-    with open(password_file, "rU") as f:
-        passwords = f.readlines()
-
-    class PasswordFound(Exception): 
-        pass
-
-    n_proc = cpu_count()
-    print("Using", n_proc, "processes")
-    pool = ThreadPool(n_proc)
-
-    def crack(passw):
-        if found.value == 1:
-            return False
-
-        FNUL = open(os.devnull, 'w')
-        cmd = command.replace("<PASSWORD>", passw.replace("\n", ""))
-        #p=subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
-        p=subprocess.Popen(cmd, stdout=FNUL, stderr=FNUL, shell=True)
-        #output, err = p.communicate()
-        status = p.wait()
-        if p.returncode==0:
-            print("\nPassword found:", passw)
-            with found.get_lock():
-                found.value = 1
-                return True
-
-
-
-    # Process thread pool in batches
-    batch=1000
-    for i in range(0, len(passwords), batch):
-        perc = round(100*float(i)/len(passwords),2)
-        sys.stdout.write("Completed: "+str(perc)+'%    \r')
-        passw_batch = passwords[i:i+batch]
-        pool = ThreadPool(n_proc)
-        results = pool.map(crack, passw_batch)
-        pool.close()
-        pool.terminate()
-        pool.join()
-        if any(results):
-            break
-
-# }}}
 
 
 
