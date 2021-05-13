@@ -10,7 +10,7 @@ Aletheia can find the password used to hide a message using brute force from a l
 First we are going to hide a message into a JPEG image using steghide:
 
 ```bash
-$ steghide embed -cf cover.jpg -sf image.jpg -p 12345ab
+$ steghide embed -cf cover.jpg -sf test.jpg -p 12345ab
 Hello World!
 embedding standard input in "cover.jpg"... done
 writing stego file "image.jpg"... done
@@ -85,11 +85,10 @@ Example:
 
 We need to provide to Aletheia the command used to extract the secret message. This command needs a "&lt;PASSWORD&gt;" section that will be replaced by every password to try. The second parameter to provide to Aletheia is the list of passwords to try. Aletheia comes with a file that contains 1000000 passwords.
 
-Let's use Aletheia to crack the known steganography tool Steghide. 
+Let's use Aletheia to crack Steghide. 
 
 
 First we are going to hide a message into a JPEG image using steghide:
-
 
 ```bash
 $ steghide embed -cf cover.jpg -sf image.jpg -p 12345ab
