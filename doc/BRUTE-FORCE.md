@@ -77,7 +77,7 @@ Writing test.jpg....
 Now we can use Aletheia to find the password:
 
 ```bash
-./aletheia.py brute-force-outguess test2.jpg resources/passwords.txt                                                                                              
+./aletheia.py brute-force-outguess test.jpg resources/passwords.txt                                                                                              
 Using 16 processes                                                                                        
 Candidate password: cocacola, filetype found: application/x-dosexec                                       
 Candidate password: maggie, filetype found: text/plain                                                    
