@@ -6,6 +6,7 @@ import magic
 import shutil
 import tempfile
 import subprocess
+import aletheialib.utils
 
 from multiprocessing import Pool as ThreadPool 
 from multiprocessing import cpu_count
@@ -13,7 +14,7 @@ from multiprocessing import cpu_count
 
 # {{{ check_password()
 def check_password(params):
-    passw, command, use_filetype = params
+    passw, command, use_filetype, continue_searching = params
     cmd = command.replace("<PASSWORD>", passw)
 
     if use_filetype:
@@ -33,6 +34,11 @@ def check_password(params):
         except:
             pass
         if ft != None and ft != 'inode/x-empty' and ft != 'application/octet-stream':
+            if not continue_searching:
+                print("\nPassword found:", passw)
+                shutil.rmtree(tempd, ignore_errors=True)
+                return True
+
             print(f"Candidate password: {passw}, filetype found: {ft}")
         shutil.rmtree(tempd, ignore_errors=True)
 
@@ -43,19 +49,22 @@ def check_password(params):
 # }}}
 
 # {{{ generic()
-def generic(command, password_file, use_filetype=False):
+def generic(command, password_file, use_filetype=False, continue_searching=False):
     
     with open(password_file, "rU") as f:
         passwords = f.readlines()
 
-    params = [ (passwd.replace("\n", ""), command, use_filetype) for passwd in passwords ]
+    params = [ (passwd.replace("\n", ""), 
+                command, 
+                use_filetype, 
+                continue_searching) for passwd in passwords ]
 
     n_proc = cpu_count()
     print("Using", n_proc, "processes")
     pool = ThreadPool(n_proc)
 
     # Process thread pool in batches
-    batch=1000
+    batch=100
     for i in range(0, len(params), batch):
         perc = round(100*float(i)/len(passwords),2)
         sys.stdout.write("Completed: "+str(perc)+'%    \r')
@@ -71,8 +80,9 @@ def generic(command, password_file, use_filetype=False):
 
 # {{{ steghide()
 def steghide(path, password_file):
+    aletheialib.utils.check_bin("steghide")   
     command = f"steghide extract -sf {path} -xf output.txt -p <PASSWORD> -f"
-    generic(command, password_file)
+    generic(command, password_file, use_filetype=False, continue_searching=False)
 
 # }}}
 
@@ -83,8 +93,19 @@ def outguess(path, password_file):
     need to check the extracted file type to know if the password is a good
     candidate.
     """
+    aletheialib.utils.check_bin("outguess")   
     command = f"outguess -k <PASSWORD> -r {path} <OUTPUT_FILE>"
-    generic(command, password_file, use_filetype=True)
+    generic(command, password_file, use_filetype=True, continue_searching=True)
 
 # }}}
+
+# {{{ openstego()
+def openstego(path, password_file):
+    aletheialib.utils.check_bin("openstego")   
+    command = f"openstego extract -sf stego.png -p <PASSWORD> -xf <OUTPUT_FILE>"
+    generic(command, password_file, use_filetype=True, continue_searching=False)
+
+# }}}
+
+
 

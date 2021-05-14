@@ -5,6 +5,28 @@ Aletheia can find the password used to hide a message using brute force from a l
 
 
 
+
+#### Attack to OpenStego
+
+First we are going to hide a message into a PNG image using OpenStego:
+
+```bash
+$ openstego embed -p 123456 -mf secret.txt -cf sample_images/lena.png -sf stego.png
+```
+
+Now we can use Aletheia to find the password:
+
+```bash
+./aletheia.py brute-force-openstego stego.png resources/passwords.txt 
+Using 16 processes
+Completed: 0.0%    
+Password found: 123456
+```
+
+
+
+
+
 #### Attack to StegHide
 
 First we are going to hide a message into a JPEG image using steghide:
@@ -55,8 +77,7 @@ Writing test.jpg....
 Now we can use Aletheia to find the password:
 
 ```bash
-./aletheia.py brute-force-outguess test2.jpg resources/p
-asswords.txt                                                                                              
+./aletheia.py brute-force-outguess test2.jpg resources/passwords.txt                                                                                              
 Using 16 processes                                                                                        
 Candidate password: cocacola, filetype found: application/x-dosexec                                       
 Candidate password: maggie, filetype found: text/plain                                                    

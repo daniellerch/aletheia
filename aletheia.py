@@ -205,6 +205,9 @@ def main():
     elif sys.argv[1] == "brute-force-outguess":
         options.brute_force.outguess()
 
+    elif sys.argv[1] == "brute-force-openstego":
+        options.brute_force.openstego()
+
     elif sys.argv[1] == "brute-force-generic":
         options.brute_force.generic()
 

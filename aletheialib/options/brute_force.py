@@ -3,8 +3,10 @@ import sys
 
 doc = "\n" \
 "  Find password by brute force using a list of passwords:\n" \
-"  - brute-force-steghide:  Brute force a password using StegHide"
-"  - brute-force-generic:   Generic tool for finding the password using a command"
+"  - brute-force-steghide:      Brute force a password using StegHide\n" \
+"  - brute-force-outguess:      Brute force a password using Outguess\n" \
+"  - brute-force-openstego:     Brute force a password using OpenStego\n" \
+"  - brute-force-generic:       Generic tool for finding the password using a command"
 
 
 # {{{ generic()
@@ -47,5 +49,19 @@ def outguess():
 
     import aletheialib.brute_force
     aletheialib.brute_force.outguess(sys.argv[2], sys.argv[3])
+# }}}
+
+# {{{ openstego()
+def openstego():
+
+    if len(sys.argv)!=4:
+        print(sys.argv[0], "brute-force-openstego <image> <passw file>\n")
+        print("Example:")
+        print(sys.argv[0], "brute-force-openstego image.jpg resources/passwords.txt\n")
+        print("")
+        sys.exit(0)
+
+    import aletheialib.brute_force
+    aletheialib.brute_force.openstego(sys.argv[2], sys.argv[3])
 # }}}
 
