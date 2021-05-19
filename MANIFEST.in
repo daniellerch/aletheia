@@ -1,1 +1,3 @@
-recursive-include resources/
+recursive-include aletheia-models/ *
+recursive-include aletheia-resources/ *
+recursive-include aletheia-octave/ *

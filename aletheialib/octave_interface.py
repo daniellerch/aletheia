@@ -49,7 +49,7 @@ def embed(sim, path, payload, dst_path=None):
 
             currdir=os.path.dirname(__file__)
             basedir=os.path.abspath(os.path.join(currdir, os.pardir))
-            m_path=os.path.join(basedir, 'external', 'octave')
+            m_path=os.path.join(basedir, 'aletheia-octave', 'octave')
 
             tmpdir=tempfile.mkdtemp()
             X_path=tmpdir+"/X.mat"
@@ -123,7 +123,7 @@ def _extract(extractor_name, path, params={}):
 
     fdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(fdir, os.pardir))
-    m_path=os.path.join(basedir, 'external', 'octave')
+    m_path=os.path.join(basedir, 'aletheia-octave', 'octave')
 
     X=numpy.array([])
     im=Image.open(path)
@@ -193,7 +193,7 @@ def _jpeg(fn_name, path):
 
             currdir=os.path.dirname(__file__)
             basedir=os.path.abspath(os.path.join(currdir, os.pardir))
-            m_path=os.path.join(basedir, 'external', 'octave')
+            m_path=os.path.join(basedir, 'aletheia-octave', 'octave')
 
             tmpdir=tempfile.mkdtemp()
             X_path=tmpdir+"/X.mat"
@@ -238,7 +238,7 @@ def _attack(attack_name, path, params={}):
 
     fdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(fdir, os.pardir))
-    m_path=os.path.join(basedir, 'external', 'octave')
+    m_path=os.path.join(basedir, 'aletheia-octave', 'octave')
 
     X=numpy.array([])
     im=Image.open(path)

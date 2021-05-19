@@ -2,7 +2,6 @@
 import os
 import sys
 import glob
-
 import aletheialib.utils
 
 
@@ -11,7 +10,6 @@ doc = "\n" \
 "  - auto:      Try different steganalysis methods."
 #"  - auto-dci:      Try different steganalysis methods with DCI."
 
-#"  - aump:          Adaptive Steganalysis Attack.\n" \
 
 
 def _format_line(value, length):
@@ -19,6 +17,19 @@ def _format_line(value, length):
         return ("["+str(round(value,1))+"]").center(length, ' ')
 
     return str(round(value,1)).center(length, ' ')
+
+def load_model(nn, model_name):
+
+    # Get the directory where the models are installed
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    dir_path = os.path.join(dir_path, os.pardir, os.pardir, 'aletheia-models')
+
+    model_path = os.path.join(dir_path, model_name+".h5")
+    if not os.path.isfile(model_path):
+        print(f"ERROR: Model file not found: {model_path}\n")
+        sys.exit(-1)
+    nn.load_model(model_path, quiet=True)
+    return nn
 
 def launch():
 
@@ -28,14 +39,9 @@ def launch():
 
     import aletheialib.models
 
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    threshold=0.05
     path = aletheialib.utils.absolute_path(sys.argv[2])
 
-    os.environ["CUDA_VISIBLE_DEVICES"] = "CPU" # XXX: read from input
-    #os.environ["CUDA_VISIBLE_DEVICES"] = "1" 
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 
     if os.path.isdir(path):
         files = glob.glob(os.path.join(path, '*.*'))
@@ -63,20 +69,16 @@ def launch():
     # JPG
     if len(jpg_files)>0:
 
-        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-outguess.h5")
-        nn.load_model(model_path, quiet=True)
+        nn = load_model(nn, "effnetb0-A-alaska2-outguess")
         outguess_pred = nn.predict(jpg_files, 10)
 
-        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-steghide.h5")
-        nn.load_model(model_path, quiet=True)
+        nn = load_model(nn, "effnetb0-A-alaska2-steghide")
         steghide_pred = nn.predict(jpg_files, 10)
 
-        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-nsf5.h5")
-        nn.load_model(model_path, quiet=True)
+        nn = load_model(nn, "effnetb0-A-alaska2-nsf5")
         nsf5_pred = nn.predict(jpg_files, 10)
 
-        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-juniw.h5")
-        nn.load_model(model_path, quiet=True)
+        nn = load_model(nn, "effnetb0-A-alaska2-juniw")
         juniw_pred = nn.predict(jpg_files, 10)
 
 
@@ -103,20 +105,16 @@ def launch():
     # BITMAP
     if len(bitmap_files)>0:
 
-        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-lsbr.h5")
-        nn.load_model(model_path, quiet=True)
+        nn = load_model(nn, "effnetb0-A-alaska2-lsbr")
         lsbr_pred = nn.predict(bitmap_files, 10)
 
-        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-lsbm.h5")
-        nn.load_model(model_path, quiet=True)
+        nn = load_model(nn, "effnetb0-A-alaska2-lsbm")
         lsbm_pred = nn.predict(bitmap_files, 10)
 
-        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-steganogan.h5")
-        nn.load_model(model_path, quiet=True)
+        nn = load_model(nn, "effnetb0-A-alaska2-steganogan")
         steganogan_pred = nn.predict(bitmap_files, 10)
 
-        model_path = os.path.join(dir_path, "../../models/effnetb0-A-alaska2-hill.h5")
-        nn.load_model(model_path, quiet=True)
+        nn = load_model(nn, "effnetb0-A-alaska2-hill")
         hill_pred = nn.predict(bitmap_files, 10)
 
 
