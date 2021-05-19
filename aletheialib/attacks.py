@@ -209,7 +209,7 @@ def beta_kl(dct_0, dct_b, k, l):
 
 
 def calibration_f5(path):
-    """ it used jpeg_toolbox """
+    """ it uses jpeg_toolbox """
     import jpeg_toolbox as jt
 
     tmpdir = tempfile.mkdtemp()
@@ -235,7 +235,7 @@ def calibration_f5(path):
 
 
 def calibration_chisquare_mode(path):
-    """ it used jpeg_toolbox """
+    """ it uses jpeg_toolbox """
     import jpeg_toolbox as jt
 
     tmpdir = tempfile.mkdtemp()
@@ -476,7 +476,7 @@ def print_diffs(cover, stego):
 
 # {{{ print_dct_diffs()
 def print_dct_diffs(cover, stego): 
-    import jpeg_toolbox as jt
+    #import jpeg_toolbox as jt
 
     def print_list(l, ln):
         mooc = 0
@@ -486,16 +486,16 @@ def print_dct_diffs(cover, stego):
             if np.abs(v) > 1:
                 mooc += 1
 
-    #C_jpeg = JPEG(cover)
-    C_jpeg = jt.load(cover)
-    #S_jpeg = JPEG(stego)
-    S_jpeg = jt.load(stego)
-    #for i in range(C_jpeg.components()):
-    for i in range(C_jpeg["jpeg_components"]):
-        #C = C_jpeg.coeffs(i)
-        #S = S_jpeg.coeffs(i)
-        C = C_jpeg["coef_arrays"][i]
-        S = S_jpeg["coef_arrays"][i]
+    C_jpeg = JPEG(cover)
+    #C_jpeg = jt.load(cover)
+    S_jpeg = JPEG(stego)
+    #S_jpeg = jt.load(stego)
+    for i in range(C_jpeg.components()):
+    #for i in range(C_jpeg["jpeg_components"]):
+        C = C_jpeg.coeffs(i)
+        S = S_jpeg.coeffs(i)
+        #C = C_jpeg["coef_arrays"][i]
+        #S = S_jpeg["coef_arrays"][i]
         if C.shape!=S.shape:
             print("WARNING! channels with different size. Channel: ", i)
             continue

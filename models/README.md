@@ -56,8 +56,10 @@ reliable to be applied to a set of images.
 |-------------------------------|--------------------|---------|-------|-----------|
 | effnetb0-A/B-alaska2-steghide | bossbase-q80-color |  0.945  | 0.985 |   0.830   |
 | effnetb0-A/B-alaska2-steghide | bossbase-q95-color |  0.945  | 0.978 |   0.804   |
+| effnetb0-A/B-alaska2-nsf5     | bossbase-q80-color |  0.781  | 0.802 |   0.686   |
 | effnetb0-A/B-alaska2-nsf5     | bossbase-q95-color |  0.781  | 0.716 |   0.696   |
-| effnetb0-A/B-alaska2-juniward | bossbase-q95-color |  0.759  | 0.700 |   0.685   |
+| effnetb0-A/B-alaska2-juniw    | bossbase-q80-color |  0.759  | 0.566 |   0.595   |
+| effnetb0-A/B-alaska2-juniw    | bossbase-q95-color |  0.759  | 0.700 |   0.685   |
 
 
 
@@ -72,6 +74,32 @@ reliable to be applied to a set of images.
 
 
 * DCI predictions tell us about the reliability of the model for these images
+
+
+
+## Secure payloads
+
+The following table contains experiments with low payloads. The objective of 
+these experiments is to find for which payloads the stegosystem is undetectable.
+
+
+| Models (JPG images)        | Testing             | Payload | Score |
+|----------------------------|---------------------|---------|-------|
+| effnetb0-A-alaska2-juniw   | bossbase-q95-color  |  0.05   | 0.526 |
+| effnetb0-A-alaska2-juniw   | alaska2-test        |  0.05   | 0.537 |
+| effnetb0-A-alaska2-juniw   | mini-imagenet-test  |  0.05   | 0.509 |
+| effnetb0-A-alaska2-juniw   | alaska2-test        |  0.10   | 0.603 |
+
+
+| Models (Bitmap images)     | Testing          | Payload | Score |
+|----------------------------|------------------|---------|-------|
+| effnetb0-A-alaska2-hill    | alaska2-test     |  0.05   | 0.574 |
+| effnetb0-A-alaska2-hill    | alaska2-test     |  0.10   | 0.768 |
+| effnetb0-A-alaska2-hill    | bossbase-test    |  0.05   | 0.500 |
+| effnetb0-A-alaska2-hill    | bossbase-test    |  0.10   | 0.502 |
+| effnetb0-A-alaska2-hill    | camid-test       |  0.05   | 0.649 |
+
+
 
 
 

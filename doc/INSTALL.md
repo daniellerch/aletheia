@@ -105,7 +105,10 @@ COMMANDS:
   - e4s-predict:           Predict using EC.
 
   Find password by brute force using a list of passwords:
-  - bf-generic:   Generic tool for finding the password using a command tool.
+  - brute-force-steghide:      Brute force a password using StegHide
+  - brute-force-outguess:      Brute force a password using Outguess
+  - brute-force-openstego:     Brute force a password using OpenStego
+  - brute-force-generic:       Generic tool for finding the password using a command
 
   Tools:
   - hpf:                   High-pass filter.
@@ -115,6 +118,7 @@ COMMANDS:
   - plot-histogram:        Plot histogram.
   - plot-histogram-diff:   Plot histogram of differences.
   - plot-dct-histogram:    Plot DCT histogram.
+
 
 ```
 

@@ -273,7 +273,7 @@ from tensorflow.keras import optimizers
 from tensorflow.keras import callbacks
 
 
-class NN: 
+class NN:
 
     def __init__(self, network, model_name=None, shape=(512,512,3)):
         # {{{
@@ -338,7 +338,7 @@ class NN:
                     S_path = random.choice(stego_list)
 
                     if self.replace_method:
-                       S_path = S_path.replace(self.replace_base_str, 
+                       S_path = S_path.replace(self.replace_base_str,
                                                random.choice(self.replace_list))
 
                     Ic = self.rot_flip(imread(C_path))
@@ -381,7 +381,7 @@ class NN:
                         S_path = stego_list[i]
 
                         if self.replace_method:
-                           S_path = S_path.replace(self.replace_base_str, 
+                           S_path = S_path.replace(self.replace_base_str,
                                                    random.choice(self.replace_list))
 
                         Ic = imread(C_path)
@@ -411,13 +411,19 @@ class NN:
         images = []
         for f in image_list:
             try:
-                img = imread(f)
-                if img.shape!=self.shape:
-                    print("NN pred_generator warning: wrong shape:", f)
-                    continue
-                images.append(img[:self.shape[0], :self.shape[1], :])
+                I = imread(f)
+
+                # This function must support images with variable size
+                # Note that with big images we are only analyzing a small part
+                img = np.zeros(self.shape)
+                d0 = min(I.shape[0], self.shape[0])
+                d1 = min(I.shape[1], self.shape[1])
+                d2 = min(I.shape[2], self.shape[2])
+                img[:d0, :d1, :d2] = I[:d0, :d1, :d2]
+                images.append(img)
+
             except Exception as e:
-                #print(e)
+                print(str(e))
                 print("NN pred_generator warning: cannot read image:", f)
                 continue
 
@@ -484,13 +490,13 @@ class NN:
         for f in files:
             img = imread(f)
             if len(img.shape)!=3 or img.shape[2] != self.shape[2]:
-                print("WARNING: image ignored:", f, ", expected number of channels:", 
+                print("WARNING: image ignored:", f, ", expected number of channels:",
                        self.shape[2])
                 continue
 
-            if (img.shape[0] < self.shape[0] or 
+            if (img.shape[0] < self.shape[0] or
                 img.shape[1] < self.shape[1]):
-                print("WARNING: image ignored:", f, ", image too small, expected:", 
+                print("WARNING: image ignored:", f, ", image too small, expected:",
                        self.shape[0], "x", self.shape[1])
                 continue
             files_ok.append(f)
@@ -521,7 +527,68 @@ class NN:
             pred = pred.tolist() + self.model.predict(g, steps=1, verbose=1)[:,-1].tolist()
         return np.array(pred)
         # }}}
- 
+
+    def get_gradients_from_array(self, arr):
+        # {{{
+        batch = len(arr)
+        targets = [[1,0]] * batch
+        labels = tf.reshape(targets, (batch, 2))
+
+        images = tf.cast(arr, tf.float32)/255
+        loss_object = tf.keras.losses.BinaryCrossentropy()
+        with tf.GradientTape() as tape:
+            tape.watch(images)
+            prediction = self.model(images, training=False)
+            loss = loss_object(labels, prediction)
+        gradient = tape.gradient(loss, images).numpy()
+
+        return gradient
+        # }}}
+
+
+
+    def get_gradients(self, files, batch):
+        # {{{
+        if len(files)<batch:
+            batch = 1
+
+        targets = [[1,0]] * batch
+        labels = tf.reshape(targets, (batch, 2))
+
+        steps = len(files)//batch
+        g1 = self.pred_generator(files[:steps*batch], batch)
+
+        g2 = []
+        if steps*batch<len(files):
+            g2 = self.pred_generator(files[steps*batch:], 1)
+
+        cnt = 0
+        I = imread(files[0])
+        gradients = np.zeros((len(files),)+I.shape).astype('float32') 
+        for g in [g1, g2]:
+            for images_batch in g:
+                images_batch = tf.cast(images_batch, tf.float32)
+                loss_object = tf.keras.losses.BinaryCrossentropy()
+                with tf.GradientTape() as tape:
+                    tape.watch(images_batch)
+                    prediction = self.model(images_batch, training=False)
+                    loss = loss_object(labels, prediction)
+                gradient = tape.gradient(loss, images_batch).numpy()
+                """
+                if gradients is None:
+                    gradients = gradient
+                else:
+                    gradients = np.concatenate((gradients, gradient), axis=0)
+                """
+                gradients[cnt:cnt+gradient.shape[0]] = gradient
+                print("gradients:", cnt, "                \r", end='')
+                cnt += gradient.shape[0]
+
+        return gradients
+        # }}}
+
+
+
 
 # }}}
 
