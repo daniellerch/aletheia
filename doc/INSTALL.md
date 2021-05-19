@@ -1,18 +1,14 @@
 ### Install
 
-First you need to clone the GIT repository:
+You can install Aletheia with the following command:
 
 ```bash
-$ git clone https://github.com/daniellerch/aletheia.git
+$ pip3 install git+https://github.com/daniellerch/aletheia
 ```
 
-Inside the Aletheia directory you will find a requirements file for installing Python dependencies with pip:
+But some things might not work properly, because Aletheia has externar denpendencies.
 
-```bash
-$ sudo pip3 install -r requirements.txt 
-```
-
-Aletheia uses Octave so you need to install it and some dependencies. You will find the dependencies in the octave-requirements.txt file. In Debian based Linux distributions you can install the dependencies with the following commands. For different distros you can deduce the appropriate ones.
+Aletheia uses Octave so you need to install it and some of its libraries. You will find the dependencies in the octave-requirements.txt file. In Debian based Linux distributions you can install the dependencies with the following commands. For different distros you can deduce the appropriate ones.
 
 ```bash
 $ sudo apt-get install octave octave-image octave-signal
@@ -23,25 +19,6 @@ You can find other dependencies in the other-requirements.txt.
 ```bash
 $ sudo apt-get install liboctave-dev imagemagick
 ```
-
-There are some functionalities that require native code. At this moment, you have to make the compilation manually.
-
-The JPEG toolbox:
-
-```bash
-$ cd external/jpeg_toolbox
-$ make
-$ cd ..
-```
-
-The maxSRM feature extractor:
-
-```bash
-$ cd external/maxSRM
-$ make
-$ cd ..
-```
-
 
 After that, you can execute Aletheia with:
 
