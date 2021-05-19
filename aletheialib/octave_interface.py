@@ -134,6 +134,16 @@ def _extract(extractor_name, path, params={}):
     basedir=os.path.abspath(os.path.join(fdir, os.pardir))
     m_path=os.path.join(basedir, 'aletheia-octave', 'octave')
 
+
+    if extractor_name in ["HILL_MAXSRM"]:
+        if not os.path.isfile(os.path.join(m_path, 'MAXSRM.mex')):
+            maxsrm_path=os.path.join(basedir, 'aletheia-octave', 'maxSRM')
+            os.chdir(maxsrm_path)
+            os.system("make")
+
+
+
+
     X=numpy.array([])
     im=Image.open(path)
     if ((im.mode=='L' and extractor_name in FEAEXT_1CH) or 
