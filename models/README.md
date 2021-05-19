@@ -85,10 +85,12 @@ these experiments is to find for which payloads the stegosystem is undetectable.
 
 | Models (JPG images)        | Testing             | Payload | Score |
 |----------------------------|---------------------|---------|-------|
-| effnetb0-A-alaska2-juniw   | bossbase-q95-color  |  0.05   | 0.526 |
 | effnetb0-A-alaska2-juniw   | alaska2-test        |  0.05   | 0.537 |
-| effnetb0-A-alaska2-juniw   | mini-imagenet-test  |  0.05   | 0.509 |
 | effnetb0-A-alaska2-juniw   | alaska2-test        |  0.10   | 0.603 |
+| effnetb0-A-alaska2-juniw   | bossbase-q95-color  |  0.05   | 0.526 |
+| effnetb0-A-alaska2-juniw   | mini-imagenet-test  |  0.05   | 0.509 |
+| effnetb0-A-alaska2-juniw   | mini-imagenet-test  |  0.10   | 0.522 |
+| effnetb0-A-alaska2-juniw   | mini-imagenet-test  |  0.20   | 0.553 |
 
 
 | Models (Bitmap images)     | Testing          | Payload | Score |
