@@ -410,22 +410,22 @@ class NN:
         # {{{
         images = []
         for f in image_list:
+            img = np.zeros(self.shape)
             try:
                 I = imread(f)
 
                 # This function must support images with variable size
                 # Note that with big images we are only analyzing a small part
-                img = np.zeros(self.shape)
                 d0 = min(I.shape[0], self.shape[0])
                 d1 = min(I.shape[1], self.shape[1])
                 d2 = min(I.shape[2], self.shape[2])
                 img[:d0, :d1, :d2] = I[:d0, :d1, :d2]
-                images.append(img)
 
             except Exception as e:
                 print(str(e))
                 print("NN pred_generator warning: cannot read image:", f)
-                continue
+
+            images.append(img)
 
             if len(images)==batch:
                 X = np.array(images).astype('float32')/255

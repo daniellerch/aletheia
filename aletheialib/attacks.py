@@ -506,6 +506,14 @@ def print_dct_diffs(cover, stego):
         print_list(pairs_diff, 5)
 
 
+    print("\nCommon DCT coefficients frequency variation:")
+    for i in range(C_jpeg.components()):
+        print("\nChannel "+str(i)+":")
+        for v in [-3, -2, -1, 0, 1, 2, 3]:
+            print(f"{v:+}:", 
+            np.sum(S_jpeg.coeffs(i)==v)-np.sum(C_jpeg.coeffs(i)==v))
+
+
 # }}}
 
 # {{{ remove_alpha_channel()
