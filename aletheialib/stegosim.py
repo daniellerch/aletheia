@@ -211,12 +211,12 @@ def lsbr(path, payload):
 # {{{ steghide()
 def steghide(path, payload, dst_path):
 
-    p=subprocess.Popen("steghide info "+path, \
+    p=subprocess.Popen("LANG=en_US && steghide info "+path, \
                        shell=True,  
                        stdout=subprocess.PIPE,   
                        stdin=subprocess.PIPE, 
                        stderr=subprocess.DEVNULL) 
-    output, err = p.communicate(input=b'y')   
+    output, err = p.communicate(input=b'n')   
     status = p.wait() 
     output = output.decode()   
  
