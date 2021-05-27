@@ -43,37 +43,43 @@ double stego. The later are used for DCI methods.
 
 ## DCI models
 
-The following table contains the score and the DCI prediction score using 
-different databases for training and for testing. A mismatch between the images
-used for training and for testing (CSM) is a usual situation in real world 
-cases. The DCI predictions (made without tags) let us know if the model is 
-reliable to be applied to a set of images.
+The following table contains the score using the Alaska2 testing set as a 
+reference and the score with a different testing set. A mismatch between 
+the images used for training and for testing (CSM, Cover Source Mimsatch) 
+is a usual situation in real world cases that decreases significantly the
+accuracy of the model. The table also contains the DCI predictions. These
+predictions (made without tags) let us know if the model is reliable to be 
+applied to the analyzed images.
+
+
+| Models (JPG images)           | Testing set        | Alaska2 | Score | DCI pred (+)|
+|-------------------------------|--------------------|---------|-------|-------------|
+| effnetb0-A/B-alaska2-steghide | bossbase-q80-color |  0.945  | 0.985 |   0.830     |
+| effnetb0-A/B-alaska2-steghide | bossbase-q95-color |  0.945  | 0.978 |   0.804     |
+| effnetb0-A/B-alaska2-steghide | imagenet-mini      |  0.945  | 0.813 |   0.695     |
+| effnetb0-A/B-alaska2-steghide | lfw-faces          |  0.945  | 0.665 |   0.639     |
+| effnetb0-A/B-alaska2-nsf5     | bossbase-q80-color |  0.781  | 0.802 |   0.686     |
+| effnetb0-A/B-alaska2-nsf5     | bossbase-q95-color |  0.781  | 0.716 |   0.696     |
+| effnetb0-A/B-alaska2-nsf5     | imagenet-mini      |  0.781  | 0.686 |   0.638     |
+| effnetb0-A/B-alaska2-nsf5     | lfw-faces          |  0.781  | 0.667 |   0.687     |
+| effnetb0-A/B-alaska2-juniw    | bossbase-q80-color |  0.759  | 0.566 |   0.595     |
+| effnetb0-A/B-alaska2-juniw    | bossbase-q95-color |  0.759  | 0.700 |   0.685     |
+| effnetb0-A/B-alaska2-juniw    | imagenet-mini      |  0.759  | 0.561 |   0.559     |
+| effnetb0-A/B-alaska2-juniw    | lfw-faces          |  0.759  | 0.558 |   0.515     |
 
 
 
 
-| Models (JPG images)           | Testing            | Alaska2 | Boss  | DCI pred* |
-|-------------------------------|--------------------|---------|-------|-----------|
-| effnetb0-A/B-alaska2-steghide | bossbase-q80-color |  0.945  | 0.985 |   0.830   |
-| effnetb0-A/B-alaska2-steghide | bossbase-q95-color |  0.945  | 0.978 |   0.804   |
-| effnetb0-A/B-alaska2-nsf5     | bossbase-q80-color |  0.781  | 0.802 |   0.686   |
-| effnetb0-A/B-alaska2-nsf5     | bossbase-q95-color |  0.781  | 0.716 |   0.696   |
-| effnetb0-A/B-alaska2-juniw    | bossbase-q80-color |  0.759  | 0.566 |   0.595   |
-| effnetb0-A/B-alaska2-juniw    | bossbase-q95-color |  0.759  | 0.700 |   0.685   |
+
+| Models  (Bitmap images)     | Testing        | Alaska2 |  Score   | DCI pred (+) |
+|-----------------------------|----------------|---------|----------|--------------|
+| effnetb0-A/B-alaska2-lsbm   | bossbase-color |  0.918  |  0.606   |   0.596      |
+| effnetb0-A/B-alaska2-hill   | bossbase-color |  0.923  |  0.503   |   0.583      |
 
 
 
 
-
-| Models  (Bitmap images)     | Testing        | Alaska2 |  Score   | DCI pred* |
-|-----------------------------|----------------|---------|----------|-----------|
-| effnetb0-A/B-alaska2-lsbm   | bossbase-color |  0.918  |  0.606   |   0.596   |
-| effnetb0-A/B-alaska2-hill   | bossbase-color |  0.923  |  0.503   |   0.583   |
-
-
-
-
-* DCI predictions tell us about the reliability of the model for these images
+(+) DCI predictions tell us about the reliability of the model for these images
 
 
 

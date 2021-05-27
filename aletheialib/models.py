@@ -509,6 +509,8 @@ class NN:
             if not quiet:
                 print("Loading", model_path, "...")
             self.model.load_weights(model_path)
+        elif not quiet:
+            print("WARNING: model file not found:", model_path)
         # }}}
 
     def predict(self, files, batch):

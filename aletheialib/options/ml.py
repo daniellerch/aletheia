@@ -419,15 +419,15 @@ def effnetb0_dci_score():
     B_files = B_stego_files+B_double_files
 
 
-    p_aa = A_nn.predict(A_files, 10)
-    p_ab = A_nn.predict(B_files, 10)
-    p_bb = B_nn.predict(B_files, 10)
-    p_ba = B_nn.predict(A_files, 10)
+    p_aa_ = A_nn.predict(A_files, 10)
+    p_ab_ = A_nn.predict(B_files, 10)
+    p_bb_ = B_nn.predict(B_files, 10)
+    p_ba_ = B_nn.predict(A_files, 10)
 
-    p_aa = np.round(p_aa).astype('uint8')
-    p_ab = np.round(p_ab).astype('uint8')
-    p_ba = np.round(p_ba).astype('uint8')
-    p_bb = np.round(p_bb).astype('uint8')
+    p_aa = np.round(p_aa_).astype('uint8')
+    p_ab = np.round(p_ab_).astype('uint8')
+    p_ba = np.round(p_ba_).astype('uint8')
+    p_bb = np.round(p_bb_).astype('uint8')
 
     y_true = np.array([0]*len(A_cover_files) + [1]*len(A_stego_files))
     inc = ( (p_aa!=p_bb) | (p_ba!=0) | (p_ab!=1) ).astype('uint8')
@@ -445,9 +445,9 @@ def effnetb0_dci_score():
     print("#S-ok:", np.sum(S_ok==1))
     print("aa-score:", accuracy_score(y_true, p_aa))
     print("bb-score:", accuracy_score(y_true, p_bb))
-    print("dci-score:", float(np.sum(C_ok==1)+np.sum(S_ok==1))/(len(A_files)-np.sum(inc==1)))
+    print("dci-score:", round(float(np.sum(C_ok==1)+np.sum(S_ok==1))/(len(A_files)-np.sum(inc==1)),2))
     print("--")
-    print("dci-prediction-score:", 1-float(np.sum(inc==1))/(2*len(p_aa)))
+    print("dci-prediction-score:", round(1-float(np.sum(inc==1))/(2*len(p_aa)),3))
 
 # }}}
 
@@ -524,7 +524,7 @@ def effnetb0_dci_predict():
            "#incF2C", np.sum(inc2c), "#incF2S:", np.sum(inc2s))
     print("#no_inc:", len(A_files)-np.sum(inc==1))
     print("--")
-    print("dci-prediction-score:", 1-float(np.sum(inc==1))/(2*len(p_aa)))
+    print("dci-prediction-score:", round(1-float(np.sum(inc==1))/(2*len(p_aa)),3))
 
 # }}}
 
