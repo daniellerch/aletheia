@@ -67,10 +67,10 @@ $ ./aletheia.py auto sample_images/alaska2
 - [Training new models](/doc/TRAIN_MODEL.md)
 - [Brute-force password attack](/doc/BRUTE-FORCE.md)
 - Examples:
+	* [Practical attack to Steghide](https://daniellerch.me/stego/aletheia/steghide-attack-en/)
 	* [Steganalysis of OpenPuff](/doc/OPENPUFF.md)
 	* [Steganalysis of OpenStego](/doc/OPENSTEGO.md)
 	* [Steganalysis of F5](/doc/F5.md)
-	* [Steganalysis of Steghide](/doc/STEGHIDE.md)
 - [How to cite Aletheia?](/doc/CITING.md)
 - [References](/doc/REFERENCES.md)
 

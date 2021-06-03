@@ -185,11 +185,7 @@ def dci():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
     A_nn = aletheialib.models.NN("effnetb0")
-    A_files = A_nn.filter_images(files)
-    if len(files)==0:
-        print("ERROR: please provide valid files")
-        sys.exit(0)
-
+    A_files = files
 
     fn_sim=aletheialib.stegosim.embedding_fn(sys.argv[2])
     method = sys.argv[2].replace("-sim", "")
