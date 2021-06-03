@@ -116,55 +116,6 @@ def plot_histogram():
 
 # }}}
 
-# {{{ plot_histogram_diff
-def plot_histogram_diff():
-
-    if len(sys.argv)<4:
-        print(sys.argv[0], "plot-histogram <image> <L|R|U|D>\n")
-        print("")
-        sys.exit(0)
-
-    import aletheialib.utils
-    from matplotlib import pyplot as plt
-
-    fn = aletheialib.utils.absolute_path(sys.argv[2])
-    direction = sys.argv[3]
-    if direction not in ["L", "R", "U", "D"]:
-        print("Please provide the substract direction: L, R, U or D\n")
-        sys.exit(0)
-
-    I = imageio.imread(fn)
-    data = []
-    if len(I.shape) == 1:
-        if direction == "L":
-            D = I[:,1:]-I[:,:-1]
-        if direction == "R":
-            D = I[:,:-1]-I[:,1:]
-        if direction == "U":
-            D = I[:-1,:]-I[1:,:]
-        if direction == "D":
-            D = I[1:,:]-I[:-1,:]
-        
-        data.append(D.flatten())
-    else:
-        for i in range(I.shape[2]):
-            if direction == "L":
-                D = I[:,1:,i]-I[:,:-1,i]
-            if direction == "R":
-                D = I[:,:-1,i]-I[:,1:,i]
-            if direction == "U":
-                D = I[:-1,:,i]-I[1:,:,i]
-            if direction == "D":
-                D = I[1:,:,i]-I[:-1,:,i]
-
-            data.append(D.flatten())
-
-    plt.hist(data, range(0, 255), color=["r", "g", "b"])
-    plt.show()
-    sys.exit(0)
-
-# }}}
-
 # {{{ plot_dct_histogram
 def plot_dct_histogram():
 
@@ -175,6 +126,7 @@ def plot_dct_histogram():
 
     import aletheialib.utils
     import aletheialib.jpeg
+    from matplotlib import pyplot as plt
 
     fn = aletheialib.utils.absolute_path(sys.argv[2])
     name, ext = os.path.splitext(fn)
@@ -189,7 +141,7 @@ def plot_dct_histogram():
         dct_list.append(dct)
         #counts, bins = np.histogram(dct, range(-5, 5))
         #plt.plot(bins[:-1], counts, channels[i])
-    plt.hist(dct_list, range(-5, 5), rwidth=1, color=["r", "g", "b"])
+    plt.hist(dct_list, range(-10, 10), rwidth=1, color=["r", "g", "b"])
 
     plt.show()
     sys.exit(0)

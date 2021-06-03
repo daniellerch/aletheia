@@ -227,6 +227,11 @@ def main():
     elif sys.argv[1] == "rm-alpha":
         options.tools.rm_alpha()
 
+    elif sys.argv[1] == "plot-histogram":
+        options.tools.plot_histogram()
+
+    elif sys.argv[1] == "plot-dct-histogram":
+        options.tools.plot_dct_histogram()
 
     else:
         print("Wrong command!")
