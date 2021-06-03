@@ -188,7 +188,8 @@ def dci():
     A_files = files
 
     fn_sim=aletheialib.stegosim.embedding_fn(sys.argv[2])
-    method = sys.argv[2].replace("-sim", "")
+    method = sys.argv[2]
+    method = method.replace("-sim", "")
 
     B_dir=tempfile.mkdtemp()
     print("Preparind the B set ...")
@@ -198,10 +199,15 @@ def dci():
     B_nn = aletheialib.models.NN("effnetb0")
     B_files = glob.glob(os.path.join(B_dir, '*'))
 
+    # Make some replacements to adapt the name of the method with the name
+    # of the model file
+    method = method.replace("-color", "")
+    method = method.replace("j-uniward", "juniw")
+
     A_nn = load_model(A_nn, "effnetb0-A-alaska2-"+method)
     B_nn = load_model(B_nn, "effnetb0-B-alaska2-"+method)
 
-
+    # Predictions for the DCI method
     p_aa = A_nn.predict(A_files, 50)
     p_ab = A_nn.predict(B_files, 50)
     p_bb = B_nn.predict(B_files, 50)
@@ -212,6 +218,7 @@ def dci():
     p_ba = np.round(p_ba).astype('uint8')
     p_bb = np.round(p_bb).astype('uint8')
 
+    # Inconsistencies
     inc = ( (p_aa!=p_bb) | (p_ba!=0) | (p_ab!=1) ).astype('uint8')
     inc1 = (p_aa!=p_bb).astype('uint8')
     inc2 = ( (p_ba!=0) | (p_ab!=1) ).astype('uint8')

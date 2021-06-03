@@ -27,8 +27,38 @@
 ## Actor: A5
 - **Number of cover images**: 0
 - **Number of stego images**: 10
-- **Steganography method**: OUTGESS
+- **Steganography method**: OUTGUESS
 - **Image database**: alaska2
+
+
+
+## Actor: B1
+- **Number of cover images**: 10
+- **Number of stego images**: 0
+- **Steganography method**: -
+- **Image database**: imagenet-mini
+
+## Actor: B2
+- **Number of cover images**: 0
+- **Number of stego images**: 10
+- **Steganography method**: Steghide
+- **Image database**: imagenet-mini
+
+## Actor: B3
+- **Number of cover images**: 0
+- **Number of stego images**: 10
+- **Steganography method**: nsF5
+- **Image database**: imagenet-mini
+
+## Actor: B4
+- **Number of cover images**: 0
+- **Number of stego images**: 10
+- **Steganography method**: J-UNIWARD
+- **Image database**: imagenet-mini
+
+
+
+
 
 
 
