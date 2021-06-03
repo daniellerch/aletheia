@@ -24,6 +24,12 @@
 - **Steganography method**: J-UNIWARD
 - **Image database**: alaska2
 
+## Actor: A5
+- **Number of cover images**: 0
+- **Number of stego images**: 10
+- **Steganography method**: OUTGESS
+- **Image database**: alaska2
+
 
 
 

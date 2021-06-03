@@ -48,8 +48,10 @@ def main():
 
     # Automatic steganalysis
     if sys.argv[1] == "auto":
-        options.auto.launch()
+        options.auto.auto()
 
+    elif sys.argv[1] == "dci":
+        options.auto.dci()
 
     # Structural LSB detectors
     elif sys.argv[1] == "sp":

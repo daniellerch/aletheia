@@ -279,10 +279,10 @@ def steganogan(path, payload, dst_path):
 
 # {{{ embedding_fn()
 def embedding_fn(name):
-    if name=="lsbm-sim":
-        return lsbm
     if name=="lsbr-sim":
         return lsbr
+    if name=="lsbm-sim":
+        return lsbm
     if name=="hugo-sim":
         return hugo
     if name=="wow-sim":
@@ -297,10 +297,6 @@ def embedding_fn(name):
         return j_uniward_color
     if name=="hill-sim":
         return hill
-    if name=="nsf5-sim":
-        return nsf5
-    if name=="nsf5-color-sim":
-        return nsf5_color
     if name=="ebs-sim":
         return ebs
     if name=="ebs-color-sim":
@@ -309,6 +305,14 @@ def embedding_fn(name):
         return ued
     if name=="ueb-color-sim":
         return ued_color
+    if name=="nsf5-sim":
+        return nsf5
+    if name=="nsf5-color-sim":
+        return nsf5_color
+    if name=="steghide-sim":
+        return steghide
+    if name=="steganogan-sim":
+        return steganogan
 
     print("Unknown simulator:", name)
     sys.exit(0)

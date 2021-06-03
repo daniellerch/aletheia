@@ -6,9 +6,9 @@ import aletheialib.utils
 
 
 doc = "\n" \
-"  Automatic steganalysis:\n" \
+"  Automated tools:\n" \
 "  - auto:      Try different steganalysis methods."
-#"  - auto-dci:      Try different steganalysis methods with DCI."
+"  - dci:       Predict a set of images using DCI evaluation."
 
 
 
@@ -31,7 +31,8 @@ def load_model(nn, model_name):
     nn.load_model(model_path, quiet=True)
     return nn
 
-def launch():
+# {{{ auto()
+def auto():
 
     if len(sys.argv)!=3:
         print(sys.argv[0], "auto <image|dir>\n")
@@ -51,7 +52,7 @@ def launch():
     nn = aletheialib.models.NN("effnetb0")
     files = nn.filter_images(files)
     if len(files)==0:
-        print("ERROR: please provice valid files")
+        print("ERROR: please provide valid files")
         sys.exit(0)
 
 
@@ -140,6 +141,109 @@ def launch():
 
     print("")
     print("* Probability of being stego using the indicated steganographic method.\n")
+# }}}
+
+# {{{ dci()
+def dci():
+
+    if len(sys.argv)!=4:
+        print(sys.argv[0], "dci <sim> <img dir>\n")
+        print("Example:");
+        print(sys.argv[0], "dci steghide-sim images/\n")
+        sys.exit(0)
+
+    files = glob.glob(os.path.join(sys.argv[3], '*'))
+
+
+    if not os.path.isdir(sys.argv[3]):
+        print("ERROR: Please, provide a valid directory\n")
+        sys.exit(0)
+
+    if len(files)<10:
+        print("ERROR: We need more images from the same actor\n")
+        sys.exit(0)
+
+    
+    ext = os.path.splitext(files[0])[1].lower().replace('.jpeg', '.jpg')
+    for f in files:
+        curr_ext = os.path.splitext(f)[1].lower().replace('.jpeg', '.jpg')
+        if ext != curr_ext:
+            print(f"ERROR: All images must be of the same type: {curr_ext}!={ext} \n")
+            sys.exit(0)
+
+    embed_fn_saving = False
+    if ext=='.jpg':
+        embed_fn_saving = True
+
+
+    import shutil
+    import tempfile
+    import aletheialib.stegosim
+    import aletheialib.models
+    import numpy as np
+
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+    A_nn = aletheialib.models.NN("effnetb0")
+    A_files = A_nn.filter_images(files)
+    if len(files)==0:
+        print("ERROR: please provide valid files")
+        sys.exit(0)
+
+
+    fn_sim=aletheialib.stegosim.embedding_fn(sys.argv[2])
+    method = sys.argv[2].replace("-sim", "")
+
+    B_dir=tempfile.mkdtemp()
+    print("Preparind the B set ...")
+    aletheialib.stegosim.embed_message(fn_sim, sys.argv[3], "0.50", B_dir, 
+                                       embed_fn_saving=embed_fn_saving)
+
+    B_nn = aletheialib.models.NN("effnetb0")
+    B_files = glob.glob(os.path.join(B_dir, '*'))
+
+    A_nn = load_model(A_nn, "effnetb0-A-alaska2-"+method)
+    B_nn = load_model(B_nn, "effnetb0-B-alaska2-"+method)
+
+
+    p_aa = A_nn.predict(A_files, 50)
+    p_ab = A_nn.predict(B_files, 50)
+    p_bb = B_nn.predict(B_files, 50)
+    p_ba = B_nn.predict(A_files, 50)
+
+    p_aa = np.round(p_aa).astype('uint8')
+    p_ab = np.round(p_ab).astype('uint8')
+    p_ba = np.round(p_ba).astype('uint8')
+    p_bb = np.round(p_bb).astype('uint8')
+
+    inc = ( (p_aa!=p_bb) | (p_ba!=0) | (p_ab!=1) ).astype('uint8')
+    inc1 = (p_aa!=p_bb).astype('uint8')
+    inc2 = ( (p_ba!=0) | (p_ab!=1) ).astype('uint8')
+    inc2c = (p_ab!=1).astype('uint8')
+    inc2s = (p_ba!=0).astype('uint8')
+
+
+    for i in range(len(p_aa)):
+        r = ""
+        if inc[i]:
+            r = "INC"
+        else:
+            r = round(p_aa[i],3)
+        print(A_files[i], r)
+
+    """
+    print("#inc:", np.sum(inc==1), "#incF1:", np.sum(inc1==1), "#incF2:", np.sum(inc2==1),
+           "#incF2C", np.sum(inc2c), "#incF2S:", np.sum(inc2s))
+    print("#no_inc:", len(A_files)-np.sum(inc==1))
+    print("--")
+    """
+    print("DCI prediction score:", round(1-float(np.sum(inc==1))/(2*len(p_aa)),3))
+
+    shutil.rmtree(B_dir)
+# }}}
+
+
+
 
 
 

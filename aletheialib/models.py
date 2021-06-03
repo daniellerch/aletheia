@@ -488,7 +488,12 @@ class NN:
         # {{{
         files_ok = []
         for f in files:
-            img = imread(f)
+            try:
+                img = imread(f)
+            except:
+                print("WARNING: cannot read, image ignored:", f)
+                continue
+
             if len(img.shape)!=3 or img.shape[2] != self.shape[2]:
                 print("WARNING: image ignored:", f, ", expected number of channels:",
                        self.shape[2])
