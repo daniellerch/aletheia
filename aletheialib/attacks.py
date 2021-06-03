@@ -278,7 +278,7 @@ def calibration_chisquare_mode(path):
 
 
 
-def calibration_f5_octave_jpeg(filename):
+def calibration_f5_octave_jpeg(filename, return_result=False):
     """ It uses JPEG from octave """
     tmpdir = tempfile.mkdtemp()
     predfile = os.path.join(tmpdir, 'img.jpg')
@@ -286,6 +286,7 @@ def calibration_f5_octave_jpeg(filename):
 
     im_jpeg = JPEG(filename)
     impred_jpeg = JPEG(predfile)
+    beta_avg = 0.0
     for i in range(im_jpeg.components()):
         dct_b = im_jpeg.coeffs(i)
         dct_0 = impred_jpeg.coeffs(i)
@@ -294,9 +295,15 @@ def calibration_f5_octave_jpeg(filename):
         b11 = beta_kl(dct_0, dct_b, 1, 1)
         beta = (b01+b10+b11)/3
         if beta > 0.05:
-            print("Hidden data found in channel "+str(i)+":", beta)
+            beta_avg += beta
+            if not return_result:
+                print("Hidden data found in channel "+str(i)+":", beta)
         else:
-            print("No hidden data found in channel "+str(i))
+            if not return_result:
+                print("No hidden data found in channel "+str(i))
+    beta_avg /= im_jpeg.components()
+    if return_result:
+        return beta_avg
 
     shutil.rmtree(tmpdir)
 
