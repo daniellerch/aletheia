@@ -195,17 +195,30 @@ def aump():
         sys.exit(0)
 
 
+    threshold=0.05
     path = aletheialib.utils.absolute_path(sys.argv[2])
     im=Image.open(path)
     if im.mode in ['RGB', 'RGBA', 'RGBX']:
-        beta_R = O._attack('AUMP', path, params={"channel":1})["data"][0][0]
-        beta_G = O._attack('AUMP', path, params={"channel":2})["data"][0][0]
-        beta_B = O._attack('AUMP', path, params={"channel":3})["data"][0][0]
-        # XXX: How to use beta?
+        alpha_R = O._attack('AUMP', path, params={"channel":1})["data"][0][0]
+        alpha_G = O._attack('AUMP', path, params={"channel":2})["data"][0][0]
+        alpha_B = O._attack('AUMP', path, params={"channel":3})["data"][0][0]
 
+        if alpha_R<threshold and alpha_G<threshold and alpha_B<threshold:
+            print("No hidden data found")
+
+        if alpha_R>=threshold:
+            print("Hidden data found in channel R", alpha_R)
+        if alpha_G>=threshold:
+            print("Hidden data found in channel G", alpha_G)
+        if alpha_B>=threshold:
+            print("Hidden data found in channel B", alpha_B)
     else:
-        beta = O._attack('AUMP', path, params={"channel":1})["data"][0][0]
-        # XXX: How to use beta?
+        alpha = O._attack('WS', path, params={"channel":1})["data"][0][0]
+        if alpha>=threshold:
+            print("Hidden data found", alpha)
+        else:
+            print("No hidden data found")
+
 
     sys.exit(0)
 # }}}

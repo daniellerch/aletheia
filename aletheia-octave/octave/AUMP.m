@@ -1,4 +1,4 @@
-function beta = AUMP(path, m, d, channel)
+function beta = AUMP(path, channel)
 %
 % AUMP LSB detector as described by L. Fillatre, "Adaptive Steganalysis of
 % Least Significant Bit Replacement in Grayscale Natural Images", IEEE
@@ -14,9 +14,11 @@ m = 16
 d = 5
 
 X = double(imread(path));
-if(size(size(X))==2)
-    X=X(:,:,channel)
+if(size(size(X))!=2)
+    X=X(:,:,channel);
 end
+
+
 
 %X = double(X);
 [Xpred,~,w] = Pred_aump(X,m,d);       % Polynomial prediction, w = weights
