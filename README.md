@@ -61,18 +61,12 @@ $ ./aletheia.py auto sample_images/alaska2
 
 ## Documentation
 
-- [Install](/doc/INSTALL.md)
-- [Statistical attacks to LSB replacement](/doc/LSBR.md)
-- [Detection using pre-trained models](/doc/MODELS.md)
-- [Training new models](/doc/TRAIN_MODEL.md)
-- [Brute-force password attack](/doc/BRUTE-FORCE.md)
+- [Installation](/doc/INSTALL.md)
 - Examples:
+	* [Introduction to steganalysis using Aletheia](https://daniellerch.me/stego/aletheia/intro-en/)
 	* [Practical attack on Steghide](https://daniellerch.me/stego/aletheia/steghide-attack-en/)
 	* [Practical attack on F5](https://daniellerch.me/stego/aletheia/f5-attack-en/)
-	* [Steganalysis of OpenPuff](/doc/OPENPUFF.md)
-	* [Steganalysis of OpenStego](/doc/OPENSTEGO.md)
 - [How to cite Aletheia?](/doc/CITING.md)
-- [References](/doc/REFERENCES.md)
 
 
 
