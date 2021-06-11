@@ -6,7 +6,7 @@ You can install Aletheia with the following command:
 $ pip3 install git+https://github.com/daniellerch/aletheia
 ```
 
-But some things might not work properly, because Aletheia has externar denpendencies.
+But some things might not work properly, because Aletheia has external denpendencies.
 
 Aletheia uses Octave so you need to install it and some of its libraries. You will find the dependencies in the octave-requirements.txt file. In Debian based Linux distributions you can install the dependencies with the following commands. For different distros you can deduce the appropriate ones.
 
