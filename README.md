@@ -62,7 +62,7 @@ $ ./aletheia.py auto sample_images/alaska2
 ## Documentation
 
 - [Installation](/INSTALL.md)
-- Examples:
+- Doc by example:
 	* [Introduction to steganalysis using Aletheia](https://daniellerch.me/stego/aletheia/intro-en/)
 	* [Practical attack on Steghide](https://daniellerch.me/stego/aletheia/steghide-attack-en/)
 	* [Practical attack on F5](https://daniellerch.me/stego/aletheia/f5-attack-en/)
