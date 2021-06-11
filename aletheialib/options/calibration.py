@@ -5,7 +5,7 @@ import glob
 
 doc = "\n" \
 "  Calibration attacks to JPEG steganography:\n" \
-"  - calibration:   Calibration attack to F5."
+"  - calibration:   Calibration attack on F5."
 
 def launch():
     if len(sys.argv)!=3:
