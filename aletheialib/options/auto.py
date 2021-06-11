@@ -7,7 +7,7 @@ import aletheialib.utils
 
 doc = "\n" \
 "  Automated tools:\n" \
-"  - auto:      Try different steganalysis methods."
+"  - auto:      Try different steganalysis methods.\n" \
 "  - dci:       Predict a set of images using DCI evaluation."
 
 
@@ -193,7 +193,7 @@ def dci():
 
     B_dir=tempfile.mkdtemp()
     print("Preparind the B set ...")
-    aletheialib.stegosim.embed_message(fn_sim, sys.argv[3], "0.50", B_dir, 
+    aletheialib.stegosim.embed_message(fn_sim, sys.argv[3], "0.05-0.50", B_dir, 
                                        embed_fn_saving=embed_fn_saving)
 
     B_nn = aletheialib.models.NN("effnetb0")
@@ -229,10 +229,10 @@ def dci():
     for i in range(len(p_aa)):
         r = ""
         if inc[i]:
-            r = "INC"
+            r = str(round(p_aa[i],3))+" (inc)"
         else:
             r = round(p_aa[i],3)
-        print(A_files[i], r)
+        print(A_files[i], "\t", r)
 
     """
     print("#inc:", np.sum(inc==1), "#incF1:", np.sum(inc1==1), "#incF2:", np.sum(inc2==1),
