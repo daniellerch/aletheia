@@ -67,6 +67,7 @@ $ ./aletheia.py auto sample_images/alaska2
     * [Identifying the steganographic scheme](https://daniellerch.me/stego/aletheia/identify-en).
 	* [Practical attack on Steghide](https://daniellerch.me/stego/aletheia/steghide-attack-en/)
 	* [Practical attack on F5](https://daniellerch.me/stego/aletheia/f5-attack-en/)
+	* [Practical attack on LSB replacement: OpenStego and OpenPuff](https://daniellerch.me/stego/aletheia/lsbr-attack-en/)
 - [How to cite Aletheia?](/CITING.md)
 
 
