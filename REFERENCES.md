@@ -51,7 +51,7 @@ This tool implements steganalysis techniques that are the result of the research
 
 ## CSM
 
-- Daniel Lerch-Hostalot and David Megías, Detection of Classifier Inconsistencies in Image Steganalysis. July 2019. Proceedings of the ACM Workshop on Information Hiding and Multimedia Security.
+- **DCI**: Daniel Lerch-Hostalot and David Megías, Detection of Classifier Inconsistencies in Image Steganalysis. July 2019. Proceedings of the ACM Workshop on Information Hiding and Multimedia Security.
 
 
 
