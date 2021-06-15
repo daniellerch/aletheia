@@ -54,6 +54,16 @@ This tool implements steganalysis techniques that are the result of the research
 - **DCI**: Daniel Lerch-Hostalot and David Megías, Detection of Classifier Inconsistencies in Image Steganalysis. July 2019. Proceedings of the ACM Workshop on Information Hiding and Multimedia Security.
 
 
+## DATABASES
+- **ALASKA2**: Rémi Cogranne, Quentin Giboulot, Patrick Bas. ALASKA-2 : Challenging Academic Research on Steganalysis with Realistic Images. IEEE International Workshop on Information Forensics and Security, Dec 2020, New York City (Virtual Conference), United States.
+
+- **BOSSBASE**: P. Bas, T. Filler, and T. Pevný. 2011. Break Our Steganographic System: The Insand Outs of Organizing BOSS. InProceedings of the 13th International Conferenceon Information Hiding (IH'11). Springer-Verlag, 59-70.
+
+- **IMAGENET**: Deng, J., Dong, W., Socher, R., Li, L.-J., Li, K., & Fei-Fei, L. (2009). Imagenet: A large-scale hierarchical image database. In 2009 IEEE conference on computer vision and pattern recognition (pp. 248?255).
+
+- **FACES**: Gary B. Huang, Manu Ramesh, Tamara Berg, and Erik Learned-Miller. Labeled Faces in the Wild: A Database for Studying Face Recognition in Unconstrained Environments. University of Massachusetts, Amherst, Technical Report 07-49, October, 2007.
+
+- **CAMID**: M. Stamm, P. Bestagini, L. Marcenaro and P. Campisi, Forensic Camera Model Identification: Highlights from the IEEE Signal Processing Cup 2018 Student Competition [SP Competitions], in IEEE Signal Processing Magazine, vol. 35, no. 5, pp. 168-174, Sept. 2018, doi: 10.1109/MSP.2018.2847326.
 
 
 
