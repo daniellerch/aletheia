@@ -2,6 +2,7 @@
 
 import os
 import re
+import sys
 from PIL import Image
 
 def is_valid_image(path):
