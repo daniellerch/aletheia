@@ -141,7 +141,7 @@ def openstego(path, password_file):
         sys.exit(0)
 
     aletheialib.utils.check_bin("openstego")   
-    command = f"openstego extract -sf stego.png -p <PASSWORD> -xf <OUTPUT_FILE>"
+    command = f"openstego extract -sf {path} -p <PASSWORD> -xf <OUTPUT_FILE>"
     generic(command, password_file, use_filetype=True, continue_searching=False)
 
 # }}}
