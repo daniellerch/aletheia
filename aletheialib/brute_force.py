@@ -11,6 +11,8 @@ import aletheialib.utils
 from multiprocessing import Pool as ThreadPool 
 from multiprocessing import cpu_count
 
+IGNORE_FILETYPES = ['inode/x-empty', 'application/x-dosexec', 'application/octet-stream']
+
 
 # {{{ check_password()
 def check_password(params):
@@ -21,6 +23,7 @@ def check_password(params):
         tempd = tempfile.mkdtemp()
         tempf = os.path.join(tempd, 'output')
         cmd = cmd.replace("<OUTPUT_FILE>", tempf)
+
 
     FNUL = open(os.devnull, 'w')
     p=subprocess.Popen(cmd, stdout=FNUL, stderr=FNUL, shell=True)
@@ -33,25 +36,30 @@ def check_password(params):
             ft = magic.Magic(mime=True).from_file(tempf)
         except:
             pass
-        if ft != None and ft != 'inode/x-empty' and ft != 'application/octet-stream':
+        if ft != None and ft not in IGNORE_FILETYPES:
             if not continue_searching:
                 print("\nPassword found:", passw)
                 shutil.rmtree(tempd, ignore_errors=True)
                 return True
 
-            print(f"Candidate password: {passw}, filetype found: {ft}")
-
-            """
+            content = ""
+            candidate = True
             if ft == "text/plain":
-                with open(tempf) as f:
-                    try:
-                        s = f.read().decode('ascii')
-                        if s.isprintable():
-                            print(f"Candidate password: {passw}, filetype found: {ft}")
-                            print(s)
-                    except:
-                        pass
-            """
+                encoding = magic.Magic(mime_encoding=True).from_file(tempf)
+                if encoding != "unknown-8bit":
+                    with open(tempf, 'rb') as f:
+                        try:
+                            s = f.read().decode(encoding)
+                            content = ", content: "+s[:10]+"... ("+encoding+")"
+                        except:
+                            candidate = False
+                            pass
+                else:
+                    candidate = False
+
+            if candidate:
+                print(f"Candidate password: {passw}, filetype found: {ft} {content}")
+
         shutil.rmtree(tempd, ignore_errors=True)
 
     elif p.returncode==0:
@@ -63,6 +71,10 @@ def check_password(params):
 # {{{ generic()
 def generic(command, password_file, use_filetype=False, continue_searching=False):
     
+    if not os.path.isfile(password_file):
+        print("ERROR: File not found -", password_file)
+        sys.exit(0)
+
     with open(password_file, "rU") as f:
         passwords = f.readlines()
 
@@ -79,7 +91,7 @@ def generic(command, password_file, use_filetype=False, continue_searching=False
     batch=100
     for i in range(0, len(params), batch):
         perc = round(100*float(i)/len(passwords),2)
-        sys.stdout.write("Completed: "+str(perc)+'%    \r')
+        sys.stderr.write("Completed: "+str(perc)+'%    \r')
         pool = ThreadPool(n_proc)
         results = pool.map(check_password, params[i:i+batch])
         pool.close()
@@ -92,6 +104,11 @@ def generic(command, password_file, use_filetype=False, continue_searching=False
 
 # {{{ steghide()
 def steghide(path, password_file):
+
+    if not os.path.isfile(password_file):
+        print("ERROR: File not found -", password_file)
+        sys.exit(0)
+
     aletheialib.utils.check_bin("steghide")   
     command = f"steghide extract -sf {path} -xf output.txt -p <PASSWORD> -f"
     generic(command, password_file, use_filetype=False, continue_searching=False)
@@ -105,6 +122,11 @@ def outguess(path, password_file):
     need to check the extracted file type to know if the password is a good
     candidate.
     """
+
+    if not os.path.isfile(password_file):
+        print("ERROR: File not found -", password_file)
+        sys.exit(0)
+
     aletheialib.utils.check_bin("outguess")   
     command = f"outguess -k <PASSWORD> -r {path} <OUTPUT_FILE>"
     generic(command, password_file, use_filetype=True, continue_searching=True)
@@ -113,11 +135,55 @@ def outguess(path, password_file):
 
 # {{{ openstego()
 def openstego(path, password_file):
+
+    if not os.path.isfile(password_file):
+        print("ERROR: File not found -", password_file)
+        sys.exit(0)
+
     aletheialib.utils.check_bin("openstego")   
     command = f"openstego extract -sf stego.png -p <PASSWORD> -xf <OUTPUT_FILE>"
     generic(command, password_file, use_filetype=True, continue_searching=False)
 
 # }}}
 
+# {{{ f5()
+def f5(path, password_file):
+    """
+    F5 does not returns a right code when the password is OK, so we 
+    need to check the extracted file type to know if the password is a good
+    candidate.
+    """
+    
+    if not os.path.isfile(password_file):
+        print("ERROR: File not found -", password_file)
+        sys.exit(0)
+
+    # Password path
+    if os.path.isabs(password_file):
+        pass_path = password_file
+    else:
+        pass_path = os.path.join(os.getcwd(), password_file)
+
+    # Image path
+    if os.path.isabs(path):
+        image_path = path
+    else:
+        image_path = os.path.join(os.getcwd(), path)
+
+
+
+
+    # Get the directory where the resources are installed
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    dir_path = os.path.join(dir_path, os.pardir, 'aletheia-resources', 'F5')
+
+    os.chdir(dir_path)
+
+    aletheialib.utils.check_bin("java")   
+
+    command = f"java Extract -p <PASSWORD> -e <OUTPUT_FILE> {image_path} "
+    generic(command, pass_path, use_filetype=True, continue_searching=True)
+
+# }}}
 
 

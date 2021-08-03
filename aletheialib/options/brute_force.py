@@ -3,6 +3,7 @@ import sys
 
 doc = "\n" \
 "  Find password by brute force using a list of passwords:\n" \
+"  - brute-force-f5:            Brute force a password using F5\n" \
 "  - brute-force-steghide:      Brute force a password using StegHide\n" \
 "  - brute-force-outguess:      Brute force a password using Outguess\n" \
 "  - brute-force-openstego:     Brute force a password using OpenStego\n" \
@@ -57,11 +58,25 @@ def openstego():
     if len(sys.argv)!=4:
         print(sys.argv[0], "brute-force-openstego <image> <passw file>\n")
         print("Example:")
-        print(sys.argv[0], "brute-force-openstego image.jpg resources/passwords.txt\n")
+        print(sys.argv[0], "brute-force-openstego image.png resources/passwords.txt\n")
         print("")
         sys.exit(0)
 
     import aletheialib.brute_force
     aletheialib.brute_force.openstego(sys.argv[2], sys.argv[3])
+# }}}
+
+# {{{ f5()
+def f5():
+
+    if len(sys.argv)!=4:
+        print(sys.argv[0], "brute-force-f5 <image> <passw file>\n")
+        print("Example:")
+        print(sys.argv[0], "brute-force-f5 image.jpg resources/passwords.txt\n")
+        print("")
+        sys.exit(0)
+
+    import aletheialib.brute_force
+    aletheialib.brute_force.f5(sys.argv[2], sys.argv[3])
 # }}}
 

@@ -201,6 +201,9 @@ def main():
 
 
     # Brute force passwords
+    elif sys.argv[1] == "brute-force-f5":
+        options.brute_force.f5()
+
     elif sys.argv[1] == "brute-force-steghide":
         options.brute_force.steghide()
 
