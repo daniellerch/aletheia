@@ -80,3 +80,17 @@ def f5():
     aletheialib.brute_force.f5(sys.argv[2], sys.argv[3])
 # }}}
 
+# {{{ stegosuite()
+def stegosuite():
+
+    if len(sys.argv)!=4:
+        print(sys.argv[0], "brute-force-stegosuite <image> <passw file>\n")
+        print("Example:")
+        print(sys.argv[0], "brute-force-stegosuite image.jpg resources/passwords.txt\n")
+        print("")
+        sys.exit(0)
+
+    import aletheialib.brute_force
+    aletheialib.brute_force.stegosuite(sys.argv[2], sys.argv[3])
+# }}}
+
