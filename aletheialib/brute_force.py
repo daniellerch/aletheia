@@ -58,7 +58,8 @@ def check_password(params):
                     candidate = False
 
             if candidate:
-                print(f"Candidate password: {passw}, ft: {ft}{content}")
+                size = os.path.getsize(tempf)
+                print(f"Candidate password: {passw}, ft: {ft}, size:{size} bytes{content}")
 
         shutil.rmtree(tempd, ignore_errors=True)
 
