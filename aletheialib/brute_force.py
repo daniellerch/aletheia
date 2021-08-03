@@ -16,7 +16,7 @@ IGNORE_FILETYPES = ['inode/x-empty', 'application/x-dosexec', 'application/octet
 
 # {{{ check_password()
 def check_password(params):
-    passw, command, use_filetype, continue_searching = params
+    passw, command, use_filetype, continue_searching, success_output_string = params
     cmd = command.replace("<PASSWORD>", passw)
 
     if use_filetype:
@@ -26,9 +26,18 @@ def check_password(params):
 
 
     FNUL = open(os.devnull, 'w')
-    p=subprocess.Popen(cmd, stdout=FNUL, stderr=FNUL, shell=True)
-    #output, err = p.communicate()
+    p=subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=FNUL, shell=True)
+    output, err = p.communicate()
     status = p.wait()
+
+
+    if success_output_string != None:
+        for line in output.decode().split('\n'):
+            if success_output_string in line:
+                print("\nPassword found:", passw)
+                print(line)
+        return True
+
 
     if use_filetype:
         ft = None
@@ -70,7 +79,8 @@ def check_password(params):
 # }}}
 
 # {{{ generic()
-def generic(command, password_file, use_filetype=False, continue_searching=False):
+def generic(command, password_file, use_filetype=False, 
+            continue_searching=False, success_output_string=None):
     
     if not os.path.isfile(password_file):
         print("ERROR: File not found -", password_file)
@@ -82,7 +92,8 @@ def generic(command, password_file, use_filetype=False, continue_searching=False
     params = [ (passwd.replace("\n", ""), 
                 command, 
                 use_filetype, 
-                continue_searching) for passwd in passwords ]
+                continue_searching,
+                success_output_string) for passwd in passwords ]
 
     n_proc = cpu_count()
     print("Using", n_proc, "processes")
@@ -187,4 +198,18 @@ def f5(path, password_file):
 
 # }}}
 
+# {{{ stegosuite()
+def stegosuite(path, password_file):
+
+    if not os.path.isfile(password_file):
+        print("ERROR: File not found -", password_file)
+        sys.exit(0)
+
+    aletheialib.utils.check_bin("stegosuite")   
+    command = f"stegosuite -k <PASSWORD> -x {path} "
+    generic(command, password_file, use_filetype=False, 
+            continue_searching=False, 
+            success_output_string="Extracted message")
+
+# }}}
 
