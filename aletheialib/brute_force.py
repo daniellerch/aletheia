@@ -40,6 +40,18 @@ def check_password(params):
                 return True
 
             print(f"Candidate password: {passw}, filetype found: {ft}")
+
+            """
+            if ft == "text/plain":
+                with open(tempf) as f:
+                    try:
+                        s = f.read().decode('ascii')
+                        if s.isprintable():
+                            print(f"Candidate password: {passw}, filetype found: {ft}")
+                            print(s)
+                    except:
+                        pass
+            """
         shutil.rmtree(tempd, ignore_errors=True)
 
     elif p.returncode==0:
