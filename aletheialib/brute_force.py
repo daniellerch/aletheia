@@ -50,7 +50,7 @@ def check_password(params):
                     with open(tempf, 'rb') as f:
                         try:
                             s = f.read().decode(encoding)
-                            content = ", content: "+s[:10]+"... ("+encoding+")"
+                            content = ', content: "'+s[:32]+'..." ('+encoding+')'
                         except:
                             candidate = False
                             pass
@@ -58,7 +58,7 @@ def check_password(params):
                     candidate = False
 
             if candidate:
-                print(f"Candidate password: {passw}, filetype found: {ft} {content}")
+                print(f"Candidate password: {passw}, ft: {ft}{content}")
 
         shutil.rmtree(tempd, ignore_errors=True)
 
