@@ -230,6 +230,12 @@ def main():
     elif sys.argv[1] == "print-dct-diffs":
         options.tools.print_dct_diffs()
 
+    elif sys.argv[1] == "print-pixels":
+        options.tools.print_pixels()
+
+    elif sys.argv[1] == "print-coeffs":
+        options.tools.print_coeffs()
+
     elif sys.argv[1] == "rm-alpha":
         options.tools.rm_alpha()
 
