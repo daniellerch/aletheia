@@ -36,7 +36,8 @@ def check_password(params):
             if success_output_string in line:
                 print("\nPassword found:", passw)
                 print(line)
-        return True
+                return True
+        return False
 
 
     if use_filetype:
