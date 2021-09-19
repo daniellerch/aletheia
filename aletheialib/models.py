@@ -152,8 +152,9 @@ class Ensemble4Stego:
     def fit(self, X, y):
 
         currdir=os.path.dirname(__file__)
-        basedir=os.path.abspath(os.path.join(currdir, os.pardir))
-        m_path=os.path.join(basedir, 'external', 'octave')
+        basedir=os.path.abspath(os.path.join(currdir, os.pardir))        
+        m_path=os.path.join(basedir, 'aletheia-octave', 'octave')
+        
         os.chdir(m_path)
 
         self.__tmpdir=tempfile.mkdtemp()
@@ -198,8 +199,8 @@ class Ensemble4Stego:
     def predict_proba(self, X):
 
         currdir=os.path.dirname(__file__)
-        basedir=os.path.abspath(os.path.join(currdir, os.pardir))
-        m_path=os.path.join(basedir, 'external', 'octave')
+        basedir=os.path.abspath(os.path.join(currdir, os.pardir))      
+        m_path=os.path.join(basedir, 'aletheia-octave', 'octave')
         os.chdir(m_path)
 
         self.__tmpdir=tempfile.mkdtemp()
