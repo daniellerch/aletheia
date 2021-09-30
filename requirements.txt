@@ -9,3 +9,4 @@ h5py
 matplotlib
 steganogan
 python-magic
+efficientnet
