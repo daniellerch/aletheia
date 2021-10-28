@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use Aletheia in a publication I would appreciate if you cite it."
+authors:
+  - family-names: Lerch-Hostalot
+    given-names: Daniel
+title: "Aletheia"
+version: v0.1
+doi: 10.5281/zenodo.4655945
+date-released: 2021-04-01
