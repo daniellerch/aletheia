@@ -278,7 +278,7 @@ class NN:
 
     def __init__(self, network, model_name=None, shape=(512,512,3)):
         # {{{
-        self.model_dir = 'models'
+        self.model_dir = 'aletheia-models'
         self.model_name = model_name
         self.shape = shape
         if network == "effnetb0":
@@ -476,6 +476,7 @@ class NN:
         steps_train = int((len(trn_C_list)+len(trn_S_list))/trn_batch)
         g_train = self.train_generator(trn_C_list, trn_S_list, trn_batch)
         steps_train = 1000 # XXX
+        #steps_train = 10 # XXX
 
         steps_valid = int((len(val_C_list)+len(val_S_list))/val_batch)
         g_valid = self.valid_generator(val_C_list, val_S_list, val_batch)
