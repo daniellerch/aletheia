@@ -32,6 +32,8 @@ The Alaska2 database contains 75000 images and can be downloaded from
 | models/effnetb0-B-alaska2-lsbm.h5       |   0.838   |   0.849    |
 | models/effnetb0-A-alaska2-hill.h5       |   0.942   |   0.923    |
 | models/effnetb0-B-alaska2-hill.h5       |   0.910   |   0.873    |
+| models/effnetb0-A-alaska2-hilluniw.h5   |   0.918   |   0.900    |
+| models/effnetb0-B-alaska2-hilluniw.h5   |   0.841   |   0.807    |
 | models/effnetb0-A-alaska2-steganogan.h5 |   1.000   |   0.994    |
 | models/effnetb0-B-alaska2-steganogan.h5 |   0.998   |   0.989    |
 

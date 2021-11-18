@@ -262,6 +262,7 @@ def effnetb0():
         print("ERROR: directory without files found")
         sys.exit(0)
 
+
     import aletheialib.models
     nn = aletheialib.models.NN("effnetb0", model_name=model_name, shape=(512,512,3))
     nn.train(trn_cover_files, trn_stego_files, 16, # 36|40
@@ -314,6 +315,8 @@ def effnetb0_score():
 
     ok = np.sum(np.round(pred_cover)==0)+np.sum(np.round(pred_stego)==1)
     score = ok/(len(pred_cover)+len(pred_stego))
+
+
     print("score:", score)
 
 # }}}
@@ -437,6 +440,19 @@ def effnetb0_dci_score():
     inc2s = (p_ba!=0).astype('uint8')
     C_ok = ( (p_aa==0) & (p_aa==y_true) & (inc==0) ).astype('uint8')
     S_ok = ( (p_aa==1) & (p_aa==y_true) & (inc==0) ).astype('uint8')
+
+    tp = np.sum( (p_aa==1) & (p_aa==y_true) ) 
+    tn = np.sum( (p_aa==0) & (p_aa==y_true) ) 
+    fp = np.sum( (p_aa==1) & (p_aa!=y_true) ) 
+    fn = np.sum( (p_aa==0) & (p_aa!=y_true) ) 
+    print(f"aa-confusion-matrix tp: tp={tp}, tn={tn}, fp={fp}, fn={fn}")
+
+    tp = np.sum( (p_aa==1) & (p_aa==y_true) & (inc==0) ) 
+    tn = np.sum( (p_aa==0) & (p_aa==y_true) & (inc==0) ) 
+    fp = np.sum( (p_aa==1) & (p_aa!=y_true) & (inc==0) ) 
+    fn = np.sum( (p_aa==0) & (p_aa!=y_true) & (inc==0) ) 
+    print(f"dci-confusion-matrix tp: tp={tp}, tn={tn}, fp={fp}, fn={fn}")
+
 
     print("#inc:", np.sum(inc==1), "#incF1:", np.sum(inc1==1), "#incF2:", np.sum(inc2==1),
            "#incF2C", np.sum(inc2c), "#incF2S:", np.sum(inc2s))

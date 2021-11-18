@@ -345,7 +345,7 @@ class NN:
                     Ic = self.rot_flip(imread(C_path))
                     Is = self.rot_flip(imread(S_path))
                     if Ic.shape!=self.shape or Is.shape!=self.shape:
-                        print("WARNING: wrong shape", Is.shape)
+                        #print("WARNING: wrong shape", Is.shape)
                         continue
                     C.append(Ic)
                     y.append([1, 0])
@@ -388,7 +388,7 @@ class NN:
                         Ic = imread(C_path)
                         Is = imread(S_path)
                         if Ic.shape!=self.shape or Is.shape!=self.shape:
-                            print("NN valid_generator warning: wrong shape:", C_path, S_path)
+                            #print("NN valid_generator warning: wrong shape:", C_path, S_path)
                             continue
                         C.append(Ic)
                         S.append(Is)
