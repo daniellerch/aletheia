@@ -54,7 +54,7 @@ predictions (made without tags) let us know if the model is reliable to be
 applied to the analyzed images.
 
 
-| Models (JPG images)           | Testing set        | Alaska2 | Score | DCI pred (+)|
+| Models (JPG images)           | Testing set        | No CSM score | CSM score | DCI pred (+)|
 |-------------------------------|--------------------|---------|-------|-------------|
 | effnetb0-A/B-alaska2-steghide | bossbase-q80-color |  0.945  | 0.985 |   0.830     |
 | effnetb0-A/B-alaska2-steghide | bossbase-q95-color |  0.945  | 0.978 |   0.804     |
@@ -73,7 +73,7 @@ applied to the analyzed images.
 
 
 
-| Models  (Bitmap images)     | Testing        | Alaska2 |  Score   | DCI pred (+) |
+| Models  (Bitmap images)     | Testing        | No CSM score |  CSM score  | DCI pred (+) |
 |-----------------------------|----------------|---------|----------|--------------|
 | effnetb0-A/B-alaska2-lsbm   | bossbase-color |  0.918  |  0.606   |   0.596      |
 | effnetb0-A/B-alaska2-hill   | bossbase-color |  0.923  |  0.503   |   0.583      |
