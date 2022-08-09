@@ -247,9 +247,8 @@ def steghide(path, payload, dst_path):
 
     password = ''.join(random.sample(string.ascii_letters+string.digits, 8))
 
-    secret = open("/tmp/secret-"+password+".data", "wb")                     
-    secret.write(os.urandom(nbytes))                                         
-    secret.close()     
+    with open("/tmp/secret-"+password+".data", "wb") as secret:
+        secret.write(os.urandom(nbytes))
 
 
     cmd = "steghide embed -cf "+path+" -ef /tmp/secret-"+password+".data -sf " \
