@@ -7,6 +7,12 @@ for training.
 
 The Alaska2 database contains 75000 images and can be downloaded from 
 [here](https://www.kaggle.com/c/alaska2-image-steganalysis).
+Models using Alaska2 in the spatial domain are made up of uncompressed JPEG images.
+
+The Alaska database contains 78000 images and can be downloaded from
+[here](https://alaska.utt.fr). In this case raw images are used.
+In case of carrying out any transformation in the images, it is indicated 
+in the name of the database.
 
 
 
@@ -32,6 +38,8 @@ The Alaska2 database contains 75000 images and can be downloaded from
 | models/effnetb0-B-alaska2-lsbm.h5       |   0.838   |   0.849    |
 | models/effnetb0-A-alaska2-hill.h5       |   0.942   |   0.923    |
 | models/effnetb0-B-alaska2-hill.h5       |   0.910   |   0.873    |
+| models/effnetb0-A-alaska-hill.h5        |   0.935   |   0.935    |
+| models/effnetb0-B-alaska-hill.h5        |   0.850   |   0.846    |
 | models/effnetb0-A-alaska2-hilluniw.h5   |   0.918   |   0.900    |
 | models/effnetb0-B-alaska2-hilluniw.h5   |   0.841   |   0.807    |
 | models/effnetb0-A-alaska2-steganogan.h5 |   1.000   |   0.994    |
