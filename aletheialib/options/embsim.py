@@ -11,6 +11,7 @@ doc="\n" \
 "  - j-uniward-sim:        Embedding using J-UNIWARD simulator.\n" \
 "  - j-uniward-color-sim:  Embedding using J-UNIWARD color simulator.\n" \
 "  - hill-sim:             Embedding using HILL simulator.\n" \
+"  - hill-color-sim:       Embedding using HILL color simulator.\n" \
 "  - ebs-sim:              Embedding using EBS simulator.\n" \
 "  - ebs-color-sim:        Embedding using EBS color simulator.\n" \
 "  - ued-sim:              Embedding using UED simulator.\n" \
@@ -110,6 +111,19 @@ def hill():
 
     import aletheialib.stegosim
     aletheialib.stegosim.embed_message(aletheialib.stegosim.hill, 
+                                       sys.argv[2], sys.argv[3], sys.argv[4])
+    sys.exit(0);
+# }}}
+
+# {{{ hill_color
+def hill_color():
+
+    if len(sys.argv)!=5:
+        print(sys.argv[0], "hill-color-sim <image/dir> <payload> <output-dir>\n")
+        sys.exit(0)
+
+    import aletheialib.stegosim
+    aletheialib.stegosim.embed_message(aletheialib.stegosim.hill_color, 
                                        sys.argv[2], sys.argv[3], sys.argv[4])
     sys.exit(0);
 # }}}

@@ -80,6 +80,8 @@ def embed(sim, path, payload, dst_path=None):
                 m_code+="X=S_UNIWARD_COLOR('"+path+"',"+payload+");"
             elif sim=='hill':
                 m_code+="X=HILL('"+path+"',"+payload+");"
+            elif sim=='hill_color':
+                m_code+="X=HILL_COLOR('"+path+"',"+payload+");"
             elif sim=='j_uniward':
                 m_code+="J_UNIWARD('"+path+"',"+payload+",'"+dst_path+"');"
             elif sim=='j_uniward_color':

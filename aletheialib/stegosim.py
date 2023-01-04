@@ -146,6 +146,9 @@ def hugo(path, payload):
 def hill(path, payload):
     return octave_interface.embed('hill', path, payload)
 
+def hill_color(path, payload):
+    return octave_interface.embed('hill_color', path, payload)
+
 def ebs(path, payload, dst_path):
     return octave_interface.embed('ebs', path, payload, dst_path)
 

@@ -123,6 +123,9 @@ def main():
     elif sys.argv[1] == "hill-sim":
         options.embsim.hill()
 
+    elif sys.argv[1] == "hill-color-sim":
+        options.embsim.hill_color()
+
     elif sys.argv[1] == "j-uniward-sim":
         options.embsim.j_uniward()
 
