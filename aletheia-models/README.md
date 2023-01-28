@@ -40,6 +40,8 @@ in the name of the database.
 | models/effnetb0-B-alaska2-hill.h5       |   0.910   |   0.873    |
 | models/effnetb0-A-alaska-hill.h5        |   0.935   |   0.935    |
 | models/effnetb0-B-alaska-hill.h5        |   0.850   |   0.846    |
+| models/effnetb0-A-alaska-uniw.h5        |   0.895   |   0.893    |
+| models/effnetb0-B-alaska-uniw.h5        |   0.811   |   0.811    |
 | models/effnetb0-A-alaska2-hilluniw.h5   |   0.918   |   0.900    |
 | models/effnetb0-B-alaska2-hilluniw.h5   |   0.841   |   0.807    |
 | models/effnetb0-A-alaska2-steganogan.h5 |   1.000   |   0.994    |
@@ -84,7 +86,11 @@ applied to the analyzed images.
 | Models  (Bitmap images)     | Testing        | No CSM score |  CSM score  | DCI pred (+) |
 |-----------------------------|----------------|---------|----------|--------------|
 | effnetb0-A/B-alaska2-lsbm   | bossbase-color |  0.918  |  0.606   |   0.596      |
+| effnetb0-A/B-alaska2-lsbm   | imagenet-mini  |  0.918  |  0.584   |   0.558      |
 | effnetb0-A/B-alaska2-hill   | bossbase-color |  0.923  |  0.503   |   0.583      |
+| effnetb0-A/B-alaska2-hill   | imagenet-mini  |  0.923  |  0.750   |   0.753      |
+| effnetb0-A/B-alaska2-uniw   | bossbase-color |  0.895  |  0.500   |   0.500      |
+| effnetb0-A/B-alaska2-uniw   | imagenet-mini  |  0.895  |  0.702   |   0.701      |
 
 
 
