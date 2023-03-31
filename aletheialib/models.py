@@ -353,8 +353,8 @@ class NN:
                     y.append([0, 1])
                     bs -= 1
                 except Exception as e:
-                    print("NN train_generator Warning: cannot read image:", C_path, S_path)
-                    print(e)
+                    #print("NN train_generator Warning: cannot read image:", C_path, S_path)
+                    #print(e)
                     continue
 
             X = np.vstack((C,S)).astype('float32')/255
@@ -396,7 +396,7 @@ class NN:
                     except KeyboardInterrupt:
                         sys.exit(0)
                     except:
-                        print("NN valid_generator warning: cannot read image:", C_path, S_path, i)
+                        #print("NN valid_generator warning: cannot read image:", C_path, S_path, i)
                         continue
                 else:
                     X = np.vstack((C,S)).astype('float32')/255
@@ -520,20 +520,22 @@ class NN:
             print("WARNING: model file not found:", model_path)
         # }}}
 
-    def predict(self, files, batch):
+    def predict(self, files, batch, verbose=None):
         # {{{
-        verbose = 1
+        verb = 1
         if len(files)<batch:
             batch=1
-            verbose = 0
+            verb = 0
+        if verbose != None:
+            verb = verbose
         steps = len(files)//batch
         #print("steps:", steps, "batch:", batch)
         #print("files:", files[:steps*batch])
         g = self.pred_generator(files[:steps*batch], batch)
-        pred = self.model.predict(g, steps=steps, verbose=verbose)[:,-1]
+        pred = self.model.predict(g, steps=steps, verbose=verb)[:,-1]
         if steps*batch<len(files):
             g = self.pred_generator(files[steps*batch:], batch)
-            pred = pred.tolist() + self.model.predict(g, steps=1, verbose=1)[:,-1].tolist()
+            pred = pred.tolist() + self.model.predict(g, steps=1, verbose=verb)[:,-1].tolist()
         return np.array(pred)
         # }}}
 

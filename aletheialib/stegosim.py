@@ -41,7 +41,7 @@ def embed(params):
                 rini = float(rng[0])
                 rend = float(rng[1])
                 rnd_payload = numpy.random.uniform(rini, rend)
-                print("rnd_payload:", rnd_payload)
+                #print("rnd_payload:", rnd_payload)
                 embed_fn(path, rnd_payload, dst_path)
             else:
                 embed_fn(path, payload, dst_path)
@@ -51,7 +51,7 @@ def embed(params):
                 rini = float(rng[0])
                 rend = float(rng[1])
                 rnd_payload = numpy.random.uniform(rini, rend)
-                print("rnd_payload:", rnd_payload)
+                #print("rnd_payload:", rnd_payload)
                 X=embed_fn(path, rnd_payload)
             else:
                 X=embed_fn(path, payload)
@@ -65,7 +65,7 @@ def embed(params):
 
 
 def embed_message(embed_fn, path, payload, output_dir, 
-                  embed_fn_saving=False):
+                  embed_fn_saving=False, show_debug_info=True):
 
     path=utils.absolute_path(path)
 
@@ -81,7 +81,8 @@ def embed_message(embed_fn, path, payload, output_dir,
             for f in filenames:
                 path=os.path.abspath(os.path.join(dirpath, f))
                 if not utils.is_valid_image(path):
-                    print("Warning, please provide a valid image: ", f)
+                    if show_debug_info:
+                        print("Warning, please provide a valid image: ", f)
                 else:
                     files.append(path)
     else:
@@ -92,8 +93,9 @@ def embed_message(embed_fn, path, payload, output_dir,
     for f in files:
         basename=os.path.basename(f)
         dst_path=os.path.join(output_dir, basename)
-        if os.path.exists(dst_path):
-            print("Warning! file already exists, ignored:", dst_path)
+        if os.path.exists(dst_path) and os.path.getsize(dst_path)>0:
+            if show_debug_info:
+                print("Warning! file already exists, ignored:", dst_path)
             continue
         filtered_files.append(f)
     files = filtered_files
@@ -112,7 +114,8 @@ def embed_message(embed_fn, path, payload, output_dir,
     for i in range(0, len(params), batch):
         params_batch = params[i:i+batch]
         n_core=cpu_count()
-        print("Using", n_core, "threads")
+        if show_debug_info:
+            print("Using", n_core, "threads")
         pool = ThreadPool(n_core)
         results = pool.map(embed, params_batch)
         pool.close()
@@ -241,7 +244,6 @@ def steghide(path, payload, dst_path):
             capacity = int(float(line)*m) 
             found = True
             break
-
     if not found:
         print("ERROR: can not get capacity for", path)
         sys.exit(0)
@@ -261,6 +263,66 @@ def steghide(path, payload, dst_path):
 
 # }}}
 
+# {{{ outguess()
+def outguess(path, payload, dst_path):
+
+    # XXX: We use steghide to estimate the capacity, this is not a good
+    # option but Outguess does not provide this feature.
+    p=subprocess.Popen("LANG=en_US && steghide info "+path, \
+                       shell=True,  
+                       stdout=subprocess.PIPE,   
+                       stdin=subprocess.PIPE, 
+                       stderr=subprocess.DEVNULL) 
+    output, err = p.communicate(input=b'n')   
+    status = p.wait() 
+    output = output.decode()   
+ 
+    found = False
+    capacity = 0.0
+    for line in output.splitlines():
+        if "capacity" in line:  
+            m = 1 
+            line = line.replace("capacity: ", "") 
+            if "KB" in line: 
+                line = line.replace("KB", "") 
+                m = 1024  
+            elif "MB" in line:  
+                line = line.replace("MB", "") 
+                m = 1024*1024 
+            elif "Byte" in line: 
+                line = line.replace("Byte", "")  
+     
+            capacity = int(float(line)*m) 
+            found = True
+            break
+
+    if not found:
+        print("ERROR: can not get capacity for", path)
+        sys.exit(0)
+
+
+    password = ''.join(random.sample(string.ascii_letters+string.digits, 8))
+
+
+    # Outguess fails frequently, so we make several attempts while reducing 
+    # the payload
+    for i in range(100): 
+        nbytes = int(capacity*float(payload));
+        payload *= 0.9
+        with open("/tmp/secret-"+password+".data", "wb") as secret:
+            secret.write(os.urandom(nbytes))
+        cmd = "outguess -k "+password+" -d "+"/tmp/secret-"+password+".data " \
+              +path+" "+dst_path+" 2>/dev/null"
+        exit_status = os.WEXITSTATUS(os.system(cmd))
+        os.remove("/tmp/secret-"+password+".data")  
+        #if exit_status == 0:
+        #    break
+        if os.path.exists(dst_path) and os.path.getsize(dst_path)>0:
+            return
+    print("WARNING: Outguess embedding failed:", path)
+
+# }}}
+
 # {{{ steganogan()
 def steganogan(path, payload, dst_path):
 
@@ -272,8 +334,8 @@ def steganogan(path, payload, dst_path):
     #print("nbytes:", nbytes)
 
     msg = ''.join(random.choice(string.ascii_letters+string.digits) for i in range(nbytes))
-    #cmd = "steganogan encode --cpu "+path+" "+msg+" -o "+dst_path
-    cmd = "steganogan encode "+path+" "+msg+" -o "+dst_path
+    cmd = "steganogan encode --cpu "+path+" "+msg+" -o "+dst_path
+    #cmd = "steganogan encode "+path+" "+msg+" -o "+dst_path
     os.system(cmd)                                                           
 
 # }}}
@@ -299,6 +361,8 @@ def embedding_fn(name):
         return j_uniward_color
     if name=="hill-sim":
         return hill
+    if name=="hill-color-sim":
+        return hill_color
     if name=="ebs-sim":
         return ebs
     if name=="ebs-color-sim":
@@ -313,9 +377,11 @@ def embedding_fn(name):
         return nsf5_color
     if name=="steghide-sim":
         return steghide
+    if name=="outguess-sim":
+        return outguess
     if name=="steganogan-sim":
         return steganogan
-
+    #print(f"|{name}|")
     print("Unknown simulator:", name)
     sys.exit(0)
 # }}}

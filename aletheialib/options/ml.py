@@ -9,15 +9,18 @@ doc="\n" \
 "  ML-based steganalysis:\n" \
 "  - split-sets:            Prepare sets for training and testing.\n" \
 "  - split-sets-dci:        Prepare sets for training and testing (DCI).\n" \
+"  - create-actors:         Prepare actors for training and testing.\n" \
 "  - effnetb0:              Train a model with EfficientNet B0.\n" \
 "  - effnetb0-score:        Score with EfficientNet B0.\n" \
 "  - effnetb0-predict:      Predict with EfficientNet B0.\n" \
 "  - effnetb0-dci-score:    DCI Score with EfficientNet B0.\n" \
-"  - effnetb0-dci-predict:  DCI Predict with EfficientNet B0.\n" \
+"  - effnetb0-dci-predict:  DCI Prediction with EfficientNet B0.\n" \
 "  - esvm:                  Train an ensemble of Support Vector Machines.\n" \
 "  - e4s:                   Train Ensemble Classifiers for Steganalysis.\n" \
 "  - esvm-predict:          Predict using eSVM.\n" \
-"  - e4s-predict:           Predict using EC."
+"  - e4s-predict:           Predict using EC.\n" \
+"  - actor-predict-fea:     Predict features for an actor.\n" \
+"  - actors-predict-fea:    Predict features for a set of actors."
 
 
 
@@ -203,6 +206,116 @@ def split_sets_dci():
     for f in double_files[test_S_indices]:
         shutil.copy(f, B_test_D_dir)
 
+
+
+# }}}
+
+# {{{ create_actors
+def create_actors():
+
+    if len(sys.argv)<8:
+        print(sys.argv[0], "create-actors <cover-dir> <stego-dir> <output-dir> <#innocent> <#guilty> <min-max> <seed>\n")
+        print("     cover-dir:    Directory containing cover images")
+        print("     stego-dir:    Directory containing stego images")
+        print("     output-dir:   Output directory where actors will be created")
+        print("     #innocent     Number of innocent actors")
+        print("     #guilty:      Number of guilty actors")
+        print("     min-max:      Range of images for each actor")
+        print("     seed:         Seed for reproducible results")
+        print("")
+        sys.exit(0)
+
+    cover_dir=sys.argv[2]
+    stego_dir=sys.argv[3]
+    output_dir=sys.argv[4]
+    n_innocent=int(sys.argv[5])
+    n_guilty=int(sys.argv[6])
+    min_max = sys.argv[7].split('-')
+    if len(min_max)!=2:
+        print("create-actors error: min-max format error, use for example: 10-50")
+        sys.exit(0)
+    seed=int(sys.argv[8])
+
+    cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
+    stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
+
+    if len(cover_files)!=len(stego_files):
+        print("ERROR: we expect the same number of cover and stego files");
+        sys.exit(0)
+
+
+    innocent_actors = os.path.join(output_dir, "innocent")
+    guilty_actors = os.path.join(output_dir, "guilty")
+
+    os.makedirs(innocent_actors, exist_ok=True)
+    os.makedirs(guilty_actors, exist_ok=True)
+ 
+
+    random.seed(seed)
+
+    # Innocent actors
+    for i in range(1, n_innocent+1):
+        num_actor_images = random.randint(int(min_max[0]), int(min_max[1]))
+        actor_dir = os.path.join(innocent_actors, f"actor{i}")
+
+        if os.path.isdir(actor_dir):
+           print(f"Innocent actor already exists actor{i}")
+           continue
+
+        if not os.path.isdir(actor_dir):
+            os.mkdir(actor_dir)
+
+        for j in range(1, num_actor_images+1):
+            # random image
+            k = random.randint(0, len(cover_files)-1)
+            src_file = cover_files[k]
+            n, ext = os.path.splitext(src_file)
+            dst_file = os.path.join(innocent_actors, f"actor{i}/{j}{ext}")
+            if os.path.exists(dst_file):
+                print(f"Already exists actor{i}/{j}{ext}")
+            else:
+                shutil.copy(src_file, dst_file)
+                print(f"Copy {src_file} actor{i}/{j}{ext}")
+
+
+    # Guilty actors
+    for i in range(1, n_guilty+1):
+        num_actor_images = random.randint(int(min_max[0]), int(min_max[1]))
+        actor_dir = os.path.join(guilty_actors, f"actor{i}")
+
+        if os.path.isdir(actor_dir):
+           print(f"Guilty actor already exists actor{i}")
+           continue
+
+        f = open(os.path.join(guilty_actors, f"actor{i}.txt"), 'w')
+
+        if not os.path.isdir(actor_dir):
+            os.mkdir(actor_dir)
+
+        for j in range(1, num_actor_images+1):
+
+            # random image
+            k = random.randint(0, len(cover_files)-1)
+
+            prob_stego = round(random.uniform(0.1, 1), 2)
+            if random.random()<prob_stego:
+                src_file = stego_files[k]
+                n, ext = os.path.splitext(src_file)
+                f.write(f'{j}{ext}, 1\n')
+            else:
+                src_file = cover_files[k]
+                n, ext = os.path.splitext(src_file)
+                f.write(f'{j}{ext}, 0\n')
+
+            dst_file = os.path.join(guilty_actors, f"actor{i}/{j}{ext}")
+
+            if os.path.exists(dst_file):
+                print(f"Already exists actor{i}/{j}{ext}")
+            else:
+                shutil.copy(src_file, dst_file)
+                print(f"Copy {src_file} actor{i}/{j}{ext}")
+
+        f.close()
 
 
 # }}}
@@ -696,6 +809,190 @@ def e4s_predict():
             print(os.path.basename(f), "Stego")
 # }}}
 
+# {{{ actor*_predict_fea()
+
+A_models = {}
+B_models = {}
+
+
+def _load_model(nn, model_name):
+
+    # Get the directory where the models are installed
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    dir_path = os.path.join(dir_path, os.pardir, os.pardir, 'aletheia-models')
+
+    model_path = os.path.join(dir_path, model_name+".h5")
+    if not os.path.isfile(model_path):
+        print(f"ERROR: Model file not found: {model_path}\n")
+        sys.exit(-1)
+    nn.load_model(model_path, quiet=False)
+    return nn
+
+def _actor(image_dir, output_file, dev_id="cpu"):
+    files = glob.glob(os.path.join(image_dir, '*'))
+
+    if not os.path.isdir(image_dir):
+        print("ERROR: Please, provide a valid directory\n")
+        sys.exit(0)
+
+    if len(files)<10:
+        print("ERROR: We need more images from the same actor\n")
+        sys.exit(0)
+
+    
+    ext = os.path.splitext(files[0])[1].lower().replace('.jpeg', '.jpg')
+    for f in files:
+        curr_ext = os.path.splitext(f)[1].lower().replace('.jpeg', '.jpg')
+        if ext != curr_ext:
+            print(f"ERROR: All images must be of the same type: {curr_ext}!={ext} \n")
+            sys.exit(0)
+
+    if ext=='.jpg':
+        simulators = ["outguess-sim", "steghide-sim", "nsf5-color-sim", "j-uniward-color-sim"]
+    else:
+        simulators = ["steganogan-sim", "lsbm-sim", "hill-color-sim", "s-uniward-color-sim"]
+
+    import gc
+    import shutil
+    import tempfile
+    import aletheialib.utils
+    import aletheialib.stegosim
+    import aletheialib.models
+    import numpy as np
+    from tensorflow.python.framework import ops
+
+    os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+    A_nn = aletheialib.models.NN("effnetb0")
+    A_files = files
+
+    output = ""
+    for simulator in simulators:
+        if simulator in ["steganogan-sim", "outguess-sim", "steghide-sim", "nsf5-color-sim", "j-uniward-color-sim"]:
+            embed_fn_saving = True
+        else:
+            embed_fn_saving = False
+            
+        fn_sim=aletheialib.stegosim.embedding_fn(simulator)
+
+        # Make some replacements to adapt the name of the method with the name
+        # of the model file
+        method = simulator
+        method = method.replace("-sim", "")
+        method = method.replace("-color", "")
+        method = method.replace("j-uniward", "juniw")
+        method = method.replace("s-uniward", "uniw")
+
+        actor_dir = aletheialib.utils.absolute_path(os.path.dirname(A_files[0]))
+        B_dir = os.path.join(actor_dir+"-B-cache", method.upper())
+
+        if os.path.exists(B_dir):
+            print(f"Cache directory already exists:", B_dir)
+        else:
+            print(f"Prepare embeddings:", B_dir)
+            os.makedirs(B_dir, exist_ok=True)
+            aletheialib.stegosim.embed_message(fn_sim, actor_dir, "0.10-0.50", B_dir, 
+                        embed_fn_saving=embed_fn_saving, show_debug_info=False)
+
+
+        B_nn = aletheialib.models.NN("effnetb0")
+        B_files = glob.glob(os.path.join(B_dir, '*'))
+
+        if method in A_models:
+            ops.reset_default_graph()
+            A_nn = A_models[method]
+            gc.collect()
+        else:
+            A_nn = aletheialib.models.NN("effnetb0")
+            A_nn = _load_model(A_nn, "effnetb0-A-alaska2-"+method)
+            A_models[method] = A_nn
+
+        if method in B_models:
+            ops.reset_default_graph()
+            B_nn = B_models[method]
+            gc.collect()
+        else:
+            B_nn = aletheialib.models.NN("effnetb0")
+            B_nn = _load_model(B_nn, "effnetb0-B-alaska2-"+method)
+            B_models[method] = B_nn
+
+
+        # Predictions for the DCI method
+        _p_aa = A_nn.predict(A_files, 50)
+        _p_ab = A_nn.predict(B_files, 50)
+        _p_bb = B_nn.predict(B_files, 50)
+        _p_ba = B_nn.predict(A_files, 50)
+
+        p_aa = np.round(_p_aa).astype('uint8')
+        p_ab = np.round(_p_ab).astype('uint8')
+        p_bb = np.round(_p_bb).astype('uint8')
+        p_ba = np.round(_p_ba).astype('uint8')
+
+        # Inconsistencies
+        inc = ( (p_aa!=p_bb) | (p_ba!=0) | (p_ab!=1) ).astype('uint8')
+
+        positives = 0
+        for i in range(len(p_aa)):
+            r = ""
+            if inc[i]:
+                r = str(round(_p_aa[i],3))+" (inc)"
+            else:
+                r = round(_p_aa[i],3)
+            #print(A_files[i], "\t", r)
+            if p_aa[i] == 1:
+                positives += 1
+
+        dci = round(1-float(np.sum(inc==1))/(2*len(p_aa)),3)
+        positives_perc = round((positives)/len(p_aa), 3)
+        #print(f"method={method}, DCI-pred={dci}, positives={positives_perc}")
+        output += f"{dci}, {positives_perc}, "
+
+    bn = os.path.basename(image_dir)
+    with open(output_file, "a+") as myfile:
+        myfile.write(bn+", "+output[:-2]+"\n")
+
+
+def actor_predict_fea():
+    if len(sys.argv)<4:
+        print(sys.argv[0], "actor-predict-fea <actor imgage dir> <output file> [dev]\n")
+        print("Example:");
+        print(sys.argv[0], "actor-predict-fea actors/A1 data.csv\n")
+        sys.exit(0)
+
+    if len(sys.argv)<5:
+        dev_id = "CPU"
+        print("'dev' not provided, using:", dev_id)
+    else:
+        dev_id = sys.argv[4]
+
+    if os.path.exists(sys.argv[3]):
+        os.remove(sys.argv[3]);
+    _actor(sys.argv[2], sys.argv[3], dev_id)
+
+def actors_predict_fea():
+    if len(sys.argv)<4:
+        print(sys.argv[0], "actors-predict-fea <actors dir> <output file> [dev]\n")
+        print("Example:");
+        print(sys.argv[0], "actors-predict-fea actors/ data.csv\n")
+        sys.exit(0)
+
+    if len(sys.argv)<5:
+        dev_id = "CPU"
+        print("'dev' not provided, using:", dev_id)
+    else:
+        dev_id = sys.argv[4]
+
+    if os.path.exists(sys.argv[3]):
+        os.remove(sys.argv[3]);
+    for path in glob.glob(os.path.join(sys.argv[2], '*')):
+        if not os.path.isdir(path):
+            continue
+        _actor(path, sys.argv[3], dev_id)
+
+
+
+# }}}
 
 
 # {{{ ats

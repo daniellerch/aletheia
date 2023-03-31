@@ -26,10 +26,6 @@ import aletheialib.options as options
 
 def main():
 
-    ats_doc="\n" \
-    "  Unsupervised attacks:\n" \
-    "  - ats:      Artificial Training Sets."
-
 
     if len(sys.argv)<2:
         print(sys.argv[0], "<command>\n")
@@ -52,6 +48,7 @@ def main():
 
     elif sys.argv[1] == "dci":
         options.auto.dci()
+
 
     # Structural LSB detectors
     elif sys.argv[1] == "sp":
@@ -156,6 +153,9 @@ def main():
     elif sys.argv[1] == "steghide-sim":
         options.embsim.steghide()
 
+    elif sys.argv[1] == "outguess-sim":
+        options.embsim.outguess()
+
     elif sys.argv[1] == "steganogan-sim":
         options.embsim.steganogan()
 
@@ -171,6 +171,9 @@ def main():
 
     elif sys.argv[1] == "split-sets-dci":
         options.ml.split_sets_dci()
+
+    elif sys.argv[1] == "create-actors":
+        options.ml.create_actors()
 
     elif sys.argv[1] == "effnetb0":
         options.ml.effnetb0()
@@ -201,6 +204,14 @@ def main():
 
     elif sys.argv[1] == "ats":
         options.ml.ats()
+
+    elif sys.argv[1] == "actor-predict-fea":
+        options.ml.actor_predict_fea()
+
+    elif sys.argv[1] == "actors-predict-fea":
+        options.ml.actors_predict_fea()
+
+
 
 
     # Brute force passwords

@@ -8,7 +8,7 @@ import aletheialib.utils
 doc = "\n" \
 "  Automated tools:\n" \
 "  - auto:      Try different steganalysis methods.\n" \
-"  - dci:       Predict a set of images using DCI evaluation."
+"  - dci:       Predicts a set of images using DCI evaluation."
 
 
 

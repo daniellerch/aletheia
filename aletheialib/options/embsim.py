@@ -19,6 +19,7 @@ doc="\n" \
 "  - nsf5-sim:             Embedding using nsF5 simulator.\n" \
 "  - nsf5-color-sim:       Embedding using nsF5 color simulator.\n" \
 "  - steghide-sim:         Embedding using Steghide simulator.\n" \
+"  - outguess-sim:         Embedding using Outguess simulator.\n" \
 "  - steganogan-sim:       Embedding using SteganoGAN simulator." 
 
 
@@ -257,6 +258,22 @@ def steghide():
     aletheialib.utils.check_bin("steghide")
 
     aletheialib.stegosim.embed_message(aletheialib.stegosim.steghide, sys.argv[2], sys.argv[3], sys.argv[4],
+                  embed_fn_saving=True)
+    sys.exit(0);
+# }}}
+
+# {{{ outguess
+def outguess():
+
+    if len(sys.argv)!=5:
+        print(sys.argv[0], "outguess-sim <image/dir> <payload> <output-dir>")
+        sys.exit(0)
+
+    import aletheialib.stegosim
+    import aletheialib.utils
+    aletheialib.utils.check_bin("outguess")
+
+    aletheialib.stegosim.embed_message(aletheialib.stegosim.outguess, sys.argv[2], sys.argv[3], sys.argv[4],
                   embed_fn_saving=True)
     sys.exit(0);
 # }}}
