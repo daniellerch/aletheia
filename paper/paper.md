@@ -36,7 +36,7 @@ safeguarding critical information from falling into the wrong hands.
 
 In recent years, there has been a significant growth in the interest of 
 researchers towards the field of steganalysis. The application of deep learning
-[@Boroumand:2019:SRNet;Yousfi:2020:alaska2]
+[@Boroumand:2019:SRNet;@Yousfi:2020:alaska2]
 in steganalysis has opened up new avenues for research, 
 leading to improved detection rates and enhanced accuracy. As the field 
 continues to evolve, experts are actively exploring novel architectures and 
@@ -52,19 +52,20 @@ leveraging deep learning techniques. These algorithms are designed to
 effectively handle even the most advanced steganography techniques. Secondly, 
 Aletheia serves as a valuable tool for researchers by simplifying the process 
 of conducting experiments and comparing methods. It includes simulators for 
-state-of-the-art steganography methods, enabling researchers to prepare and 
-evaluate their work efficiently.
+common algorithms 
+[@Sharp:2001:lsbm;@Provos:2001:outguess;@Hetzl:2005:steghide]
+as well as state-of-the-art steganography methods
+[@Guo:2014:UED;Fridirch:2007:nsF5;@Li:2014:hill;Holub:2014:uniward;@zhang:2019:steganogan]
+, enabling researchers to prepare and evaluate their work efficiently.
 
 
 On the other hand, to the best of the authors' knowledge, Aletheia stands out 
 as the sole steganalysis tool currently available that incorporates the 
-latest detection techniques specifically designed to address the challenges 
-posed by Cover Source Mismatch (CSM) in real-world steganalysis scenarios. 
+latest detection techniques [@Lerch-Hostalot:2019;@Megias:2023]
+specifically designed to address the challenges posed by Cover Source Mismatch 
+(CSM) in real-world steganalysis scenarios
 [@Ker:2013:real_world]. This capability is particularly significant for 
 conducting effective steganalysis in practical applications.
-The issue of Cover Source Mismatch (CSM) remains an ongoing challenge that 
-continues to captivate the interest of researchers.
-
 
 
 
