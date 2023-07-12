@@ -55,7 +55,7 @@ of conducting experiments and comparing methods. It includes simulators for
 common algorithms 
 [@Sharp:2001:lsbm;@Provos:2001:outguess;@Hetzl:2005:steghide]
 as well as state-of-the-art steganography methods
-[@Guo:2014:UED;Fridirch:2007:nsF5;@Li:2014:hill;Holub:2014:uniward;@zhang:2019:steganogan]
+[@Guo:2014:UED;@Fridrich:2007:nsF5;@Li:2014:hill;@Holub:2014:uniward;@zhang:2019:steganogan]
 , enabling researchers to prepare and evaluate their work efficiently.
 
 
