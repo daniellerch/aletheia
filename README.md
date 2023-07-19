@@ -68,6 +68,8 @@ $ ./aletheia.py auto sample_images/alaska2
 	* [Practical attack on Steghide](https://daniellerch.me/stego/aletheia/steghide-attack-en/)
 	* [Practical attack on F5](https://daniellerch.me/stego/aletheia/f5-attack-en/)
 	* [Practical attack on LSB replacement: OpenStego and OpenPuff](https://daniellerch.me/stego/aletheia/lsbr-attack-en/)
+- [Available models](/aletheia-models/README.md)
+- [Folder structure](/FOLDERS.md)
 - [How to cite Aletheia?](/CITING.md)
 - [References](/REFERENCES.md)
 
