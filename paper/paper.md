@@ -8,9 +8,14 @@ authors:
   - name: Daniel Lerch-Hostalot
     orcid: 0000-0003-2602-672X
     affiliation: 1
+  - name: David Megías
+    orcid: 0000-0002-0507-7731
+    affiliation: 2
 affiliations:
  - name: Universitat Oberta de Catalunya (UOC), Barcelona, Spain
    index: 1
+ - name: Universitat Oberta de Catalunya (UOC), Barcelona, Spain
+   index: 2
 date: 1 August 2023
 bibliography: paper.bib
 ---
@@ -66,6 +71,72 @@ specifically designed to address the challenges posed by Cover Source Mismatch
 (CSM) in real-world steganalysis scenarios
 [@Ker:2013:real_world]. This capability is particularly significant for 
 conducting effective steganalysis in practical applications.
+
+
+# Description
+
+Aletheia incorporates various image steganography simulators, as well as tools for preparing datasets with different payload sizes using these simulators. This enables researchers to prepare experiments for their articles. Therefore, having access to the original implementations of the different simulators is important. Since it is common for these implementations to be developed in Matlab, Aletheia includes several of these simulators in its original code, slightly modified to be executed using Octave.
+Aletheia also implements other simulators directly in Python, the programming language of Aletheia as well as tools that directly utilize their binaries.
+
+
+```bash
+$ ./aletheia.py
+
+./aletheia.py <command>
+
+COMMANDS:
+
+...
+
+  Embedding simulators:
+  - lsbr-sim:             Embedding using LSB replacement simulator.
+  - lsbm-sim:             Embedding using LSB matching simulator.
+  - hugo-sim:             Embedding using HUGO simulator.
+  - wow-sim:              Embedding using WOW simulator.
+  - s-uniward-sim:        Embedding using S-UNIWARD simulator.
+  - s-uniward-color-sim:  Embedding using S-UNIWARD color simulator.
+  - j-uniward-sim:        Embedding using J-UNIWARD simulator.
+  - j-uniward-color-sim:  Embedding using J-UNIWARD color simulator.
+  - hill-sim:             Embedding using HILL simulator.
+  - ebs-sim:              Embedding using EBS simulator.
+  - ebs-color-sim:        Embedding using EBS color simulator.
+  - ued-sim:              Embedding using UED simulator.
+  - ued-color-sim:        Embedding using UED color simulator.
+  - nsf5-sim:             Embedding using nsF5 simulator.
+  - nsf5-color-sim:       Embedding using nsF5 color simulator.
+  - steghide-sim:         Embedding using Steghide simulator.
+  - steganogan-sim:       Embedding using SteganoGAN simulator.
+
+...
+```
+
+...
+
+
+
+
+
+
+# Acknowledgements
+
+We acknowledge the funding obtained by the Detection
+of fake newS on SocIal MedIa pLAtfoRms (DISSIMILAR) project
+from the EIG CONCERT-Japan with grant PCI2020-120689-2 (Gov-
+ernment of Spain), and to the PID2021-125962OB-C31 “SECURING”
+project granted by the Spanish Ministry of Science and Innovation.
+We wish to express our sincere gratitude towards NVIDIA Corporation for their 
+generous donation of an NVIDIA TITAN Xp GPU card, which has been instrumental 
+in the training of our models.
+
+
+
+
+
+
+
+
+
+
 
 
 
