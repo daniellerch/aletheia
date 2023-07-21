@@ -2,25 +2,25 @@ import sys
 
 doc="\n" \
 "  Embedding simulators:\n" \
-"  - lsbr-sim:             Embedding using LSB replacement simulator.\n" \
-"  - lsbm-sim:             Embedding using LSB matching simulator.\n" \
-"  - hugo-sim:             Embedding using HUGO simulator.\n" \
-"  - wow-sim:              Embedding using WOW simulator.\n" \
-"  - s-uniward-sim:        Embedding using S-UNIWARD simulator.\n" \
-"  - s-uniward-color-sim:  Embedding using S-UNIWARD color simulator.\n" \
-"  - j-uniward-sim:        Embedding using J-UNIWARD simulator.\n" \
-"  - j-uniward-color-sim:  Embedding using J-UNIWARD color simulator.\n" \
-"  - hill-sim:             Embedding using HILL simulator.\n" \
-"  - hill-color-sim:       Embedding using HILL color simulator.\n" \
-"  - ebs-sim:              Embedding using EBS simulator.\n" \
-"  - ebs-color-sim:        Embedding using EBS color simulator.\n" \
-"  - ued-sim:              Embedding using UED simulator.\n" \
-"  - ued-color-sim:        Embedding using UED color simulator.\n" \
-"  - nsf5-sim:             Embedding using nsF5 simulator.\n" \
-"  - nsf5-color-sim:       Embedding using nsF5 color simulator.\n" \
-"  - steghide-sim:         Embedding using Steghide simulator.\n" \
-"  - outguess-sim:         Embedding using Outguess simulator.\n" \
-"  - steganogan-sim:       Embedding using SteganoGAN simulator." 
+"  - lsbr-sim:             LSB replacement simulator.\n" \
+"  - lsbm-sim:             LSB matching simulator.\n" \
+"  - hugo-sim:             HUGO simulator.\n" \
+"  - wow-sim:              WOW simulator.\n" \
+"  - s-uniward-sim:        Spatial UNIWARD simulator.\n" \
+"  - s-uniward-color-sim:  Spatial UNIWARD color simulator.\n" \
+"  - j-uniward-sim:        JPEG UNIWARD simulator.\n" \
+"  - j-uniward-color-sim:  JPEG UNIWARD color simulator.\n" \
+"  - hill-sim:             HILL simulator.\n" \
+"  - hill-color-sim:       HILL color simulator.\n" \
+"  - ebs-sim:              EBS simulator.\n" \
+"  - ebs-color-sim:        EBS color simulator.\n" \
+"  - ued-sim:              UED simulator.\n" \
+"  - ued-color-sim:        UED color simulator.\n" \
+"  - nsf5-sim:             nsF5 simulator.\n" \
+"  - nsf5-color-sim:       nsF5 color simulator.\n" \
+"  - steghide-sim:         Steghide simulator.\n" \
+"  - outguess-sim:         Outguess simulator.\n" \
+"  - steganogan-sim:       SteganoGAN simulator." 
 
 
 
