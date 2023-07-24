@@ -85,36 +85,6 @@ slightly modified to be executed using Octave.
 Aletheia also implements other simulators directly in Python, the programming
 language of Aletheia as well as tools that directly utilize their binaries.
 
-
-```bash
-$ ./aletheia.py
-
-...
-
-Embedding simulators:
-  - lsbr-sim:             LSB replacement simulator.
-  - lsbm-sim:             LSB matching simulator.
-  - hugo-sim:             HUGO simulator.
-  - wow-sim:              WOW simulator.
-  - s-uniward-sim:        Spatial UNIWARD simulator.
-  - s-uniward-color-sim:  Spatial UNIWARD color simulator.
-  - j-uniward-sim:        JPEG UNIWARD simulator.
-  - j-uniward-color-sim:  JPEG UNIWARD color simulator.
-  - hill-sim:             HILL simulator.
-  - hill-color-sim:       HILL color simulator.
-  - ebs-sim:              EBS simulator.
-  - ebs-color-sim:        EBS color simulator.
-  - ued-sim:              UED simulator.
-  - ued-color-sim:        UED color simulator.
-  - nsf5-sim:             nsF5 simulator.
-  - nsf5-color-sim:       nsF5 color simulator.
-  - steghide-sim:         Steghide simulator.
-  - outguess-sim:         Outguess simulator.
-  - steganogan-sim:       SteganoGAN simulator.
-
-...
-```
-
 This simulator can be used to conduct experiments, as shown in the following
 example. Here, you can observe how the simulator utilizes the HILL algorithm
 and a random payload (ranging from 0.05 to 0.25) hidden within images sourced
@@ -139,7 +109,7 @@ following example, an automatic analysis of a set of images is demonstrated.
 ```bash
 $ ./aletheia.py auto actors/A2/
 
-Outguess  Steghide   nsF5  J-UNIWARD *
+                    Outguess  Steghide   nsF5  J-UNIWARD *
 -----------------------------------------------------------
 2.jpg                  [1.0]    [1.0]    [0.9]     0.3
 4.jpg                  [1.0]    [1.0]    [0.7]     0.3
@@ -158,7 +128,8 @@ Outguess  Steghide   nsF5  J-UNIWARD *
 Aletheia offers many other functionalities for steganalysis that are not covered
 in this article and can be found in Aletheia's documentation [@Lerch-Hostalot:Aletheia].
 Some examples include calibration attacks, custom model preparation, high-pass
-filters, image difference analysis using pixels and DCT coefficients, and more.
+filters, image difference analysis using pixels and DCT coefficients, DCI 
+techniques to deal with Cover Source Mismatch (CSM), and more.
 
 
 # Acknowledgements
