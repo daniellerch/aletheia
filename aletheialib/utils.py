@@ -166,6 +166,8 @@ def download_octave_jpeg_toolbox():
             sys.exit(0)
 
 
+    os.chdir(os.path.join(cache_dir, 'jpeg_toolbox/'))
+    os.system("make")
 
 
 
