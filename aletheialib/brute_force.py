@@ -184,8 +184,6 @@ def f5(path, password_file):
         image_path = os.path.join(os.getcwd(), path)
 
 
-
-
     # Get the directory where the resources are installed
     dir_path = os.path.dirname(os.path.realpath(__file__))
     dir_path = os.path.join(dir_path, os.pardir, 'aletheia-resources', 'F5')

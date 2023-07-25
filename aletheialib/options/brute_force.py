@@ -1,5 +1,6 @@
 
 import sys
+from aletheialib.utils import download_F5
 
 doc = "\n" \
 "  Find password by brute force using a list of passwords:\n" \
@@ -75,6 +76,8 @@ def f5():
         print(sys.argv[0], "brute-force-f5 image.jpg resources/passwords.txt\n")
         print("")
         sys.exit(0)
+
+    download_F5()
 
     import aletheialib.brute_force
     aletheialib.brute_force.f5(sys.argv[2], sys.argv[3])

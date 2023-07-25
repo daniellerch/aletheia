@@ -10,11 +10,11 @@ test(){
    rm -f fea.txt fea.txt.label
 }
 
+test gfr sample_images/alaska2jpg
+test dctr sample_images/alaska2jpg
 test srm sample_images/alaska2 
 test srmq1 sample_images/lena_gs.png
 test scrmq1 sample_images/alaska2 
-test gfr sample_images/alaska2jpg
-test dctr sample_images/alaska2jpg
 
 
 

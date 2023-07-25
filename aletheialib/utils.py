@@ -3,6 +3,7 @@
 import os
 import re
 import sys
+import zipfile
 from PIL import Image
 import urllib.request
 import urllib.error
@@ -172,6 +173,45 @@ def download_octave_jpeg_toolbox():
     
 # }}}
 
+# {{{ download_F5()
+def download_F5():
+
+    currdir=os.path.dirname(__file__)
+    basedir=os.path.abspath(os.path.join(currdir, os.pardir))
+    cache_dir = os.path.join(basedir, 'aletheia-cache')
+
+    # Has the F5 already been downloaded and compiled?
+    if os.path.isfile(os.path.join(cache_dir, 'F5/Extract.class')):
+        return
+
+    print("")
+    r = ""
+    while r not in ["y", "n"]:
+        r = input("Do you agree to download the F5 software from 'aletheia-external-resources'? (y/n): ")
+        if r == "n":
+            sys.exit(0)
+        elif r == "y":
+            break
+
+    # Download F5
+    remote_file = EXTERNAL_RESOURCES+'steganography-tools/F5.zip'
+    local_file = os.path.join(cache_dir, 'F5.zip')
+    try:
+        urllib.request.urlretrieve(remote_file, local_file)
+    except:
+        print("Error,", remote_file, "cannot be downloaded")
+        sys.exit(0)
+
+    # Unzip
+    F5_path = os.path.join(cache_dir, "F5")
+    with zipfile.ZipFile(local_file, 'r') as zip_file:
+        zip_file.extractall(cache_dir)
+
+    os.chdir(F5_path)
+    os.system("make")
+
+    
+# }}}
 
 
 
