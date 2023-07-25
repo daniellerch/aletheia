@@ -308,7 +308,7 @@ def outguess(path, payload, dst_path):
     # the payload
     for i in range(100): 
         nbytes = int(capacity*float(payload));
-        payload *= 0.9
+        payload = float(payload)*0.9
         with open("/tmp/secret-"+password+".data", "wb") as secret:
             secret.write(os.urandom(nbytes))
         cmd = "outguess -k "+password+" -d "+"/tmp/secret-"+password+".data " \

@@ -37,15 +37,15 @@ def embed(sim, path, payload, dst_path=None):
     
     check_octave()
 
-
     currdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(currdir, os.pardir))
-    m_path=os.path.join(basedir, 'aletheia-octave', 'octave')
+    m_path=os.path.join(basedir, 'aletheia-cache', 'octave')
+
 
     if sim in ["j_uniward", "j_uniward_color", "nsf5", "nsf5_color", 
                "ebs", "ebs_color", "ued", "ued_color", "jpeg_read_struct"]:
         if not os.path.isfile(os.path.join(m_path, 'jpeg_write.mex')):
-            tb_path=os.path.join(basedir, 'aletheia-octave', 'jpeg_toolbox')
+            tb_path=os.path.join(basedir, 'aletheia-cache', 'jpeg_toolbox')
             os.chdir(tb_path)
             os.system("make")
 
@@ -134,12 +134,12 @@ def _extract(extractor_name, path, params={}):
 
     fdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(fdir, os.pardir))
-    m_path=os.path.join(basedir, 'aletheia-octave', 'octave')
+    m_path=os.path.join(basedir, 'aletheia-cache', 'octave')
 
 
     if extractor_name in ["HILL_MAXSRM"]:
         if not os.path.isfile(os.path.join(m_path, 'MAXSRM.mex')):
-            maxsrm_path=os.path.join(basedir, 'aletheia-octave', 'maxSRM')
+            maxsrm_path=os.path.join(basedir, 'aletheia-cache', 'maxSRM')
             os.chdir(maxsrm_path)
             os.system("make")
 
@@ -207,10 +207,10 @@ def _jpeg(fn_name, path):
 
     currdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(currdir, os.pardir))
-    m_path=os.path.join(basedir, 'aletheia-octave', 'octave')
+    m_path=os.path.join(basedir, 'aletheia-cache', 'octave')
 
     if not os.path.isfile(os.path.join(m_path, 'jpeg_read.mex')):
-        tb_path=os.path.join(basedir, 'aletheia-octave', 'jpeg_toolbox')
+        tb_path=os.path.join(basedir, 'aletheia-cache', 'jpeg_toolbox')
         os.chdir(tb_path)
         os.system("make")
 
@@ -264,7 +264,7 @@ def _attack(attack_name, path, params={}):
 
     fdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(fdir, os.pardir))
-    m_path=os.path.join(basedir, 'aletheia-octave', 'octave')
+    m_path=os.path.join(basedir, 'aletheia-cache', 'octave')
 
     X=numpy.array([])
     im=Image.open(path)
