@@ -91,11 +91,6 @@ def main():
     elif sys.argv[1] == "dctr":
         options.feaext.dctr()
 
-    elif sys.argv[1] == "hill-sigma-spam-psrm":
-        options.feaext.hill_sigma_spam_psrm()
-
-    elif sys.argv[1] == "hill-maxsrm":
-        options.feaext.hill_maxsrm()
 
 
     # Embedding simulators

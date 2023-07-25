@@ -22,7 +22,7 @@ from multiprocessing import cpu_count
 M_BIN="octave -q --no-gui --eval"
 
 
-FEAEXT_1CH = ["GFR", "DCTR", "SRM", "SRMQ1", "HILL_MAXSRM", "HILL_sigma_spam_PSRM"]
+FEAEXT_1CH = ["GFR", "DCTR", "SRM", "SRMQ1"]
 FEAEXT_3CH = ["SCRMQ1", "GFR", "SRM", "DCTR"]
 
 # {{{ check_octave()
@@ -135,15 +135,6 @@ def _extract(extractor_name, path, params={}):
     fdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(fdir, os.pardir))
     m_path=os.path.join(basedir, 'aletheia-cache', 'octave')
-
-
-    if extractor_name in ["HILL_MAXSRM"]:
-        if not os.path.isfile(os.path.join(m_path, 'MAXSRM.mex')):
-            maxsrm_path=os.path.join(basedir, 'aletheia-cache', 'maxSRM')
-            os.chdir(maxsrm_path)
-            os.system("make")
-
-
 
 
     X=numpy.array([])

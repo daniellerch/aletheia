@@ -188,12 +188,6 @@ def DCTR_extract(path, quality="auto"):
 
 
 
-def HILL_sigma_spam_PSRM_extract(path):
-    return _extract('HILL_sigma_spam_PSRM', path)
-
-def HILL_MAXSRM_extract(path):
-    return _extract('HILL_MAXSRM', path)
-
 
 def extractor_fn(name):
     if name == "srm": 
