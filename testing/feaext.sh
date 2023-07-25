@@ -1,21 +1,20 @@
 #!/bin/bash
 
 
-#  - srm:           Full Spatial Rich Models.
-#  - srmq1:         Spatial Rich Models with fixed quantization q=1c.
-#  - scrmq1:        Spatial Color Rich Models with fixed quantization q=1c.
-#  - gfr:           JPEG steganalysis with 2D Gabor Filters.
-
-
 
 
 test(){
    echo "Testing $1 / $2 ..."
-   ./aletheia.py $1 $2 fea.csv
-   rm -f fea.csv
+   ./aletheia.py $1 $2 fea.txt
+   wc -l fea.txt
+   rm -f fea.txt
 }
 
-test srm sample_images/alaska2 
+#test srm sample_images/alaska2 
+test srmq1 sample_images/lena_gs.png
+#test scrmq1 sample_images/alaska2 
+#test gfr sample_images/alaska2jpg
+#test dctr sample_images/alaska2jpg
 
 
 

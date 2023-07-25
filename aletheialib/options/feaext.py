@@ -1,4 +1,5 @@
 import sys
+from aletheialib.utils import download_octave_code, download_octave_jpeg_toolbox
 
 doc="\n" \
 "  Feature extractors:\n" \
@@ -6,6 +7,7 @@ doc="\n" \
 "  - srmq1:         Spatial Rich Models with fixed quantization q=1c.\n" \
 "  - scrmq1:        Spatial Color Rich Models with fixed quantization q=1c.\n" \
 "  - gfr:           JPEG steganalysis with 2D Gabor Filters.\n" \
+"  - dctr:          JPEG Low complexity features extracted from DCT residuals.\n" \
 
 
 # {{{ srm
@@ -13,6 +15,8 @@ def srm():
     if len(sys.argv)!=4:
         print(sys.argv[0], "srm <image/dir> <output-file>\n")
         sys.exit(0)
+
+    download_octave_code("SRM")
 
     import aletheialib.feaext
 
@@ -28,6 +32,8 @@ def srmq1():
     if len(sys.argv)!=4:
         print(sys.argv[0], "srmq1 <image/dir> <output-file>\n")
         sys.exit(0)
+
+    download_octave_code("SRMQ1")
 
     import aletheialib.feaext
 
@@ -45,6 +51,8 @@ def scrmq1():
         print(sys.argv[0], "scrmq1 <image/dir> <output-file>\n")
         sys.exit(0)
 
+    download_octave_code("SCRMQ1")
+
     import aletheialib.feaext
 
     image_path=sys.argv[2]
@@ -60,6 +68,9 @@ def gfr():
     if len(sys.argv)<4:
         print(sys.argv[0], "gfr <image/dir> <output-file> [quality] [rotations]\n")
         sys.exit(0)
+
+    download_octave_jpeg_toolbox()
+    download_octave_code("GFR")
 
     import aletheialib.feaext
 
@@ -96,6 +107,9 @@ def dctr():
     if len(sys.argv)<4:
         print(sys.argv[0], "dctr <image/dir> <output-file> [quality]\n")
         sys.exit(0)
+
+    download_octave_jpeg_toolbox()
+    download_octave_code("DCTR")
 
     import aletheialib.feaext
 

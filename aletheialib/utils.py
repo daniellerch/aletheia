@@ -4,6 +4,11 @@ import os
 import re
 import sys
 from PIL import Image
+import urllib.request
+import urllib.error
+
+
+EXTERNAL_RESOURCES='https://raw.githubusercontent.com/daniellerch/aletheia-external-resources/main/'
 
 def is_valid_image(path):
  
@@ -57,5 +62,116 @@ def check_bin(cmd):
     if not shutil.which(cmd):
         print("ERROR: you need to install "+cmd+" to run this command!");
         sys.exit(0)
+
+
+# {{{ download_octave_code()
+def download_octave_code(method):
+
+    currdir=os.path.dirname(__file__)
+    basedir=os.path.abspath(os.path.join(currdir, os.pardir))
+    cache_dir = os.path.join(basedir, 'aletheia-cache', 'octave')
+
+    remote_octave_file = EXTERNAL_RESOURCES+'octave/code/'+method+'.m'
+    remote_license_file = EXTERNAL_RESOURCES+'octave/code/'+method+'.LICENSE'
+
+    local_octave_file = os.path.join(cache_dir, method+'.m')
+    local_license_file = os.path.join(cache_dir, method+'.LICENSE')
+
+    # Has the file already been downloaded?
+    if os.path.isfile(local_octave_file): 
+        return
+
+    # Download the license if available
+    os.makedirs(os.path.join(cache_dir, "octave"), exist_ok=True)
+    try:
+        urllib.request.urlretrieve(remote_license_file, local_license_file)
+    except:
+        print("Error,", method, "license cannot be downloaded")
+        sys.exit(0)
+
+
+    # Accept license
+    print("\nCODE:", method)
+    print("\nTo proceed, kindly confirm your acceptance of the license and your")
+    print("agreement to download the code from 'aletheia-external-resources'\n")
+
+    print("LICENSE:\n")
+    with open(local_license_file, 'r') as f:
+        print(f.read())
+
+    r = ""
+    while r not in ["y", "n"]:
+        r = input("Do you agree? (y/n): ")
+        if r == "n":
+            print("The terms have not been accepted\n")
+            sys.exit(0)
+        elif r == "y":
+            break
+
+    # Download code
+    try:
+        urllib.request.urlretrieve(remote_octave_file, local_octave_file)
+    except:
+        print("Error,", method, "code cannot be downloaded")
+        sys.exit(0)
+
+# }}}
+
+# {{{ download_octave_jpeg_toolbox()
+def download_octave_jpeg_toolbox():
+
+    currdir=os.path.dirname(__file__)
+    basedir=os.path.abspath(os.path.join(currdir, os.pardir))
+    cache_dir = os.path.join(basedir, 'aletheia-cache')
+
+    # Has the JPEG TOOLBOX already been downloaded?
+    if os.path.isfile(os.path.join(cache_dir, 'jpeg_toolbox/Makefile')):
+        return
+
+    # Download the license if available
+    os.makedirs(os.path.join(cache_dir, "jpeg_toolbox"), exist_ok=True)
+    licpath = 'jpeg_toolbox/LICENSE'
+    remote_license_file = EXTERNAL_RESOURCES+'octave/'+licpath
+    local_license_file = os.path.join(cache_dir, licpath)
+    try:
+        urllib.request.urlretrieve(remote_license_file, local_license_file)
+    except Exception as e:
+        print("Error, JPEG TOOLBOX license cannot be downloaded")
+        sys.exit(0)
+
+    # Accept license
+    print("\nTo use this command, you must accept the license of the JPEG TOOLBOX. In that")
+    print("case, we will download the JPEG TOOLBOX from 'aletheia-external-resources'.\n")
+    with open(local_license_file, 'r') as f:
+        print(f.read())
+
+    r = ""
+    while r not in ["y", "n"]:
+        r = input("Do you accept the license? (y/n): ")
+        if r == "n":
+            print("The license has not been accepted\n")
+            sys.exit(0)
+        elif r == "y":
+            break
+
+    # Download JPEG TOOLBOX
+    for f in ['jpeg_read.c', 'jpeg_write.c', 'Makefile']:
+        remote_file = EXTERNAL_RESOURCES+'octave/jpeg_toolbox/'+f
+        local_file = os.path.join(cache_dir, 'jpeg_toolbox/'+f)
+        try:
+            urllib.request.urlretrieve(remote_file, local_file)
+        except:
+            print("Error,", remote_file, "cannot be downloaded")
+            sys.exit(0)
+
+
+
+
+
+
+    
+# }}}
+
+
 
 

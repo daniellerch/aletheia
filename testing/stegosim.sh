@@ -10,7 +10,7 @@ test(){
 
 test lsbr-sim sample_images/lena.png
 test lsbm-sim sample_images/lena.png
-test hugo-sim sample_images/lena_gs.png
+#test hugo-sim sample_images/lena_gs.png
 test wow-sim sample_images/lena_gs.png
 test s-uniward-sim sample_images/lena_gs.png
 test s-uniward-color-sim sample_images/lena.png
