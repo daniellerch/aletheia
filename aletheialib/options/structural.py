@@ -100,6 +100,8 @@ def ws():
         print(sys.argv[0], "ws <image>\n")
         sys.exit(0)
 
+    download_octave_code("WS")
+
     from PIL import Image
     import aletheialib.utils
     import aletheialib.octave_interface as O
@@ -142,6 +144,8 @@ def triples():
     if len(sys.argv)!=3:
         print(sys.argv[0], "triples <image>\n")
         sys.exit(0)
+
+    download_octave_code("TRIPLES")
 
     from PIL import Image
     import aletheialib.utils
@@ -186,6 +190,8 @@ def aump():
     if len(sys.argv)!=3:
         print(sys.argv[0], "aump <image>\n")
         sys.exit(0)
+
+    download_octave_code("AUMP")
 
     from PIL import Image
     import aletheialib.utils
