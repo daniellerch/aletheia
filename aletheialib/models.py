@@ -10,14 +10,6 @@ import sys
 
 from aletheialib import utils
 
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-from sklearn.svm import SVC
-from sklearn.feature_selection import f_classif, SelectKBest
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn import svm
-
-#import hdf5storage
 from scipy.io import savemat, loadmat
 from scipy import signal # ndimage
 from imageio import imread
@@ -26,121 +18,6 @@ from multiprocessing.dummy import Pool as ThreadPool
 from multiprocessing import cpu_count
 
 
-
-# {{{ EnsembleSVM
-class EnsembleSVM:
-
-    def __init__(self, n_estimators=50, max_samples=1000, max_features=2000,
-                 n_randomized_search_iter=20, random_state=123):
-
-        random.seed(random_state)
-        self.random_state=random_state
-        self.n_estimators=n_estimators
-        self.max_samples=max_samples
-        self.max_features=max_features
-        self.n_randomized_search_iter=n_randomized_search_iter
-
-    def _prepare_classifier(self, params, n_jobs=1):
-
-        X_train, y_train = params
-
-        tuned_parameters = [{
-            'kernel': ['rbf'],
-            'gamma': [1e-4,1e-3,1e-2,1e-1,1e+0,1e+1,1e+2,1e+3,1e+4],
-            'C': [1e+0,1e+1,1e+2,1e+3,1e+4,1e+5,1e+6,1e+7,1e+8,1e+9]
-        }]
-
-        clf=RandomizedSearchCV(svm.SVC(random_state=self.random_state),
-                               tuned_parameters[0],
-                               n_iter=self.n_randomized_search_iter,
-                               n_jobs=n_jobs, random_state=self.random_state)
-        clf.fit(X_train, y_train)
-
-        params=clf.best_params_
-        clf=svm.SVC(kernel=params['kernel'], C=params['C'],
-            gamma=params['gamma'], probability=True,
-            random_state=self.random_state)
-        clf.fit(X_train, y_train)
-
-        return clf
-
-
-    def fit(self, X, y):
-
-        self.selector = SelectKBest(f_classif, k=self.max_features)
-        self.selector.fit(X, y)
-
-        X_train=self.selector.transform(X)
-        y_train=y
-
-        param_list=[]
-        idx = range(len(y_train))
-        for i in range(self.n_estimators):
-            random.shuffle(idx)
-            param_list.append((X_train[idx[:self.max_samples]],
-                               y_train[idx[:self.max_samples]]))
-
-        pool = ThreadPool(cpu_count())
-        self.clf_list = pool.map(self._prepare_classifier, param_list)
-        pool.close()
-        pool.join()
-
-        """
-        X2=[]
-        for clf in self.clf_list:
-            P=clf.predict_proba(X_train)
-            if len(X2)==0:
-                X2=P[:, 0]
-            else:
-                X2=numpy.vstack((X2, P[:, 0]))
-        X2=numpy.swapaxes(X2, 0, 1)
-        print "X2:", X2.shape
-
-        from sklearn.ensemble import RandomForestClassifier
-        self.clf2=RandomForestClassifier(n_estimators=100)
-        self.clf2.fit(X2, y_train)
-        """
-
-    def predict_proba(self, X):
-        y_pred=self._predict_cover_proba(X)
-        return [ [float(x)/100, 1-float(x)/100] for x in y_pred ]
-
-    def _predict_cover_proba(self, X):
-        X_val=self.selector.transform(X)
-        y_val_pred=[0]*len(X_val)
-        for clf in self.clf_list:
-            P=clf.predict_proba(X_val)
-            for i in range(len(P)):
-                y_val_pred[i]+=P[i][0]
-        return y_val_pred
-
-        """
-        X2=[]
-        Xt=self.selector.transform(X)
-        for clf in self.clf_list:
-            P=clf.predict_proba(Xt)
-            if len(X2)==0:
-                X2=P[:, 0]
-            else:
-                X2=numpy.vstack((X2, P[:, 0]))
-        X2=numpy.swapaxes(X2, 0, 1)
-        print "X2 predict:", X2.shape
-
-        return self.clf2.predict_proba(X2)[:,0]
-        """
-
-    def score(self, X, y):
-        y_pred=self._predict_cover_proba(X)
-        ok=0
-        for i in range(len(y)):
-            p=float(y_pred[i])/len(self.clf_list)
-            if  p > 0.5 and y[i]==0: ok+=1
-            elif p <= 0.5 and y[i]==1: ok+=1
-
-        return float(ok)/len(y)
-
-
-# }}}
 
 # {{{ Ensemble4Stego
 
@@ -151,9 +28,11 @@ class Ensemble4Stego:
 
     def fit(self, X, y):
 
+        import hdf5storage
+
         currdir=os.path.dirname(__file__)
         basedir=os.path.abspath(os.path.join(currdir, os.pardir))        
-        m_path=os.path.join(basedir, 'aletheia-octave', 'octave')
+        m_path=os.path.join(basedir, 'aletheia-cache', 'octave')
         
         os.chdir(m_path)
 
@@ -198,9 +77,11 @@ class Ensemble4Stego:
 
     def predict_proba(self, X):
 
+        import hdf5storage
+
         currdir=os.path.dirname(__file__)
         basedir=os.path.abspath(os.path.join(currdir, os.pardir))      
-        m_path=os.path.join(basedir, 'aletheia-octave', 'octave')
+        m_path=os.path.join(basedir, 'aletheia-cache', 'octave')
         os.chdir(m_path)
 
         self.__tmpdir=tempfile.mkdtemp()

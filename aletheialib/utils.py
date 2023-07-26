@@ -215,5 +215,56 @@ def download_F5():
     
 # }}}
 
+# {{{ download_e4s()
+def download_e4s():
+
+    currdir=os.path.dirname(__file__)
+    basedir=os.path.abspath(os.path.join(currdir, os.pardir))
+    cache_dir = os.path.join(basedir, 'aletheia-cache', 'octave')
+
+    # Has the e4s already been downloaded?
+    if os.path.isfile(os.path.join(cache_dir, 'ensemble_training.m')):
+        return
+
+    # Download the license if available
+    licpath = 'e4s.LICENSE'
+    remote_license_file = EXTERNAL_RESOURCES+'octave/code/'+licpath
+    local_license_file = os.path.join(cache_dir, licpath)
+    try:
+        urllib.request.urlretrieve(remote_license_file, local_license_file)
+    except Exception as e:
+        print("Error, e4s license cannot be downloaded")
+        sys.exit(0)
+
+    # Accept license
+    print("\nENSEMBLE CLASSIFERS FOR STEGANALYSIS (e4s)\n")
+    print("\nTo proceed, kindly confirm your acceptance of the license and your")
+    print("agreement to download the code from 'aletheia-external-resources'\n")
+    with open(local_license_file, 'r') as f:
+        print(f.read())
+
+    r = ""
+    while r not in ["y", "n"]:
+        r = input("Do you accept the license? (y/n): ")
+        if r == "n":
+            print("The license has not been accepted\n")
+            sys.exit(0)
+        elif r == "y":
+            break
+
+    # Download
+    for f in ['ensemble_fit.m', 'ensemble_predict.m', 'ensemble_testing.m', 'ensemble_training.m']:
+        remote_file = EXTERNAL_RESOURCES+'octave/code/'+f
+        local_file = os.path.join(cache_dir, f)
+        try:
+            urllib.request.urlretrieve(remote_file, local_file)
+        except:
+            print("Error,", remote_file, "cannot be downloaded")
+            sys.exit(0)
+
+
+
+    
+# }}}
 
 

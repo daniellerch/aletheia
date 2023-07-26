@@ -4,6 +4,7 @@ import glob
 import shutil
 import random
 import numpy as np
+from aletheialib.utils import download_e4s
 
 doc="\n" \
 "  ML-based steganalysis:\n" \
@@ -15,9 +16,7 @@ doc="\n" \
 "  - effnetb0-predict:      Predict with EfficientNet B0.\n" \
 "  - effnetb0-dci-score:    DCI Score with EfficientNet B0.\n" \
 "  - effnetb0-dci-predict:  DCI Prediction with EfficientNet B0.\n" \
-"  - esvm:                  Train an ensemble of Support Vector Machines.\n" \
 "  - e4s:                   Train Ensemble Classifiers for Steganalysis.\n" \
-"  - esvm-predict:          Predict using eSVM.\n" \
 "  - e4s-predict:           Predict using EC.\n" \
 "  - actor-predict-fea:     Predict features for an actor.\n" \
 "  - actors-predict-fea:    Predict features for a set of actors."
@@ -660,44 +659,14 @@ def effnetb0_dci_predict():
 
 
 
-# {{{ esvm
-def esvm():
-
-    if len(sys.argv)!=5:
-        print(sys.argv[0], "esvm <cover-fea> <stego-fea> <model-file>\n")
-        sys.exit(0)
-
-    import aletheialib.utils
-    import aletheialib.models
-    from sklearn.model_selection import train_test_split
-
-    cover_fea=sys.argv[2]
-    stego_fea=sys.argv[3]
-    model_file = aletheialib.utils.absolute_path(sys.argv[4])
-
-    X_cover = pandas.read_csv(cover_fea, delimiter = " ").values
-    X_stego = pandas.read_csv(stego_fea, delimiter = " ").values
-    #X_cover=numpy.loadtxt(cover_fea)
-    #X_stego=numpy.loadtxt(stego_fea)
-
-    X=numpy.vstack((X_cover, X_stego))
-    y=numpy.hstack(([0]*len(X_cover), [1]*len(X_stego)))
-    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.10)
-
-    clf = aletheialib.models.EnsembleSVM()
-    clf.fit(X_train, y_train)
-    val_score=clf.score(X_val, y_val)
-
-    pickle.dump(clf, open(model_file, "wb"))
-    print("Validation score:", val_score)
-# }}}
-
 # {{{ e4s
 def e4s():
 
     if len(sys.argv)!=5:
         print(sys.argv[0], "e4s <cover-fea> <stego-fea> <model-file>\n")
         sys.exit(0)
+
+    download_e4s()
 
     import aletheialib.utils
     import aletheialib.models
@@ -724,56 +693,15 @@ def e4s():
     print("Validation score:", val_score)
 # }}}
 
-# {{{ esvm_predict
-def esvm_predict():
-
-    if len(sys.argv)!=5:
-        print(sys.argv[0], "esvm-predict <model-file> <feature-extractor> <image/dir>")
-        print(feaextract_doc)
-        sys.exit(0)
-
-    import aletheialib.utils
-    import aletheialib.feaext
-
-    model_file = sys.argv[2]
-    extractor = sys.argv[3]
-    path = aletheialib.utils.absolute_path(sys.argv[4])
-
-    files=[]
-    if os.path.isdir(path):
-        for dirpath,_,filenames in os.walk(path):
-            for f in filenames:
-                path=os.path.abspath(os.path.join(dirpath, f))
-                if not aletheialib.utils.is_valid_image(path):
-                    print("Warning, please provide a valid image: ", f)
-                else:
-                    files.append(path)
-    else:
-        files=[path]
-
-
-    clf=pickle.load(open(model_file, "r"))
-    for f in files:
-        
-        X = aletheialib.feaext.extractor_fn(extractor)(f)
-        X = X.reshape((1, X.shape[0]))
-        p = clf.predict_proba(X)
-        print(p)
-        if p[0][0] > 0.5:
-            print(os.path.basename(f), "Cover, probability:", p[0][0])
-        else:
-            print(os.path.basename(f), "Stego, probability:", p[0][1])
-# }}}
-
 # {{{ e4s_predict
 def e4s_predict():
 
     if len(sys.argv)!=5:
         print(sys.argv[0], "e4s-predict <model-file> <feature-extractor> <image/dir>\n")
         print("")
-        print(feaextract_doc)
-        print("")
         sys.exit(0)
+
+    download_e4s()
 
     import aletheialib.models
     import aletheialib.utils
@@ -803,6 +731,7 @@ def e4s_predict():
         X = aletheialib.feaext.extractor_fn(extractor)(f)
         X = X.reshape((1, X.shape[0]))
         p = clf.predict(X)
+        print(p)
         if p[0] == 0:
             print(os.path.basename(f), "Cover")
         else:
