@@ -727,11 +727,11 @@ def e4s_predict():
     clf = aletheialib.models.Ensemble4Stego()
     clf.load(model_file)
     for f in files:
-       
+        # TODO: make it multithread
         X = aletheialib.feaext.extractor_fn(extractor)(f)
         X = X.reshape((1, X.shape[0]))
         p = clf.predict(X)
-        print(p)
+        #print(p)
         if p[0] == 0:
             print(os.path.basename(f), "Cover")
         else:
