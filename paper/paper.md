@@ -81,18 +81,38 @@ This enables researchers to prepare experiments for their articles. Therefore,
 having access to the original implementations of the different simulators is
 important. Since it is common for these implementations to be developed in
 Matlab, Aletheia includes several of these simulators in its original code,
-slightly modified to be executed using Octave.
+slightly modified to be executed using Octave. Frequently this simularters have
+a diferent license that can be incompatible with the MIT license used by 
+Aletheia. For this reason this code is in an external repository and is downloaded
+a part after a confirmation of the user.
 Aletheia also implements other simulators directly in Python, the programming
 language of Aletheia as well as tools that directly utilize their binaries.
 
-This simulator can be used to conduct experiments, as shown in the following
+
+
+Aletheia incorporates numerous image steganography simulators and tools for 
+generating datasets of varying payload sizes using these simulators. 
+This facilitates researchers in preparing experiments for their publications. 
+Therefore, accessing the original versions of these different simulators is 
+crucial. Given that many of these implementations are developed in Matlab, 
+Aletheia integrates several of these simulators into its original code, albeit 
+with slight modifications for execution using Octave. Often, these simulators 
+possess a different license that may be incompatible with the MIT license used 
+by Aletheia. As a result, this code is housed in an external repository and 
+is downloaded separately, following user confirmation. 
+Aletheia also incorporates other simulators directly in Python 
+-the programming language of Aletheia- as well as tools for which their 
+binaries are used directly.
+
+
+These simulators can be used to conduct experiments, as shown in the following
 example. Here, you can observe how the simulator utilizes the HILL algorithm
 and a random payload (ranging from 0.05 to 0.25) hidden within images sourced
 from the "images" directory. The resulting data is then saved in the "experiment"
 directory.
 
 ```bash
-./aletheia.py hill-color-sim images 0.20 experiment
+./aletheia.py hill-color-sim images 0.05-0.25 experiment
 ```
 
 Although Aletheia allows for the preparation of experiments using multiple
