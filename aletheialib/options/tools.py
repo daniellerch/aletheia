@@ -64,12 +64,25 @@ def print_dct_diffs():
 
     cover = aletheialib.utils.absolute_path(sys.argv[2])
     stego = aletheialib.utils.absolute_path(sys.argv[3])
+
     if not os.path.isfile(cover):
         print("Cover file not found:", cover)
         sys.exit(0)
     if not os.path.isfile(stego):
         print("Stego file not found:", stego)
         sys.exit(0)
+
+
+    name, ext = os.path.splitext(cover)
+    if ext.lower() not in [".jpeg", ".jpg"] or not os.path.isfile(cover):
+        print("Please, provide a a JPEG image!\n")
+        sys.exit(0)
+
+    name, ext = os.path.splitext(stego)
+    if ext.lower() not in [".jpeg", ".jpg"] or not os.path.isfile(stego):
+        print("Please, provide a a JPEG image!\n")
+        sys.exit(0)
+
 
 
     aletheialib.attacks.print_dct_diffs(cover, stego)
@@ -94,7 +107,7 @@ def rm_alpha():
 # {{{ plot_histogram
 def plot_histogram():
 
-    if len(sys.argv)<2:
+    if len(sys.argv)<3:
         print(sys.argv[0], "plot-histogram <image>\n")
         print("")
         sys.exit(0)
@@ -121,7 +134,7 @@ def plot_histogram():
 # {{{ plot_dct_histogram
 def plot_dct_histogram():
 
-    if len(sys.argv)<2:
+    if len(sys.argv)<3:
         print(sys.argv[0], "plot-dct-histogram <image>\n")
         print("")
         sys.exit(0)

@@ -155,6 +155,20 @@ def download_octave_jpeg_toolbox():
         elif r == "y":
             break
 
+
+    # Download Mathlab file
+    f = 'JPEG_READ_STRUCT.m'
+    remote_file = EXTERNAL_RESOURCES+'octave/code/'+f
+    local_file = os.path.join(cache_dir, 'octave', f)
+    try:
+        urllib.request.urlretrieve(remote_file, local_file)
+    except Exception as e:
+        print(remote_file)
+        print(local_file)
+        print("Error, JPEG_READ_STRUCT cannot be downloaded")
+        sys.exit(0)
+
+
     # Download JPEG TOOLBOX
     for f in ['jpeg_read.c', 'jpeg_write.c', 'Makefile']:
         remote_file = EXTERNAL_RESOURCES+'octave/jpeg_toolbox/'+f

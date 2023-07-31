@@ -16,6 +16,7 @@ from aletheialib.octave_interface import _jpeg
 
 class JPEG():
     def __init__(self, path):
+        utils.download_octave_jpeg_toolbox()
         self.data = _jpeg('jpeg_read_struct', path)
         #print(self.data)
         #numpy.set_printoptions(threshold=sys.maxsize)
