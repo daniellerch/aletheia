@@ -12,6 +12,7 @@ doc = "\n" \
 "  - plot-histogram:        Plot histogram.\n" \
 "  - plot-histogram-diff:   Plot histogram of differences.\n" \
 "  - plot-dct-histogram:    Plot DCT histogram.\n" \
+"  - eof-extrat:            Extract the data after EOF.\n" \
 
 
 # {{{ hpf
@@ -75,12 +76,12 @@ def print_dct_diffs():
 
     name, ext = os.path.splitext(cover)
     if ext.lower() not in [".jpeg", ".jpg"] or not os.path.isfile(cover):
-        print("Please, provide a a JPEG image!\n")
+        print("Please, provide a JPEG image!\n")
         sys.exit(0)
 
     name, ext = os.path.splitext(stego)
     if ext.lower() not in [".jpeg", ".jpg"] or not os.path.isfile(stego):
-        print("Please, provide a a JPEG image!\n")
+        print("Please, provide a JPEG image!\n")
         sys.exit(0)
 
 
@@ -146,7 +147,7 @@ def plot_dct_histogram():
     fn = aletheialib.utils.absolute_path(sys.argv[2])
     name, ext = os.path.splitext(fn)
     if ext.lower() not in [".jpeg", ".jpg"] or not os.path.isfile(fn):
-        print("Please, provide a a JPEG image!\n")
+        print("Please, provide a JPEG image!\n")
         sys.exit(0)
     I = aletheialib.jpeg.JPEG(fn)
     channels = ["r", "g", "b"]
@@ -233,4 +234,22 @@ def print_coeffs():
 
 
 # }}}
+
+# {{{ eof_extract
+def eof_extract():
+
+    if len(sys.argv)!=4:
+        print(sys.argv[0], "eof-extract <input-image> <output-data>\n")
+        print("")
+        sys.exit(0)
+
+    if not os.path.isfile(sys.argv[2]):
+        print("Please, provide a valid image!\n")
+
+    import aletheialib.attacks
+    aletheialib.attacks.eof_extract(sys.argv[2], sys.argv[3])
+    sys.exit(0)
+# }}}
+
+
 
