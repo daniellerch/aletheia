@@ -29,17 +29,6 @@ from multiprocessing import cpu_count
 from multiprocessing import Pool
 
 
-# -- APPENDED FILES --
-
-def extra_size(filename):
-    print("WARNING! not implemented")
-
-    name=ntpath.basename(filename)
-    I = imread(filename)
-
-    imsave(tempfile.gettempdir()+'/'+name, I)
-    return 0
-
 
 # -- EXIF --
 

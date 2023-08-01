@@ -13,6 +13,7 @@ doc = "\n" \
 "  - plot-histogram-diff:   Plot histogram of differences.\n" \
 "  - plot-dct-histogram:    Plot DCT histogram.\n" \
 "  - eof-extrat:            Extract the data after EOF.\n" \
+"  - print-metadata:        Print Exif metadata.\n" \
 
 
 # {{{ hpf
@@ -251,5 +252,20 @@ def eof_extract():
     sys.exit(0)
 # }}}
 
+# {{{ print_metadata
+def print_metadata():
+
+    if len(sys.argv)!=3:
+        print(sys.argv[0], "print-metadata <input-image>\n")
+        print("")
+        sys.exit(0)
+
+    if not os.path.isfile(sys.argv[2]):
+        print("Please, provide a valid image!\n")
+
+    import aletheialib.attacks
+    aletheialib.attacks.exif(sys.argv[2])
+    sys.exit(0)
+# }}}
 
 

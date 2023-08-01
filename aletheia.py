@@ -257,6 +257,9 @@ def main():
     elif sys.argv[1] == "eof-extract":
         options.tools.eof_extract()
 
+    elif sys.argv[1] == "print-metadata":
+        options.tools.print_metadata()
+
     else:
         print("Wrong command!")
 
