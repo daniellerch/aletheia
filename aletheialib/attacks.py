@@ -35,13 +35,17 @@ from multiprocessing import Pool
 # {{{ exif()
 def exif(filename):
     image = Image.open(filename)
-    try:
-        exif = { TAGS[k]: v for k, v in image._getexif().items() if k in TAGS }
-        return exif
 
-    except AttributeError:
-        return {}
-# }}}
+    exifdata = image.getexif()
+    for tag_id in exifdata:
+        tag = TAGS.get(tag_id, tag_id)
+        data = exifdata.get(tag_id)
+        if isinstance(data, bytes):
+            data = data.decode()
+        print(f"{tag:25}: {data}")
+
+
+# }}}$
 
 
 # -- SAMPLE PAIR ATTACK --
