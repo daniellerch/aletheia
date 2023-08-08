@@ -12,9 +12,9 @@ authors:
     orcid: 0000-0002-0507-7731
     affiliation: 2
 affiliations:
- - name: Universitat Oberta de Catalunya (UOC), Barcelona, Spain
+ - name: Internet Interdisciplinary Institute (IN3), Universitat Oberta de Catalunya (UOC), CYBERCAT-Center for Cybersecurity Research of Catalonia, Barcelona, Spain
    index: 1
- - name: Universitat Oberta de Catalunya (UOC), Barcelona, Spain
+ - name: Internet Interdisciplinary Institute (IN3), Universitat Oberta de Catalunya (UOC), CYBERCAT-Center for Cybersecurity Research of Catalonia, Barcelona, Spain
    index: 2
 date: 1 August 2023
 bibliography: paper.bib
@@ -31,12 +31,12 @@ uncover the hidden data. The goal of steganalysis is to determine whether a
 file contains covert information and potentially identify the steganographic
 method used.
 
-Steganalysis has become increasingly important in the face of rising espionage
+Steganalysis has become increasingly important in the face of rising spying
 and stegomalware threats, particularly in the context of data exfiltration.
 In this scenario, malicious actors leverage steganographic techniques to
 conceal sensitive data within innocent-looking files, evading traditional
 security measures. By detecting and analyzing such covert communication
-channels, steganalysis helps identify and prevent data exfiltration attempts,
+channels, steganalysis helps to identify and prevent data exfiltration attempts,
 safeguarding critical information from falling into the wrong hands.
 
 In recent years, there has been a significant growth in the interest of
@@ -75,24 +75,9 @@ conducting effective steganalysis in practical applications.
 
 # Description
 
-Aletheia incorporates various image steganography simulators, as well as tools
-for preparing datasets with different payload sizes using these simulators.
-This enables researchers to prepare experiments for their articles. Therefore,
-having access to the original implementations of the different simulators is
-important. Since it is common for these implementations to be developed in
-Matlab, Aletheia includes several of these simulators in its original code,
-slightly modified to be executed using Octave. Frequently this simularters have
-a diferent license that can be incompatible with the MIT license used by 
-Aletheia. For this reason this code is in an external repository and is downloaded
-a part after a confirmation of the user.
-Aletheia also implements other simulators directly in Python, the programming
-language of Aletheia as well as tools that directly utilize their binaries.
-
-
-
 Aletheia incorporates numerous image steganography simulators and tools for 
 generating datasets of varying payload sizes using these simulators. 
-This facilitates researchers in preparing experiments for their publications. 
+This makes it easier for researchers to prepare experiments for publication.
 Therefore, accessing the original versions of these different simulators is 
 crucial. Given that many of these implementations are developed in Matlab, 
 Aletheia integrates several of these simulators into its original code, albeit 
@@ -104,12 +89,27 @@ Aletheia also incorporates other simulators directly in Python
 -the programming language of Aletheia- as well as tools for which their 
 binaries are used directly.
 
+Aletheia incorporates various image steganography simulators, as well as tools
+for preparing datasets with different payload sizes using these simulators.
+This enables researchers to prepare experiments for their articles. Therefore,
+having access to the original implementations of the different simulators is
+relevant. Since it is common for these implementations to be developed in
+Matlab, Aletheia includes several of these simulators in its original code,
+slightly modified to be executed using Octave. Frequently this simulators 
+have a different license that can be incompatible with the MIT license used by 
+Aletheia. For this reason, this code is in an external repository and is downloaded
+separately after a confirmation of the user.
+Aletheia also implements other simulators directly in Python, the programming
+language of Aletheia, as well as tools that directly utilize their binaries.
+
+
+
 
 These simulators can be used to conduct experiments, as shown in the following
-example. Here, you can observe how the simulator utilizes the HILL algorithm
+example. Here, you can observe how the simulator uses the HILL algorithm
 and a random payload (ranging from 0.05 to 0.25) hidden within images sourced
-from the "images" directory. The resulting data is then saved in the "experiment"
-directory.
+from the "images" folder. The resulting data is then saved in the "experiment"
+folder.
 
 ```bash
 ./aletheia.py hill-color-sim images 0.05-0.25 experiment
@@ -124,7 +124,7 @@ the real world and state-of-the-art steganographic methods.
 
 Aletheia also offers automated tools that allow for a preliminary analysis,
 greatly aiding the investigation of the steganalyst. For instance, in the
-following example, an automatic analysis of a set of images is demonstrated.
+following example, an automatic analysis of a set of images is shown.
 
 ```bash
 $ ./aletheia.py auto actors/A2/
