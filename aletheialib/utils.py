@@ -118,6 +118,30 @@ def download_octave_code(method):
 
 # }}}
 
+# {{{ download_octave_aux_file()
+def download_octave_aux_file(fname):
+
+    currdir=os.path.dirname(__file__)
+    basedir=os.path.abspath(os.path.join(currdir, os.pardir))
+    cache_dir = os.path.join(basedir, 'aletheia-cache', 'octave')
+
+    remote_octave_file = EXTERNAL_RESOURCES+'octave/code/'+fname
+    local_octave_file = os.path.join(cache_dir, fname)
+
+    # Has the file already been downloaded?
+    if os.path.isfile(local_octave_file): 
+        return
+
+    # Download the file
+    os.makedirs(os.path.join(cache_dir, "octave"), exist_ok=True)
+    try:
+        urllib.request.urlretrieve(remote_octave_file, local_octave_file)
+    except:
+        print("Error,", fname, "code cannot be downloaded")
+        sys.exit(0)
+
+# }}}
+
 # {{{ download_octave_jpeg_toolbox()
 def download_octave_jpeg_toolbox():
 

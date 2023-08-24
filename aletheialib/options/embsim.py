@@ -1,6 +1,8 @@
 import sys
 import os
-from aletheialib.utils import download_octave_code, download_octave_jpeg_toolbox
+from aletheialib.utils import download_octave_code
+from aletheialib.utils import download_octave_aux_file
+from aletheialib.utils import download_octave_jpeg_toolbox
 
 doc="\n" \
 "  Embedding simulators:\n" \
@@ -12,7 +14,7 @@ doc="\n" \
 "  - s-uniward-color-sim:  Spatial UNIWARD color simulator.\n" \
 "  - j-uniward-sim:        JPEG UNIWARD simulator.\n" \
 "  - j-uniward-color-sim:  JPEG UNIWARD color simulator.\n" \
-#"  - j-mipod-sim:          JPEG MiPOD simulator.\n" \
+"  - j-mipod-sim:          JPEG MiPOD simulator.\n" \
 "  - hill-sim:             HILL simulator.\n" \
 "  - hill-color-sim:       HILL color simulator.\n" \
 "  - ebs-sim:              EBS simulator.\n" \
@@ -186,6 +188,7 @@ def j_mipod():
 
     download_octave_jpeg_toolbox()
     download_octave_code("J_MIPOD")
+    download_octave_aux_file("ixlnx3_5.mat")
 
     import aletheialib.stegosim
     aletheialib.stegosim.embed_message(aletheialib.stegosim.j_mipod, 
