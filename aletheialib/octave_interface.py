@@ -42,8 +42,12 @@ def embed(sim, path, payload, dst_path=None):
     m_path=os.path.join(basedir, 'aletheia-cache', 'octave')
 
 
-    if sim in ["j_uniward", "j_uniward_color", "nsf5", "nsf5_color", 
-               "ebs", "ebs_color", "ued", "ued_color", "jpeg_read_struct"]:
+    if sim in ["j_uniward", "j_uniward_color", 
+               "j_mipod",
+               "nsf5", "nsf5_color", 
+               "ebs", "ebs_color", 
+               "ued", "ued_color", 
+               "jpeg_read_struct"]:
         if not os.path.isfile(os.path.join(m_path, 'jpeg_write.mex')):
             tb_path=os.path.join(basedir, 'aletheia-cache', 'jpeg_toolbox')
             os.chdir(tb_path)
@@ -69,6 +73,7 @@ def embed(sim, path, payload, dst_path=None):
             m_code+="warning('off');"
             m_code+="pkg load image;"
             m_code+="pkg load signal;"
+            m_code+="pkg load nan;"
 
             if sim=='wow':
                 m_code+="X=WOW('"+path+"',"+payload+");"
@@ -86,6 +91,8 @@ def embed(sim, path, payload, dst_path=None):
                 m_code+="J_UNIWARD('"+path+"',"+payload+",'"+dst_path+"');"
             elif sim=='j_uniward_color':
                 m_code+="J_UNIWARD_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
+            elif sim=='j_mipod':
+                m_code+="J_MIPOD('"+path+"',"+payload+",'"+dst_path+"');"
             elif sim=='nsf5':
                 m_code+="NSF5('"+path+"',"+payload+",'"+dst_path+"');"
             elif sim=='nsf5_color':
@@ -108,6 +115,7 @@ def embed(sim, path, payload, dst_path=None):
             m_code+="exit"
 
             p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
+            #print(M_BIN+" \""+m_code+"\"")
             output, err = p.communicate()
             #print(output)
             status = p.wait()
@@ -158,6 +166,7 @@ def _extract(extractor_name, path, params={}):
         m_code+="warning('off');"
         m_code+="pkg load image;"
         m_code+="pkg load signal;"
+        m_code+="pkg load nan;"
         if extractor_name=="GFR":
             m_code+="data="+extractor_name+"('"+path+"'," \
                     +str(params["rotations"])+", "+str(params["quality"])+", "+str(channel)+");"
@@ -221,6 +230,7 @@ def _jpeg(fn_name, path):
             m_code+="warning('off');"
             m_code+="pkg load image;"
             m_code+="pkg load signal;"
+            m_code+="pkg load nan;"
 
             if fn_name=='jpeg_read_struct':
                 m_code+="X=JPEG_READ_STRUCT('"+path+"');"
@@ -276,6 +286,7 @@ def _attack(attack_name, path, params={}):
     m_code+="warning('off');"
     m_code+="pkg load image;"
     m_code+="pkg load signal;"
+    m_code+="pkg load nan;"
     m_code+="data="+attack_name+"('"+path+"', "+str(channel)+");"
     m_code+="save('-mat7-binary', '"+data_path+"','data');"
     m_code+="exit"

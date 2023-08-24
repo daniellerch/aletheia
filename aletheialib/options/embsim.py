@@ -12,6 +12,7 @@ doc="\n" \
 "  - s-uniward-color-sim:  Spatial UNIWARD color simulator.\n" \
 "  - j-uniward-sim:        JPEG UNIWARD simulator.\n" \
 "  - j-uniward-color-sim:  JPEG UNIWARD color simulator.\n" \
+#"  - j-mipod-sim:          JPEG MiPOD simulator.\n" \
 "  - hill-sim:             HILL simulator.\n" \
 "  - hill-color-sim:       HILL color simulator.\n" \
 "  - ebs-sim:              EBS simulator.\n" \
@@ -172,6 +173,22 @@ def j_uniward_color():
 
     import aletheialib.stegosim
     aletheialib.stegosim.embed_message(aletheialib.stegosim.j_uniward_color, 
+            sys.argv[2], sys.argv[3], sys.argv[4], embed_fn_saving=True)
+    sys.exit(0);
+# }}}
+
+# {{{ j_mipod
+def j_mipod():
+
+    if len(sys.argv)!=5:
+        print(sys.argv[0], "j-mipod-sim <image/dir> <payload> <output-dir>\n")
+        sys.exit(0)
+
+    download_octave_jpeg_toolbox()
+    download_octave_code("J_MIPOD")
+
+    import aletheialib.stegosim
+    aletheialib.stegosim.embed_message(aletheialib.stegosim.j_mipod, 
             sys.argv[2], sys.argv[3], sys.argv[4], embed_fn_saving=True)
     sys.exit(0);
 # }}}

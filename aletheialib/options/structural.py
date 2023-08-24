@@ -1,6 +1,21 @@
 
+import os
+import glob
 import sys
+
+import numpy as np
+import aletheialib.utils
+import aletheialib.attacks
 from aletheialib.utils import download_octave_code
+
+from imageio import imread
+from multiprocessing import Pool as ThreadPool 
+from multiprocessing import cpu_count
+
+from PIL import Image
+import aletheialib.octave_interface as O
+
+
 
 doc = "\n" \
 "  Structural LSB detectors (Statistical attacks to LSB replacement):\n" \
@@ -102,10 +117,6 @@ def ws():
 
     download_octave_code("WS")
 
-    from PIL import Image
-    import aletheialib.utils
-    import aletheialib.octave_interface as O
-
     if not aletheialib.utils.is_valid_image(sys.argv[2]):
         print("Please, provide a valid image")
         sys.exit(0)
@@ -146,10 +157,6 @@ def triples():
         sys.exit(0)
 
     download_octave_code("TRIPLES")
-
-    from PIL import Image
-    import aletheialib.utils
-    import aletheialib.octave_interface as O
 
     if not aletheialib.utils.is_valid_image(sys.argv[2]):
         print("Please, provide a valid image")
@@ -193,10 +200,6 @@ def aump():
 
     download_octave_code("AUMP")
 
-    from PIL import Image
-    import aletheialib.utils
-    import aletheialib.octave_interface as O
-
     if not aletheialib.utils.is_valid_image(sys.argv[2]):
         print("Please, provide a valid image")
         sys.exit(0)
@@ -231,6 +234,134 @@ def aump():
 # }}}
 
 
+# {{{ spa_score
+def spa_detect(p):
+    f, threshold = p
+    I = imread(f)
+    if len(I.shape)==2:
+        bitrate = aletheialib.attacks.spa_image(I, None)
+    else:
+        bitrate_R = aletheialib.attacks.spa_image(I, 0)
+        bitrate_G = aletheialib.attacks.spa_image(I, 1)
+        bitrate_B = aletheialib.attacks.spa_image(I, 2)
+        bitrate = max(bitrate_R, bitrate_G, bitrate_B)
+
+    if bitrate < threshold:
+        return False
+    return True
+
+def spa_score():
+
+    if len(sys.argv)<4:
+        print(sys.argv[0], "spa-score <test-cover-dir> <test-stego-dir> [threshold]\n")
+        print("     test-cover-dir:    Directory containing cover images")
+        print("     test-stego-dir:    Directory containing stego images")
+        print("     threshold:         Threshold for detecting steganographic images (default=0.05)")
+        print("")
+        sys.exit(0)
+
+    cover_dir=sys.argv[2]
+    stego_dir=sys.argv[3]
+
+    cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
+    stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
+
+    if len(sys.argv)==5:
+        threshold = float(sys.argv[4])
+    else:
+        threshold = 0.05
+    print("Using threshold", threshold)
+
+    batch=1000
+    n_core = cpu_count()
+
+    # Process thread pool in batches
+    for i in range(0, len(cover_files), batch):
+        params_batch = zip(cover_files[i:i+batch], [threshold]*batch)
+        pool = ThreadPool(n_core)
+        pred_cover = pool.map(spa_detect, params_batch)
+        pool.close()
+        pool.terminate()
+        pool.join()
+
+    for i in range(0, len(stego_files), batch):
+        params_batch = zip(stego_files[i:i+batch], [threshold]*batch)
+        pool = ThreadPool(n_core)
+        pred_stego = pool.map(spa_detect, params_batch)
+        pool.close()
+        pool.terminate()
+        pool.join()
+
+    ok = np.sum(np.array(pred_cover)==0)+np.sum(np.array(pred_stego)==1)
+    score = ok/(len(pred_cover)+len(pred_stego))
+    print("score:", score)
+
+# }}}
+
+# {{{ ws_score
+def ws_detect(f):
+
+    if not aletheialib.utils.is_valid_image(f):
+        print("Please, provide a valid image:", f)
+        return False
+
+    threshold=0.05
+    path = aletheialib.utils.absolute_path(f)
+    im=Image.open(path)
+    if im.mode in ['RGB', 'RGBA', 'RGBX']:
+        alpha_R = O._attack('WS', path, params={"channel":1})["data"][0][0]
+        alpha_G = O._attack('WS', path, params={"channel":2})["data"][0][0]
+        alpha_B = O._attack('WS', path, params={"channel":3})["data"][0][0]
+        alpha = max(alpha_R, alpha_G, alpha_B)
+    else:
+        alpha = O._attack('WS', path, params={"channel":1})["data"][0][0]
+
+    if alpha<threshold:
+        return False
+    return True
+
+
+def ws_score():
+
+    if len(sys.argv)<3:
+        print(sys.argv[0], "ws-score <test-cover-dir> <test-stego-dir>\n")
+        print("     test-cover-dir:    Directory containing cover images")
+        print("     test-stego-dir:    Directory containing stego images")
+        print("")
+        sys.exit(0)
+
+    cover_dir=sys.argv[2]
+    stego_dir=sys.argv[3]
+
+    cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
+    stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
+
+
+    batch=1000
+    n_core = cpu_count()
+
+    # Process thread pool in batches
+    for i in range(0, len(cover_files), batch):
+        params_batch = cover_files[i:i+batch]
+        pool = ThreadPool(n_core)
+        pred_cover = pool.map(ws_detect, params_batch)
+        pool.close()
+        pool.terminate()
+        pool.join()
+
+    for i in range(0, len(stego_files), batch):
+        params_batch = stego_files[i:i+batch]
+        pool = ThreadPool(n_core)
+        pred_stego = pool.map(ws_detect, params_batch)
+        pool.close()
+        pool.terminate()
+        pool.join()
+
+    ok = np.sum(np.array(pred_cover)==0)+np.sum(np.array(pred_stego)==1)
+    score = ok/(len(pred_cover)+len(pred_stego))
+    print("score:", score)
+
+# }}}
 
 
 

@@ -69,6 +69,12 @@ def main():
     elif sys.argv[1] == "rs":
         options.structural.rs()
 
+    elif sys.argv[1] == "spa-score":
+        options.structural.spa_score()
+
+    elif sys.argv[1] == "ws-score":
+        options.structural.ws_score()
+
 
     # Calibration attacks
     elif sys.argv[1] == "calibration":
@@ -123,6 +129,9 @@ def main():
 
     elif sys.argv[1] == "j-uniward-color-sim":
         options.embsim.j_uniward_color()
+
+    elif sys.argv[1] == "j-mipod-sim":
+        options.embsim.j_mipod()
 
     elif sys.argv[1] == "ebs-sim":
         options.embsim.ebs()

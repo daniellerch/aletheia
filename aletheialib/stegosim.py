@@ -143,6 +143,9 @@ def j_uniward(path, payload, dst_path):
 def j_uniward_color(path, payload, dst_path):
     return octave_interface.embed('j_uniward_color', path, payload, dst_path)
 
+def j_mipod(path, payload, dst_path):
+    return octave_interface.embed('j_mipod', path, payload, dst_path)
+
 def hugo(path, payload):
     return octave_interface.embed('hugo', path, payload)
 
@@ -359,6 +362,8 @@ def embedding_fn(name):
         return j_uniward
     if name=="j-uniward-color-sim":
         return j_uniward_color
+    if name=="j-mipod-sim":
+        return j_mipod
     if name=="hill-sim":
         return hill
     if name=="hill-color-sim":
