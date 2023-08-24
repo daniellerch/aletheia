@@ -511,9 +511,10 @@ def print_dct_diffs(cover, stego):
     print("\nCommon DCT coefficients frequency variation:")
     for i in range(C_jpeg.components()):
         print("\nChannel "+str(i)+":")
-        num_coeffs = C_jpeg.coeffs(i).shape[0]*C_jpeg.coeffs(i).shape[1]
+        nz_coeffs = np.count_nonzero(C_jpeg.coeffs(i))
         changes = np.sum(np.abs(C_jpeg.coeffs(i)-S_jpeg.coeffs(i)))
-        print("Changes:", changes, ", rate:", round(changes/num_coeffs,4))
+        rate = round(changes/nz_coeffs, 4)
+        print(f"non zero coeffs: {nz_coeffs}, changes: {changes}, rate: {rate}")
         print("H BAR    COVER      STEGO       DIFF")
         print("------------------------------------")
         for v in [-4, -3, -2, -1, 0, 1, 2, 3, 4]:

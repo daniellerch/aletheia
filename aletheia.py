@@ -133,6 +133,9 @@ def main():
     elif sys.argv[1] == "j-mipod-sim":
         options.embsim.j_mipod()
 
+    elif sys.argv[1] == "j-mipod-color-sim":
+        options.embsim.j_mipod_color()
+
     elif sys.argv[1] == "ebs-sim":
         options.embsim.ebs()
 

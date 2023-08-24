@@ -93,6 +93,8 @@ def embed(sim, path, payload, dst_path=None):
                 m_code+="J_UNIWARD_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
             elif sim=='j_mipod':
                 m_code+="J_MIPOD('"+path+"',"+payload+",'"+dst_path+"');"
+            elif sim=='j_mipod_color':
+                m_code+="J_MIPOD_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
             elif sim=='nsf5':
                 m_code+="NSF5('"+path+"',"+payload+",'"+dst_path+"');"
             elif sim=='nsf5_color':
