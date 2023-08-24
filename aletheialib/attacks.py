@@ -3,10 +3,12 @@
 import os
 import sys
 import shutil
+import magic
 import ntpath
 import tempfile
 import subprocess
 
+from io import BytesIO
 from aletheialib import stegosim, utils
 
 import numpy as np
@@ -27,30 +29,23 @@ from multiprocessing import cpu_count
 from multiprocessing import Pool
 
 
-# -- APPENDED FILES --
-
-def extra_size(filename):
-    print("WARNING! not implemented")
-
-    name=ntpath.basename(filename)
-    I = imread(filename)
-
-    imsave(tempfile.gettempdir()+'/'+name, I)
-    return 0
-
 
 # -- EXIF --
 
 # {{{ exif()
 def exif(filename):
     image = Image.open(filename)
-    try:
-        exif = { TAGS[k]: v for k, v in image._getexif().items() if k in TAGS }
-        return exif
 
-    except AttributeError:
-        return {}
-# }}}
+    exifdata = image.getexif()
+    for tag_id in exifdata:
+        tag = TAGS.get(tag_id, tag_id)
+        data = exifdata.get(tag_id)
+        if isinstance(data, bytes):
+            data = data.decode()
+        print(f"{tag:25}: {data}")
+
+
+# }}}$
 
 
 # -- SAMPLE PAIR ATTACK --
@@ -538,6 +533,40 @@ def remove_alpha_channel(input_image, output_image):
     imsave(output_image, I)
 # }}}
 
+# {{{ eof_extract()
+def eof_extract(input_image, output_data): 
+
+    name, ext = os.path.splitext(input_image)
+
+    eof = None
+    if ext.lower() in [".jpeg", ".jpg"]:
+        eof = b"\xFF\xD9"
+    elif ext.lower() in [".gif"]:
+        eof = b"\x00\x3B"
+    elif ext.lower() in [".png"]:
+        eof = b"\x49\x45\x4E\x44\xAE\x42\x60\x82"
+    else:
+        print("Please provide a JPG, GIF or PNG file")
+        sys.exit(0)
+
+    raw = open(input_image, 'rb').read()
+    buff = BytesIO()
+    buff.write(raw)
+    buff.seek(0)
+    bytesarray = buff.read()
+    data = bytesarray.rsplit(eof, 1) # last occurrence
+
+    # data[0] contains the original image
+    if len(data[1])==0:
+        print("No data found")
+        sys.exit(0)
+    with open(output_data, 'wb') as outf:
+        outf.write(data[1])
+
+    ft = magic.Magic(mime=True).from_file(output_data)
+    print("\nData extracted from", input_image, "to", output_data, "("+ft+")\n")
+
+# }}}
 
 
 

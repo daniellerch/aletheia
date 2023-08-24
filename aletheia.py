@@ -254,6 +254,12 @@ def main():
     elif sys.argv[1] == "plot-dct-histogram":
         options.tools.plot_dct_histogram()
 
+    elif sys.argv[1] == "eof-extract":
+        options.tools.eof_extract()
+
+    elif sys.argv[1] == "print-metadata":
+        options.tools.print_metadata()
+
     else:
         print("Wrong command!")
 

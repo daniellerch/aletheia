@@ -10,3 +10,4 @@ matplotlib
 steganogan
 python-magic
 efficientnet
+Pillow
