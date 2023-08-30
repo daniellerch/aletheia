@@ -331,7 +331,7 @@ def effnetb0():
         print("     val-stego-dir:    Directory containing validation stego images")
         print("     model-name:       A name for the model")
         print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
-        print("     ES:         early stopping iterations x1000 (default=100)")
+        print("     ES:         early stopping iterations x1000 (default=10)")
         print("")
         sys.exit(0)
 

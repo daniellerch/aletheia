@@ -173,6 +173,8 @@ class NN:
             if os.path.exists(path):
                 print("Loading", path, "...")
                 self.model.load_weights(path)
+            else:
+                print("New model:", path)
 
         self.replace_method = False
 
