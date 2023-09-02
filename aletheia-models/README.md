@@ -26,6 +26,8 @@ in the name of the database.
 | models/effnetb0-B-alaska2-nsf5.h5     |   0.679   |   0.680    |
 | models/effnetb0-A-alaska2-juniw.h5    |   0.769   |   0.759    |
 | models/effnetb0-B-alaska2-juniw.h5    |   0.701   |   0.698    |
+| models/effnetb0-A-alaska2-jmipod.h5   |   0.873   |   0.830    |
+| models/effnetb0-B-alaska2-jmipod.h5   |   0.716   |   0.670    |
 
 
 
