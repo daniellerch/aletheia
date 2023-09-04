@@ -80,6 +80,8 @@ applied to the analyzed images.
 | effnetb0-A/B-alaska2-juniw    | bossbase-q95-color |  0.759  | 0.700 |   0.685     |
 | effnetb0-A/B-alaska2-juniw    | imagenet-mini      |  0.759  | 0.561 |   0.559     |
 | effnetb0-A/B-alaska2-juniw    | lfw-faces          |  0.759  | 0.558 |   0.515     |
+| effnetb0-A/B-alaska2-jmipod   | bossbase-q80-color |  0.830  | 0.710 |   0.520     |
+| effnetb0-A/B-alaska2-jmipod   | bossbase-q95-color |  0.830  | 0.840 |   0.615     |
 
 
 
