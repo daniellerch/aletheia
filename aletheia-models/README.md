@@ -26,7 +26,7 @@ in the name of the database.
 | models/effnetb0-B-alaska2-nsf5.h5     |   0.679   |   0.680    |
 | models/effnetb0-A-alaska2-juniw.h5    |   0.769   |   0.759    |
 | models/effnetb0-B-alaska2-juniw.h5    |   0.701   |   0.698    |
-| models/effnetb0-A-alaska2-jmipod.h5   |   0.873   |   0.830    |
+| models/effnetb0-A-alaska2-jmipod.h5   |   0.873   |   0.837    |
 | models/effnetb0-B-alaska2-jmipod.h5   |   0.716   |   0.670    |
 
 
@@ -80,8 +80,8 @@ applied to the analyzed images.
 | effnetb0-A/B-alaska2-juniw    | bossbase-q95-color |  0.759  | 0.700 |   0.685     |
 | effnetb0-A/B-alaska2-juniw    | imagenet-mini      |  0.759  | 0.561 |   0.559     |
 | effnetb0-A/B-alaska2-juniw    | lfw-faces          |  0.759  | 0.558 |   0.515     |
-| effnetb0-A/B-alaska2-jmipod   | bossbase-q80-color |  0.830  | 0.710 |   0.520     |
-| effnetb0-A/B-alaska2-jmipod   | bossbase-q95-color |  0.830  | 0.840 |   0.615     |
+| effnetb0-A/B-alaska2-jmipod   | bossbase-q80-color |  0.837  | 0.656 |   0.530     |
+| effnetb0-A/B-alaska2-jmipod   | bossbase-q95-color |  0.837  | 0.853 |   0.621     |
 
 
 
