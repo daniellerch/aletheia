@@ -22,8 +22,8 @@ in the name of the database.
 | models/effnetb0-B-alaska2-steghide.h5 |   0.762   |   0.697    |
 | models/effnetb0-A-alaska2-outguess.h5 |   0.999   |   0.999    |
 | models/effnetb0-B-alaska2-outguess.h5 |   0.851   |   0.856    |
-| models/effnetb0-A-alaska2-nsf5.h5     |   0.796   |   0.781    |
-| models/effnetb0-B-alaska2-nsf5.h5     |   0.679   |   0.680    |
+| models/effnetb0-A-alaska2-nsf5.h5     |   0.825   |   0.809    |
+| models/effnetb0-B-alaska2-nsf5.h5     |   0.702   |   0.668    |
 | models/effnetb0-A-alaska2-juniw.h5    |   0.769   |   0.759    |
 | models/effnetb0-B-alaska2-juniw.h5    |   0.701   |   0.698    |
 | models/effnetb0-A-alaska2-jmipod.h5   |   0.873   |   0.837    |
@@ -72,10 +72,10 @@ applied to the analyzed images.
 | effnetb0-A/B-alaska2-steghide | bossbase-q95-color |  0.945  | 0.978 |   0.804     |
 | effnetb0-A/B-alaska2-steghide | imagenet-mini      |  0.945  | 0.813 |   0.695     |
 | effnetb0-A/B-alaska2-steghide | lfw-faces          |  0.945  | 0.665 |   0.639     |
-| effnetb0-A/B-alaska2-nsf5     | bossbase-q80-color |  0.781  | 0.802 |   0.686     |
-| effnetb0-A/B-alaska2-nsf5     | bossbase-q95-color |  0.781  | 0.716 |   0.696     |
-| effnetb0-A/B-alaska2-nsf5     | imagenet-mini      |  0.781  | 0.686 |   0.638     |
-| effnetb0-A/B-alaska2-nsf5     | lfw-faces          |  0.781  | 0.667 |   0.687     |
+| effnetb0-A/B-alaska2-nsf5     | bossbase-q80-color |  0.809  | 0.771 |   0.780     |
+| effnetb0-A/B-alaska2-nsf5     | bossbase-q95-color |  0.809  | 0.653 |   0.708     |
+| effnetb0-A/B-alaska2-nsf5     | imagenet-mini      |  0.809  | 0.692 |   0.645     |
+| effnetb0-A/B-alaska2-nsf5     | lfw-faces          |  0.809  | 0.667 |   0.687     |
 | effnetb0-A/B-alaska2-juniw    | bossbase-q80-color |  0.759  | 0.566 |   0.595     |
 | effnetb0-A/B-alaska2-juniw    | bossbase-q95-color |  0.759  | 0.700 |   0.685     |
 | effnetb0-A/B-alaska2-juniw    | imagenet-mini      |  0.759  | 0.561 |   0.559     |
