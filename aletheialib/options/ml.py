@@ -45,24 +45,22 @@ def split_sets():
     seed=int(sys.argv[7])
 
 
-    cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
-    stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
+    cover_files = np.array(sorted(glob.glob(os.path.join(cover_dir, '*'))))
+    stego_files = np.array(sorted(glob.glob(os.path.join(stego_dir, '*'))))
 
     if len(cover_files)!=len(stego_files):
         print("ERROR: we expect the same number of cover and stego files");
         sys.exit(0)
 
-    from sklearn.model_selection import train_test_split
-    trn_C_files, tv_C_files, trn_S_files, tv_S_files = \
-        train_test_split(cover_files, stego_files, 
-                         test_size=n_valid+n_test*2, random_state=seed)
 
-    train_C_files = trn_C_files
-    train_S_files = trn_S_files
-    valid_C_files = tv_C_files[:n_valid//2]
-    valid_S_files = tv_S_files[:n_valid//2]
-    test_C_files = tv_C_files[n_valid//2:n_valid//2+n_test//2]
-    test_S_files = tv_S_files[n_valid//2+n_test//2:n_valid//2+n_test]
+    indices = list(range(len(cover_files)))
+    random.seed(seed)
+    random.shuffle(indices)
+
+    valid_indices = indices[:n_valid//2]
+    test_C_indices = indices[n_valid//2:n_valid//2+n_test//2]
+    test_S_indices = indices[n_valid//2+n_test//2:n_valid//2+n_test]
+    train_indices = indices[n_valid//2+n_test:]
 
     train_C_dir = os.path.join(output_dir, "train", "cover")
     train_S_dir = os.path.join(output_dir, "train", "stego")
@@ -71,9 +69,9 @@ def split_sets():
     test_C_dir = os.path.join(output_dir, "test", "cover")
     test_S_dir = os.path.join(output_dir, "test", "stego")
 
+
     if not os.path.isdir(output_dir):
         os.mkdir(output_dir)
-
     os.makedirs(train_C_dir, exist_ok=True)
     os.makedirs(train_S_dir, exist_ok=True)
     os.makedirs(valid_C_dir, exist_ok=True)
@@ -81,22 +79,22 @@ def split_sets():
     os.makedirs(test_C_dir, exist_ok=True)
     os.makedirs(test_S_dir, exist_ok=True)
     
-    for f in train_C_files:
+    for f in cover_files[train_indices]:
         shutil.copy(f, train_C_dir)
 
-    for f in train_S_files:
+    for f in stego_files[train_indices]:
         shutil.copy(f, train_S_dir)
 
-    for f in valid_C_files:
+    for f in cover_files[valid_indices]:
         shutil.copy(f, valid_C_dir)
 
-    for f in valid_S_files:
+    for f in stego_files[valid_indices]:
         shutil.copy(f, valid_S_dir)
 
-    for f in test_C_files:
+    for f in cover_files[test_C_indices]:
         shutil.copy(f, test_C_dir)
 
-    for f in test_S_files:
+    for f in stego_files[test_S_indices]:
         shutil.copy(f, test_S_dir)
 # }}}
 
@@ -324,7 +322,7 @@ def create_actors():
 def effnetb0():
 
     if len(sys.argv)<7:
-        print(sys.argv[0], "effnetb0 <trn-cover-dir> <trn-stego-dir> <val-cover-dir> <val-stego-dir> <model-file> [dev] [ES]\n")
+        print(sys.argv[0], "effnetb0 <trn-cover-dir> <trn-stego-dir> <val-cover-dir> <val-stego-dir> <model-file> [dev] [ES] [BS]\n")
         print("     trn-cover-dir:    Directory containing training cover images")
         print("     trn-stego-dir:    Directory containing training stego images")
         print("     val-cover-dir:    Directory containing validation cover images")
@@ -332,6 +330,7 @@ def effnetb0():
         print("     model-name:       A name for the model")
         print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
         print("     ES:         early stopping iterations x1000 (default=10)")
+        print("     BS:         Batch size (default=16)")
         print("")
         sys.exit(0)
 
@@ -352,6 +351,14 @@ def effnetb0():
         print("'ES' not provided, using:", early_stopping)
     else:
         early_stopping = int(sys.argv[8])
+
+    if len(sys.argv)<10:
+        batch = 16
+        print("'BS' not provided, using:", batch)
+    else:
+        batch = int(sys.argv[9])
+
+
 
     if dev_id == "CPU":
         print("Running with CPU. It could be very slow!")
@@ -377,7 +384,7 @@ def effnetb0():
 
     import aletheialib.models
     nn = aletheialib.models.NN("effnetb0", model_name=model_name, shape=(512,512,3))
-    nn.train(trn_cover_files, trn_stego_files, 16, # 36|40
+    nn.train(trn_cover_files, trn_stego_files, batch, # 36|40
     #nn = aletheialib.models.NN("effnetb0", model_name=model_name, shape=(32,32,3))
     #nn.train(trn_cover_files, trn_stego_files, 500, # 36|40
              val_cover_files, val_stego_files, 10,
