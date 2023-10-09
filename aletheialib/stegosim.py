@@ -17,6 +17,7 @@ from PIL import Image
 
 from aletheialib import utils
 from aletheialib import octave_interface 
+from aletheialib.jpeg import JPEG
 
 import multiprocessing
 #from multiprocessing.dummy import Pool as ThreadPool 
@@ -24,6 +25,9 @@ from multiprocessing import Pool as ThreadPool
 from multiprocessing import cpu_count
 
 from imageio import imread, imwrite
+
+import warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
 # {{{ embed_message()
@@ -269,6 +273,43 @@ def steghide(path, payload, dst_path):
 
 # }}}
 
+# {{{ f5()
+def f5(path, payload, dst_path):
+
+    # bytes to hide
+    nbytes = 0
+    jpeg = JPEG(path)
+    for i in range(jpeg.components()):
+        nz_coeffs = np.count_nonzero(jpeg.coeffs(i))
+        nbytes += nz_coeffs*float(payload)
+    nbytes = int(round(nbytes))
+
+
+    # Image path
+    if os.path.isabs(path):
+        image_path = path
+    else:
+        image_path = os.path.join(os.getcwd(), path)
+
+    # Get the directory where the resources are installed
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    dir_path = os.path.join(dir_path, os.pardir, 'aletheia-cache', 'F5')
+    os.chdir(dir_path)
+    utils.check_bin("java")   
+
+    print("payload:", payload, "bytes to hide:", nbytes)
+
+    password = ''.join(random.sample(string.ascii_letters+string.digits, 8))
+
+    with open("/tmp/secret-"+password+".data", "wb") as secret:
+        secret.write(os.urandom(nbytes))
+
+    cmd = "java Embed  -p "+password+" -e /tmp/secret-"+password+".data "+image_path+" "+dst_path
+    os.system(cmd)                                                           
+    os.remove("/tmp/secret-"+password+".data")  
+
+# }}}
+
 # {{{ outguess()
 def outguess(path, payload, dst_path):
 
@@ -346,6 +387,125 @@ def steganogan(path, payload, dst_path):
 
 # }}}
 
+# {{{ adversarial_adaptive()
+# XXX EXPERIMENTAL XXX
+
+def ternary_entropyf(pP1, pM1):
+    # {{{
+    p0 = 1-pP1-pM1
+    P = np.hstack((p0.flatten(), pP1.flatten(), pM1.flatten()))
+    H = -P*np.log2(P)
+    eps = 2.2204e-16
+    H[P<eps] = 0
+    H[P>1-eps] = 0
+    return np.sum(H)
+    # }}}
+
+def calc_lambda(rho_p1, rho_m1, message_length, n):
+    # {{{
+    l3 = 1e+3
+    m3 = float(message_length+1)
+    iterations = 0
+    while m3 > message_length:
+        l3 = l3 * 2
+        pP1 = (np.exp(-l3 * rho_p1)) / (1 + np.exp(-l3 * rho_p1) + np.exp(-l3 * rho_m1))
+        pM1 = (np.exp(-l3 * rho_m1)) / (1 + np.exp(-l3 * rho_p1) + np.exp(-l3 * rho_m1))
+        m3 = ternary_entropyf(pP1, pM1)
+
+        iterations += 1
+        if iterations > 10:
+            return l3
+    l1 = 0
+    m1 = float(n)
+    lamb = 0
+    iterations = 0
+    alpha = float(message_length)/n
+    # limit search to 30 iterations and require that relative payload embedded 
+    # is roughly within 1/1000 of the required relative payload
+    while float(m1-m3)/n > alpha/1000.0 and iterations<300:
+        lamb = l1+(l3-l1)/2
+        pP1 = (np.exp(-lamb*rho_p1))/(1+np.exp(-lamb*rho_p1)+np.exp(-lamb*rho_m1))
+        pM1 = (np.exp(-lamb*rho_m1))/(1+np.exp(-lamb*rho_p1)+np.exp(-lamb*rho_m1))
+        m2 = ternary_entropyf(pP1, pM1)
+        if m2 < message_length:
+            l3 = lamb
+            m3 = m2
+        else:
+            l1 = lamb
+            m1 = m2
+    iterations = iterations + 1;
+    return lamb
+    # }}}
+
+def embedding_simulator(x, rho_p1, rho_m1, m):
+    # {{{
+    n = x.shape[0]*x.shape[1]
+    lamb = calc_lambda(rho_p1, rho_m1, m, n)
+    pChangeP1 = (np.exp(-lamb * rho_p1)) / (1 + np.exp(-lamb * rho_p1) + np.exp(-lamb * rho_m1));
+    pChangeM1 = (np.exp(-lamb * rho_m1)) / (1 + np.exp(-lamb * rho_p1) + np.exp(-lamb * rho_m1));
+    y = x.copy()
+    randChange = np.random.rand(y.shape[0], y.shape[1])
+    y[randChange < pChangeP1] = y[randChange < pChangeP1] + 1;
+    y[(randChange >= pChangeP1) & (randChange < pChangeP1+pChangeM1)] = y[(randChange >= pChangeP1) & (randChange < pChangeP1+pChangeM1)] - 1;
+    # }}}
+    return y
+
+def adversarial_adaptive(path, payload):
+
+    payload = float(payload)
+    C = imread(path).astype('int16')
+    S = C.copy()
+
+    import aletheialib.models
+
+    bn = os.path.basename(path)+'.npy'
+    gradient_path = os.path.join("/tmp/gradients", bn)
+    print("load gradient", gradient_path)
+    gradient = np.load(gradient_path)
+    gradient = gradient.reshape((gradient.shape[1:]))
+
+    WET_COST = 10**10
+
+    rho_p1 = np.ones(C.shape)*WET_COST
+    rho_m1 = np.ones(C.shape)*WET_COST
+    rho_p1[gradient<0] = 1
+    rho_m1[gradient>0] = 1
+
+    """
+    rho = 1/gradient.reshape((gradient.shape[1:]))
+
+    rho_p1 = rho.copy()
+    rho_p1[rho_p1<0] = WET_COST
+
+    rho_m1 = rho.copy()
+    rho_m1[rho_m1>0] = WET_COST
+    rho_m1 = np.abs(rho_m1)
+
+    rho_p1 += 10e-3
+    rho_m1 += 10e-3
+    """
+
+
+
+
+    #rho_p1 = np.ones(C.shape)
+    #rho_m1 = np.ones(C.shape)
+
+    for channel in range(S.shape[2]):
+        num_bits = round(payload * S.shape[0]*S.shape[1])
+        S[:,:,channel] = embedding_simulator(
+            S[:,:,channel], 
+            rho_p1[:,:,channel], 
+            rho_m1[:,:,channel], 
+            num_bits
+        )
+        #print("--")
+        #print(C[:2,:10,channel])
+        #print(S[:2,:10,channel])
+        print("payload:", payload, num_bits, "channel:", channel, "modifs:", np.sum(np.abs(S[:,:,channel].astype("int16")-C[:,:,channel].astype("int16"))))
+
+    return S.astype('uint8')
+# }}}
 
 # {{{ embedding_fn()
 def embedding_fn(name):
@@ -391,6 +551,8 @@ def embedding_fn(name):
         return outguess
     if name=="steganogan-sim":
         return steganogan
+    if name=="f5-sim":
+        return outguess
     #print(f"|{name}|")
     print("Unknown simulator:", name)
     sys.exit(0)

@@ -166,11 +166,15 @@ def main():
     elif sys.argv[1] == "steganogan-sim":
         options.embsim.steganogan()
 
-    elif sys.argv[1] == "adv-lsbm-sim":
-        options.embsim.adv_lsbm()
+    elif sys.argv[1] == "f5-sim":
+        options.embsim.f5()
 
-    elif sys.argv[1] == "adv-pm2-fix":
-        options.embsim.adv_pm2_fix()
+    #elif sys.argv[1] == "adversarial-adaptive-sim":
+    #    options.embsim.adversarial_adaptive()
+
+    #elif sys.argv[1] == "adversarial-fix":
+    #    options.embsim.adversarial_fix()
+
 
     # ML base steganaysis
     elif sys.argv[1] == "split-sets":
