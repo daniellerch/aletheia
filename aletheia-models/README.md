@@ -16,18 +16,20 @@ in the name of the database.
 
 
 
-| Model file (JPG images)               | val score | test score |
-|---------------------------------------|-----------|------------|
-| models/effnetb0-A-alaska2-steghide.h5 |   0.944   |   0.945    |
-| models/effnetb0-B-alaska2-steghide.h5 |   0.762   |   0.697    |
-| models/effnetb0-A-alaska2-outguess.h5 |   0.999   |   0.999    |
-| models/effnetb0-B-alaska2-outguess.h5 |   0.851   |   0.856    |
-| models/effnetb0-A-alaska2-nsf5.h5     |   0.825   |   0.809    |
-| models/effnetb0-B-alaska2-nsf5.h5     |   0.702   |   0.668    |
-| models/effnetb0-A-alaska2-juniw.h5    |   0.769   |   0.759    |
-| models/effnetb0-B-alaska2-juniw.h5    |   0.701   |   0.698    |
-| models/effnetb0-A-alaska2-jmipod.h5   |   0.873   |   0.837    |
-| models/effnetb0-B-alaska2-jmipod.h5   |   0.716   |   0.670    |
+| Model file (JPG images)                   | val score | test score |
+|-------------------------------------------|-----------|------------|
+| models/effnetb0-A-alaska2-steghide.h5     |   0.944   |   0.945    |
+| models/effnetb0-B-alaska2-steghide.h5     |   0.762   |   0.697    |
+| models/effnetb0-A-alaska2-outguess.h5     |   0.999   |   0.999    |
+| models/effnetb0-B-alaska2-outguess.h5     |   0.851   |   0.856    |
+| models/effnetb0-A-alaska2-nsf5.h5         |   0.825   |   0.809    |
+| models/effnetb0-B-alaska2-nsf5.h5         |   0.702   |   0.668    |
+| models/effnetb0-A-alaska2-jmipod.h5       |   0.873   |   0.837    |
+| models/effnetb0-B-alaska2-jmipod.h5       |   0.716   |   0.670    |
+| models/effnetb0-A-alaska2-juniw.h5        |   0.769   |   0.759    |
+| models/effnetb0-B-alaska2-juniw.h5        |   0.701   |   0.698    |
+| models/effnetb0-A-alaska2-juniw+wiener.h5 |   0.723   |   0.706    |
+| models/effnetb0-B-alaska2-juniw+wiener.h5 |   0.732   |   0.714    |
 
 
 
