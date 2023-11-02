@@ -184,6 +184,7 @@ def download_octave_jpeg_toolbox():
     f = 'JPEG_READ_STRUCT.m'
     remote_file = EXTERNAL_RESOURCES+'octave/code/'+f
     local_file = os.path.join(cache_dir, 'octave', f)
+    os.makedirs(os.path.join(cache_dir, "octave"), exist_ok=True)
     try:
         urllib.request.urlretrieve(remote_file, local_file)
     except Exception as e:
