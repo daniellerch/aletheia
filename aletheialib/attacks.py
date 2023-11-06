@@ -462,11 +462,11 @@ def print_diffs(cover, stego):
         pairs_diff = [p for p in pairs if p[2]!=0]
         print_list(pairs_diff, 5)
         print("\nChannel 2:")
-        pairs = list(zip(C[:,:,0].ravel(), S[:,:,0].ravel(), D1.ravel()))
+        pairs = list(zip(C[:,:,1].ravel(), S[:,:,1].ravel(), D2.ravel()))
         pairs_diff = [p for p in pairs if p[2]!=0]
         print_list(pairs_diff, 5)
         print("\nChannel 3:")
-        pairs = list(zip(C[:,:,0].ravel(), S[:,:,0].ravel(), D1.ravel()))
+        pairs = list(zip(C[:,:,2].ravel(), S[:,:,2].ravel(), D3.ravel()))
         pairs_diff = [p for p in pairs if p[2]!=0]
         print_list(pairs_diff, 5)
     else:
