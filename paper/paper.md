@@ -75,20 +75,6 @@ conducting effective steganalysis in practical applications.
 
 # Description
 
-Aletheia incorporates numerous image steganography simulators and tools for 
-generating datasets of varying payload sizes using these simulators. 
-This makes it easier for researchers to prepare experiments for publication.
-Therefore, accessing the original versions of these different simulators is 
-crucial. Given that many of these implementations are developed in Matlab, 
-Aletheia integrates several of these simulators into its original code, albeit 
-with slight modifications for execution using Octave. Often, these simulators 
-possess a different license that may be incompatible with the MIT license used 
-by Aletheia. As a result, this code is housed in an external repository and 
-is downloaded separately, following user confirmation. 
-Aletheia also incorporates other simulators directly in Python 
--the programming language of Aletheia- as well as tools for which their 
-binaries are used directly.
-
 Aletheia incorporates various image steganography simulators, as well as tools
 for preparing datasets with different payload sizes using these simulators.
 This enables researchers to prepare experiments for their articles. Therefore,
@@ -101,7 +87,6 @@ Aletheia. For this reason, this code is in an external repository and is downloa
 separately after a confirmation of the user.
 Aletheia also implements other simulators directly in Python, the programming
 language of Aletheia, as well as tools that directly utilize their binaries.
-
 
 
 
