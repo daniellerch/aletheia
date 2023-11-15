@@ -12,8 +12,8 @@ setup(
     version = '0.2',
     scripts = ['aletheia.py'],
     install_requires = ['imageio', 'numpy', 'scipy', 'tensorflow', 'scikit-learn',
-                        'pandas', 'hdf5storage', 'h5py', ' matplotlib', 
-                        'python-magic'],
+                        'pandas', 'hdf5storage', 'h5py', 'matplotlib',
+                        'steganogan', 'python-magic', 'efficientnet', 'Pillow'],
     include_package_data = True
 )
 

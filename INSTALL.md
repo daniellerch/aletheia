@@ -6,18 +6,18 @@ You can install Aletheia with the following command:
 $ pip3 install git+https://github.com/daniellerch/aletheia
 ```
 
-But some things might not work properly, because Aletheia has external denpendencies.
+But some things might not work properly, because Aletheia has external dependencies.
 
-Aletheia uses Octave so you need to install it and some of its libraries. You will find the dependencies in the octave-requirements.txt file. In Debian based Linux distributions you can install the dependencies with the following commands. For different distros you can deduce the appropriate ones.
+Aletheia uses Octave, so you need to install it and some of its libraries. You will find the dependencies in the octave-requirements.txt file. In Debian based Linux distributions you can install the dependencies with the following commands. For different distros you can deduce the appropriate ones.
 
 ```bash
-$ sudo apt-get install octave octave-image octave-signal
+$ sudo apt-get install octave octave-image octave-signal octave-nan
 ```
 
 You can find other dependencies in the other-requirements.txt.
 
 ```bash
-$ sudo apt-get install liboctave-dev imagemagick
+$ sudo apt-get install liboctave-dev imagemagick steghide outguess
 ```
 
 After that, you can execute Aletheia with:
