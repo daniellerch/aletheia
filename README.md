@@ -30,7 +30,7 @@ Aletheia is an open source image steganalysis tool for the detection of hidden m
 01294.jpg               0.0      0.0      0.2     [0.5] 
 
 
-* Probability of being stego using the indicated steganographic method.
+* Probability of steganographic content using the indicated method.
 
 ```
 
@@ -54,7 +54,7 @@ $ ./aletheia.py auto sample_images/alaska2
 55453_lsbm.png         [0.6]     [0.9]     0.0     [0.9]  
 67104_steganogan.png   [0.9]     [0.9]    [1.0]    [0.8] 
 
-* Probability of being stego using the indicated steganographic method.
+* Probability of steganographic content using the indicated method.
 
 ```
 

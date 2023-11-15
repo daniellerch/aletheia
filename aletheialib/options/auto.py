@@ -140,7 +140,7 @@ def auto():
 
 
     print("")
-    print("* Probability of being stego using the indicated steganographic method.\n")
+    print("* Probability of steganographic content using the indicated method.\n")
 # }}}
 
 # {{{ dci()

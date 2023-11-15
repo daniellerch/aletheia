@@ -90,11 +90,11 @@ language of Aletheia, as well as tools that directly utilize their binaries.
 
 
 
-These simulators can be used to conduct experiments, as shown in the following
-example. Here, you can observe how the simulator uses the HILL algorithm
-and a random payload (ranging from 0.05 to 0.25) hidden within images sourced
-from the "images" folder. The resulting data is then saved in the "experiment"
-folder.
+These simulators can be used to conduct experiments, as shown in the following 
+example. Here, you can observe how the simulator uses the HILL algorithm 
+and embeds a random payload, which ranges from 5% to 25% of the image's maximum 
+capacity when hiding 1 bit per pixel, within images sourced from the "images" 
+folder. The resulting data is then saved in the "experiment" folder.
 
 ```bash
 ./aletheia.py hill-color-sim images 0.05-0.25 experiment
@@ -108,8 +108,10 @@ steganography algorithms. These algorithms include both commonly used tools in
 the real world and state-of-the-art steganographic methods.
 
 Aletheia also offers automated tools that allow for a preliminary analysis,
-greatly aiding the investigation of the steganalyst. For instance, in the
-following example, an automatic analysis of a set of images is shown.
+greatly aiding the investigation of the steganalyst. 
+For example, the automated analysis below showcases the modeled probabilities 
+of each image being generated using various steganographic methods.
+
 
 ```bash
 $ ./aletheia.py auto actors/A2/
@@ -127,7 +129,7 @@ $ ./aletheia.py auto actors/A2/
 3.jpg                  [1.0]    [1.0]    [1.0]     0.3
 5.jpg                   0.0      0.1     [0.7]    [0.6]
 
-* Probability of being stego using the indicated steganographic method.
+* Probability of steganographic content using the indicated method.
 ```
 
 Aletheia offers many other functionalities for steganalysis that are not covered
