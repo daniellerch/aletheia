@@ -34,7 +34,7 @@ Aletheia is an open source image steganalysis tool for the detection of hidden m
 
 ```
 
-#### Bitmap images
+#### Uncompressed images
 ```bash
 $ ./aletheia.py auto sample_images/alaska2
 ...

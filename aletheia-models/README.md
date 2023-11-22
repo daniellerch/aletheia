@@ -35,7 +35,7 @@ in the name of the database.
 
 
 
-| Model file (Spatial images)             | val score | test score |
+| Model file (Uncompressed images)             | val score | test score |
 |-----------------------------------------|-----------|------------|
 | models/effnetb0-A-alaska2-lsbr.h5       |   0.925   |   0.913    |
 | models/effnetb0-A-alaska2-lsbm.h5       |   0.913   |   0.918    |
@@ -89,7 +89,7 @@ applied to the analyzed images.
 
 
 
-| Models  (Bitmap images)     | Testing        | No CSM score |  CSM score  | DCI pred (+) |
+| Models  (Uncompressed images)     | Testing        | No CSM score |  CSM score  | DCI pred (+) |
 |-----------------------------|----------------|---------|----------|--------------|
 | effnetb0-A/B-alaska2-lsbm   | bossbase-color |  0.918  |  0.606   |   0.596      |
 | effnetb0-A/B-alaska2-lsbm   | imagenet-mini  |  0.918  |  0.584   |   0.558      |
@@ -121,7 +121,7 @@ these experiments is to find for which payloads the stegosystem is undetectable.
 | effnetb0-A-alaska2-juniw   | mini-imagenet-test  |  0.20   | 0.553 |
 
 
-| Models (Bitmap images)     | Testing          | Payload | Score |
+| Models (Uncompressed images)     | Testing          | Payload | Score |
 |----------------------------|------------------|---------|-------|
 | effnetb0-A-alaska2-hill    | alaska2-test     |  0.05   | 0.574 |
 | effnetb0-A-alaska2-hill    | alaska2-test     |  0.10   | 0.768 |
