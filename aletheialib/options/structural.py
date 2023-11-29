@@ -28,8 +28,8 @@ doc = "\n" \
 
 # {{{ spa()
 def spa():
-    if len(sys.argv)!=3:
-        print(sys.argv[0], "spa <image>\n")
+    if len(sys.argv)<3:
+        print(sys.argv[0], "spa <image> [threshold]\n")
         sys.exit(0)
 
     import aletheialib.utils
@@ -40,7 +40,10 @@ def spa():
         print("Please, provide a valid image")
         sys.exit(0)
 
-    threshold=0.05
+    threshold = 0.05
+    if len(sys.argv) == 4:
+        threshold = float(sys.argv[3])
+    print("Using threshold:", threshold)
 
     I = imread(sys.argv[2])
     if len(I.shape)==2:
@@ -69,8 +72,8 @@ def spa():
 
 # {{{ rs()
 def rs():
-    if len(sys.argv)!=3:
-        print(sys.argv[0], "rs <image>\n")
+    if len(sys.argv)<3:
+        print(sys.argv[0], "rs <image> [threshold]\n")
         sys.exit(0)
 
     import numpy as np
@@ -83,6 +86,9 @@ def rs():
         sys.exit(0)
 
     threshold=0.05
+    if len(sys.argv) == 4:
+        threshold = float(sys.argv[3])
+    print("Using threshold:", threshold)
 
     I = np.asarray(imread(sys.argv[2]))
     if len(I.shape)==2:
@@ -111,8 +117,8 @@ def rs():
 
 # {{{ ws()
 def ws(): 
-    if len(sys.argv)!=3:
-        print(sys.argv[0], "ws <image>\n")
+    if len(sys.argv)<3:
+        print(sys.argv[0], "ws <image> [threshold]\n")
         sys.exit(0)
 
     download_octave_code("WS")
@@ -122,6 +128,10 @@ def ws():
         sys.exit(0)
 
     threshold=0.05
+    if len(sys.argv) == 4:
+        threshold = float(sys.argv[3])
+    print("Using threshold:", threshold)
+
     path = aletheialib.utils.absolute_path(sys.argv[2])
     im=Image.open(path)
     if im.mode in ['RGB', 'RGBA', 'RGBX']:
@@ -152,8 +162,8 @@ def ws():
 # {{{ triples()
 def triples():
 
-    if len(sys.argv)!=3:
-        print(sys.argv[0], "triples <image>\n")
+    if len(sys.argv)<3:
+        print(sys.argv[0], "triples <image> [threshold]\n")
         sys.exit(0)
 
     download_octave_code("TRIPLES")
@@ -164,6 +174,10 @@ def triples():
 
 
     threshold=0.05
+    if len(sys.argv) == 4:
+        threshold = float(sys.argv[3])
+    print("Using threshold:", threshold)
+
     path = aletheialib.utils.absolute_path(sys.argv[2])
     im=Image.open(path)
     if im.mode in ['RGB', 'RGBA', 'RGBX']:
@@ -194,8 +208,8 @@ def triples():
 
 # {{{ aump()
 def aump():
-    if len(sys.argv)!=3:
-        print(sys.argv[0], "aump <image>\n")
+    if len(sys.argv)<3:
+        print(sys.argv[0], "aump <image> [threshold]\n")
         sys.exit(0)
 
     download_octave_code("AUMP")
@@ -206,6 +220,10 @@ def aump():
 
 
     threshold=0.05
+    if len(sys.argv) == 4:
+        threshold = float(sys.argv[3])
+    print("Using threshold:", threshold)
+
     path = aletheialib.utils.absolute_path(sys.argv[2])
     im=Image.open(path)
     if im.mode in ['RGB', 'RGBA', 'RGBX']:
