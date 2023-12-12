@@ -70,7 +70,7 @@ $ ./aletheia.py auto sample_images/alaska2
 	* [Practical attack on LSB replacement: OpenStego and OpenPuff](https://daniellerch.me/stego/aletheia/lsbr-attack-en/)
    * [Solving Stego-Puzzles with Aletheia](https://daniellerch.me/stego/aletheia/stego-puzzles-en/)
    * [Comparison of Image Steganography Tools](https://daniellerch.me/stego/aletheia/tool-comparison-en/).
-   * [Training models for Aletheia](/stego/aletheia/training-en/).
+   * [Training models for Aletheia](https://daniellerch.me/stego/aletheia/training-en/).
 
 - [Available models](/aletheia-models/README.md)
 - [How to cite Aletheia?](/CITING.md)
