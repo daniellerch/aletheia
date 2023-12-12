@@ -73,6 +73,7 @@ $ ./aletheia.py auto sample_images/alaska2
    * [Training models for Aletheia](https://daniellerch.me/stego/aletheia/training-en/).
 
 - [Available models](/aletheia-models/README.md)
+- [External resources](/EXTERNAL.md)
 - [How to cite Aletheia?](/CITING.md)
 - [References](/REFERENCES.md)
 

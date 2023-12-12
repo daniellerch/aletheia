@@ -34,9 +34,22 @@ def load_model(nn, model_name):
 # {{{ auto()
 def auto():
 
-    if len(sys.argv)!=3:
-        print(sys.argv[0], "auto <image|dir>\n")
+    if len(sys.argv)<3:
+        print(sys.argv[0], "auto <image|dir> [dev]\n")
         sys.exit(0)
+
+    if len(sys.argv)<4:
+        dev_id = "CPU"
+        print("'dev' not provided, using:", dev_id)
+    else:
+        dev_id = sys.argv[3]
+
+    if dev_id == "CPU":
+        print("Running with CPU. It could be very slow!")
+
+    os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 
     import aletheialib.models
 
@@ -146,14 +159,25 @@ def auto():
 # {{{ dci()
 def dci():
 
-    if len(sys.argv)!=4:
-        print(sys.argv[0], "dci <sim> <img dir>\n")
+    if len(sys.argv)<4:
+        print(sys.argv[0], "dci <sim> <img dir> [dev]\n")
         print("Example:");
         print(sys.argv[0], "dci steghide-sim images/\n")
         sys.exit(0)
 
     files = glob.glob(os.path.join(sys.argv[3], '*'))
 
+    if len(sys.argv)<5:
+        dev_id = "CPU"
+        print("'dev' not provided, using:", dev_id)
+    else:
+        dev_id = sys.argv[4]
+
+    if dev_id == "CPU":
+        print("Running with CPU. It could be very slow!")
+
+    os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
     if not os.path.isdir(sys.argv[3]):
         print("ERROR: Please, provide a valid directory\n")
@@ -193,7 +217,7 @@ def dci():
 
     B_dir=tempfile.mkdtemp()
     print("Preparind the B set ...")
-    aletheialib.stegosim.embed_message(fn_sim, sys.argv[3], "0.05-0.50", B_dir, 
+    aletheialib.stegosim.embed_message(fn_sim, sys.argv[3], "0.40", B_dir, 
                                        embed_fn_saving=embed_fn_saving)
 
     B_nn = aletheialib.models.NN("effnetb0")
@@ -208,10 +232,10 @@ def dci():
     B_nn = load_model(B_nn, "effnetb0-B-alaska2-"+method)
 
     # Predictions for the DCI method
-    p_aa = A_nn.predict(A_files, 50)
-    p_ab = A_nn.predict(B_files, 50)
-    p_bb = B_nn.predict(B_files, 50)
-    p_ba = B_nn.predict(A_files, 50)
+    p_aa = A_nn.predict(A_files, 10)
+    p_ab = A_nn.predict(B_files, 10)
+    p_bb = B_nn.predict(B_files, 10)
+    p_ba = B_nn.predict(A_files, 10)
 
     p_aa = np.round(p_aa).astype('uint8')
     p_ab = np.round(p_ab).astype('uint8')

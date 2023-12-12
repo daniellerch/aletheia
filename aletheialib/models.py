@@ -384,11 +384,13 @@ class NN:
                        self.shape[2])
                 continue
 
+            """
             if (img.shape[0] < self.shape[0] or
                 img.shape[1] < self.shape[1]):
                 print("WARNING: image ignored:", f, ", image too small, expected:",
                        self.shape[0], "x", self.shape[1])
                 continue
+            """
             files_ok.append(f)
         return files_ok
         # }}}
