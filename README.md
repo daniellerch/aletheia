@@ -77,7 +77,7 @@ $ ./aletheia.py auto sample_images/alaska2
 - [Available models](/aletheia-models/README.md)
 - [External resources](/EXTERNAL.md)
 - [How to cite Aletheia?](/CITING.md)
-- [How to contribute?](/CCONTRIBUTING.md)
+- [How to contribute?](/CONTRIBUTING.md)
 - [References](/REFERENCES.md)
 
 
