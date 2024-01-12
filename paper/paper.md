@@ -10,12 +10,10 @@ authors:
     affiliation: 1
   - name: David Megías
     orcid: 0000-0002-0507-7731
-    affiliation: 2
+    affiliation: 1
 affiliations:
  - name: Internet Interdisciplinary Institute (IN3), Universitat Oberta de Catalunya (UOC), CYBERCAT-Center for Cybersecurity Research of Catalonia, Barcelona, Spain
    index: 1
- - name: Internet Interdisciplinary Institute (IN3), Universitat Oberta de Catalunya (UOC), CYBERCAT-Center for Cybersecurity Research of Catalonia, Barcelona, Spain
-   index: 2
 date: 1 August 2023
 bibliography: paper.bib
 ---
