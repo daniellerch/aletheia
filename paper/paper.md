@@ -10,12 +10,10 @@ authors:
     affiliation: 1
   - name: David Megías
     orcid: 0000-0002-0507-7731
-    affiliation: 2
+    affiliation: 1
 affiliations:
  - name: Internet Interdisciplinary Institute (IN3), Universitat Oberta de Catalunya (UOC), CYBERCAT-Center for Cybersecurity Research of Catalonia, Barcelona, Spain
    index: 1
- - name: Internet Interdisciplinary Institute (IN3), Universitat Oberta de Catalunya (UOC), CYBERCAT-Center for Cybersecurity Research of Catalonia, Barcelona, Spain
-   index: 2
 date: 1 August 2023
 bibliography: paper.bib
 ---
@@ -60,8 +58,8 @@ of conducting experiments and comparing methods. It includes simulators for
 common algorithms
 [@Sharp:2001:lsbm;@Provos:2001:outguess;@Hetzl:2005:steghide]
 as well as state-of-the-art steganography methods
-[@Guo:2014:UED;@Fridrich:2007:nsF5;@Li:2014:hill;@Holub:2014:uniward;@zhang:2019:steganogan]
-, enabling researchers to prepare and evaluate their work efficiently.
+[@Guo:2014:UED;@Fridrich:2007:nsF5;@Li:2014:hill;@Holub:2014:uniward;@zhang:2019:steganogan],
+enabling researchers to prepare and evaluate their work efficiently.
 
 
 On the other hand, to the best of the authors' knowledge, Aletheia stands out
@@ -113,7 +111,7 @@ For example, the automated analysis below showcases the modeled probabilities
 of each image being generated using various steganographic methods.
 
 
-```bash
+```verb
 $ ./aletheia.py auto actors/A2/
 
                     Outguess  Steghide   nsF5  J-UNIWARD *
@@ -133,7 +131,8 @@ $ ./aletheia.py auto actors/A2/
 ```
 
 Aletheia offers many other functionalities for steganalysis that are not covered
-in this article and can be found in Aletheia's documentation [@Lerch-Hostalot:Aletheia].
+in this article and can be found in Aletheia's documentation
+([github.com/daniellerch/aletheia](https://github.com/daniellerch/aletheia)).
 Some examples include calibration attacks, custom model preparation, high-pass
 filters, image difference analysis using pixels and DCT coefficients, DCI 
 techniques to deal with Cover Source Mismatch (CSM), and more.
@@ -143,8 +142,8 @@ techniques to deal with Cover Source Mismatch (CSM), and more.
 
 We acknowledge the funding obtained by the Detection
 of fake newS on SocIal MedIa pLAtfoRms (DISSIMILAR) project
-from the EIG CONCERT-Japan with grant PCI2020-120689-2 (Gov-
-ernment of Spain), and to the PID2021-125962OB-C31 “SECURING”
+from the EIG CONCERT-Japan with grant PCI2020-120689-2
+(Government of Spain), and to the PID2021-125962OB-C31 “SECURING”
 project granted by the Spanish Ministry of Science and Innovation.
 We wish to express our sincere gratitude towards NVIDIA Corporation for their
 generous donation of an NVIDIA TITAN Xp GPU card, which has been instrumental
