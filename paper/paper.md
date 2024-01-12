@@ -111,7 +111,7 @@ For example, the automated analysis below showcases the modeled probabilities
 of each image being generated using various steganographic methods.
 
 
-```bash
+```verb
 $ ./aletheia.py auto actors/A2/
 
                     Outguess  Steghide   nsF5  J-UNIWARD *
