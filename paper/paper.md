@@ -7,14 +7,19 @@ tags:
 authors:
   - name: Daniel Lerch-Hostalot
     orcid: 0000-0003-2602-672X
-    affiliation: 1
+    affiliation: "1, 2, 3"
   - name: David Megías
     orcid: 0000-0002-0507-7731
-    affiliation: 1
+    affiliation: "1, 2, 3"
 affiliations:
- - name: Internet Interdisciplinary Institute (IN3), Universitat Oberta de Catalunya (UOC), CYBERCAT-Center for Cybersecurity Research of Catalonia, Barcelona, Spain
+ - name: Internet Interdisciplinary Institute (IN3), Barcelona, Spain
    index: 1
-date: 1 August 2023
+ - name: Universitat Oberta de Catalunya (UOC), Barcelona, Spain
+   index: 2
+ - name: CYBERCAT-Center for Cybersecurity Research of Catalonia, Barcelona, Spain
+   index: 3
+   
+date: 12 January 2024
 bibliography: paper.bib
 ---
 
