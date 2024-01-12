@@ -12,7 +12,7 @@ or use directly the folloging BibTeX entry:
   month        = Aug,
   year         = 2023,
   publisher    = {Zenodo},
-  version      = {v0.2},
+  version      = {v0.3},
   doi          = {10.5281/zenodo.4655944},
   url          = {https://doi.org/10.5281/zenodo.4655944}
 }
