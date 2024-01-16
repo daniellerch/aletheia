@@ -1,9 +1,32 @@
-cff-version: 1.2.0
-message: "If you use Aletheia in a publication I would appreciate if you cite it."
+cff-version: "1.2.0"
 authors:
+- family-names: Lerch-Hostalot
+  given-names: Daniel
+  orcid: "https://orcid.org/0000-0003-2602-672X"
+- family-names: Megías
+  given-names: David
+  orcid: "https://orcid.org/0000-0002-0507-7731"
+doi: 10.5281/zenodo.10497963
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
   - family-names: Lerch-Hostalot
     given-names: Daniel
-title: "Aletheia"
-version: v0.1
-doi: 10.5281/zenodo.4655945
-date-released: 2021-04-01
+    orcid: "https://orcid.org/0000-0003-2602-672X"
+  - family-names: Megías
+    given-names: David
+    orcid: "https://orcid.org/0000-0002-0507-7731"
+  date-published: 2024-01-16
+  doi: 10.21105/joss.05982
+  issn: 2475-9066
+  issue: 93
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 5982
+  title: "Aletheia: an open-source toolbox for steganalysis"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.05982"
+  volume: 9
+title: "Aletheia: an open-source toolbox for steganalysis"
