@@ -1,4 +1,8 @@
 
+# Aletheia: an open-source toolbox for steganalysis
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.05982/status.svg)](https://doi.org/10.21105/joss.05982)
+
+
 ## What is Aletheia?
 
 Aletheia is an open source image steganalysis tool for the detection of hidden messages in images. To achieve its objectives, Aletheia uses state-of-the-art machine learning techniques. It is capable of detecting several different steganographic methods as for example F5, Steghide, LSB replacement, LSB matching and some kind of adaptive schemes.
