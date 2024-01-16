@@ -2,6 +2,7 @@
 ### How to cite Aletheia?
 
 If you use Aletheia in a publication I would appreciate if you cite it. 
+
 Please refer to the [JOSS publication](https://doi.org/10.21105/joss.05982) or use the folloging BibTeX entry:
 
 ```
