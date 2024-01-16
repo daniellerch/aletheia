@@ -27,10 +27,10 @@ bibliography: paper.bib
 
 Steganalysis is the practice of detecting the presence of hidden information
 within digital media, such as images, audio, or video. It involves analyzing
-the media for signs of steganography, which is the technique used to conceal
+the media for signs of steganography, which is a set of techniques used to conceal
 information within the carrier file. Steganalysis techniques can include
 statistical analysis, visual inspection, and machine learning algorithms to
-uncover the hidden data. The goal of steganalysis is to determine whether a
+uncover hidden data. The goal of steganalysis is to determine whether a
 file contains covert information and potentially identify the steganographic
 method used.
 
@@ -40,7 +40,7 @@ In this scenario, malicious actors leverage steganographic techniques to
 conceal sensitive data within innocent-looking files, evading traditional
 security measures. By detecting and analyzing such covert communication
 channels, steganalysis helps to identify and prevent data exfiltration attempts,
-safeguarding critical information from falling into the wrong hands.
+safeguarding critical information and preventing it from falling into the wrong hands.
 
 In recent years, there has been a significant growth in the interest of
 researchers towards the field of steganalysis. The application of deep learning
@@ -84,10 +84,10 @@ This enables researchers to prepare experiments for their articles. Therefore,
 having access to the original implementations of the different simulators is
 relevant. Since it is common for these implementations to be developed in
 Matlab, Aletheia includes several of these simulators in its original code,
-slightly modified to be executed using Octave. Frequently this simulators 
-have a different license that can be incompatible with the MIT license used by 
+slightly modified to be executed using Octave. These simulators frequently 
+have licenses that can be incompatible with the MIT license used by 
 Aletheia. For this reason, this code is in an external repository and is downloaded
-separately after a confirmation of the user.
+separately after a confirmation by the user.
 Aletheia also implements other simulators directly in Python, the programming
 language of Aletheia, as well as tools that directly utilize their binaries.
 
@@ -148,7 +148,7 @@ techniques to deal with Cover Source Mismatch (CSM), and more.
 We acknowledge the funding obtained by the Detection
 of fake newS on SocIal MedIa pLAtfoRms (DISSIMILAR) project
 from the EIG CONCERT-Japan with grant PCI2020-120689-2
-(Government of Spain), and to the PID2021-125962OB-C31 “SECURING”
+(Government of Spain), and the PID2021-125962OB-C31 “SECURING”
 project granted by the Spanish Ministry of Science and Innovation.
 We wish to express our sincere gratitude towards NVIDIA Corporation for their
 generous donation of an NVIDIA TITAN Xp GPU card, which has been instrumental
