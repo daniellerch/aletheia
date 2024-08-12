@@ -8,7 +8,8 @@ import aletheialib.utils
 doc = "\n" \
 "  Automated tools:\n" \
 "  - auto:      Try different steganalysis methods.\n" \
-"  - dci:       Predicts a set of images using DCI evaluation."
+"  - dci:       Predicts a set of images using DCI evaluation.\n" \
+"  - dci-si:    Predict an image using the DCI-SI method."
 
 
 
@@ -268,6 +269,154 @@ def dci():
 
     shutil.rmtree(B_dir)
 # }}}
+
+# {{{ dci_si()
+def dci_si():
+
+    if len(sys.argv)<4:
+        print(sys.argv[0], "dci-si <sim> <img> [dev]\n")
+        print("Example:");
+        print(sys.argv[0], "dci-si steghide-sim image.jpg\n")
+        sys.exit(0)
+
+    method = sys.argv[2]
+    image_path = sys.argv[3]
+
+    if len(sys.argv)<5:
+        dev_id = "CPU"
+        print("'dev' not provided, using:", dev_id)
+    else:
+        dev_id = sys.argv[4]
+
+    if dev_id == "CPU":
+        print("Running with CPU. It could be very slow!")
+
+    os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+    if not os.path.isfile(image_path):
+        print("ERROR: Please, provide a valid image file\n")
+        sys.exit(0)
+
+    ext = os.path.splitext(image_path)[1].lower().replace('.jpeg', '.jpg')
+    embed_fn_saving = False
+    if ext=='.jpg':
+        embed_fn_saving = True
+
+
+
+
+    import shutil
+    import tempfile
+    import aletheialib.stegosim
+    import aletheialib.models
+    import numpy as np
+    from imageio import imread
+    from aletheialib.stegosim import JPEG_METHODS 
+
+    # Check pair method/image
+    m = method.replace('-sim', '').replace('-', '_').replace("j-uniward", "juniw")
+    if ext=='.jpg' and m not in JPEG_METHODS:
+        print("ERROR: Please, provide a compatible image for this method\n")
+        sys.exit(0)
+    elif ext!='.jpg' and m  in JPEG_METHODS:
+        print("ERROR: Please, provide a compatible image for this method\n")
+        sys.exit(0)
+
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+
+    fn_sim=aletheialib.stegosim.embedding_fn(method)
+    method = method.replace("-sim", "")
+
+    A_dir=tempfile.mkdtemp()
+    shutil.copy(image_path, A_dir)
+
+    B_dir=tempfile.mkdtemp()
+    aletheialib.stegosim.embed_message(fn_sim, A_dir, "0.40", B_dir, 
+                                       embed_fn_saving=embed_fn_saving)
+
+    A_nn = aletheialib.models.NN("effnetb0")
+    B_nn = aletheialib.models.NN("effnetb0")
+    A_files = glob.glob(os.path.join(A_dir, '*'))
+    B_files = glob.glob(os.path.join(B_dir, '*'))
+
+    # Make some replacements to adapt the name of the method with the name
+    # of the model file
+    method = method.replace("-color", "")
+    method = method.replace("j-uniward", "juniw")
+
+    A_nn = load_model(A_nn, "effnetb0-A-alaska2-"+method)
+    B_nn = load_model(B_nn, "effnetb0-B-alaska2-"+method)
+
+    A = imread(A_files[0])
+    B = imread(B_files[0])
+    # This function must support images with variable size
+    # Note that with big images we are only analyzing a small part
+    d0 = min(A.shape[0], A_nn.shape[0])
+    d1 = min(A.shape[1], A_nn.shape[1])
+    d2 = min(A.shape[2], A_nn.shape[2])
+    Ai = np.zeros(A_nn.shape)
+    Bi = np.zeros(A_nn.shape)
+    Ai[:d0, :d1, :d2] = A[:d0, :d1, :d2]
+    Bi[:d0, :d1, :d2] = B[:d0, :d1, :d2]
+
+    aa = []
+    ab = []
+    bb = []
+    ba = []
+    for flip in [0, 1]:
+        for rot in [0, 1, 2, 3]:
+            for roll in [0, 128, 256, 384]:
+
+                if flip:
+                    Ai = np.flip(Ai)
+                    Bi = np.flip(Bi)
+                if rot:
+                    Ai = np.rot90(Ai, rot)
+                    Bi = np.rot90(Bi, rot)
+                if roll:
+                    Ai = np.roll(Ai, roll, axis=1)
+                    Bi = np.roll(Bi, roll, axis=1)
+
+                Ax = np.array([Ai]).astype('float32')/255
+                Bx = np.array([Bi]).astype('float32')/255
+
+                p_aa = A_nn.model.predict(Ax)[0,1]
+                p_ab = A_nn.model.predict(Bx)[0,1]
+                p_bb = B_nn.model.predict(Bx)[0,1]
+                p_ba = B_nn.model.predict(Ax)[0,1]
+                aa.append(p_aa)
+                ab.append(p_ab)
+                bb.append(p_bb)
+                ba.append(p_ba)
+
+    aa_mean = np.mean(aa)
+    aa = np.array(np.round(aa)).astype('uint8')
+    ab = np.array(np.round(ab)).astype('uint8')
+    bb = np.array(np.round(bb)).astype('uint8')
+    ba = np.array(np.round(ba)).astype('uint8')
+
+    inc = ( (aa!=bb) | (ba!=0) | (ab!=1) ).astype('uint8') 
+    dci_pred_score = round(1-float(np.sum(inc==1))/(2*len(aa)),3)
+
+    textpred = "cover"
+    if aa_mean > 0.5:
+        textpred = "stego"
+
+    print("")
+    print(f"DCI-SI prediction: {dci_pred_score}")
+    print("*  Accuracy (confidence) of the model.")   
+    print("")
+
+    print(f"Prediction: {aa_mean:.3f} ({textpred})")
+    print("* Probability of steganographic content using the indicated method.")   
+    print("")
+
+    shutil.rmtree(A_dir)
+    shutil.rmtree(B_dir)
+# }}}
+
 
 
 

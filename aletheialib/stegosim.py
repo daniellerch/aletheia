@@ -29,6 +29,9 @@ from imageio import imread, imwrite
 import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
+JPEG_METHODS = ["j_uniward", "j_uniward_color", "j_mipod", "j_mipod_color",
+                "ebs", "ebs_color", "ueb", "ued_color", "nsf5", "nsf5_color"]
+
 
 # {{{ embed_message()
 

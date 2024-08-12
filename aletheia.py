@@ -49,6 +49,11 @@ def main():
     elif sys.argv[1] == "dci":
         options.auto.dci()
 
+    elif sys.argv[1] == "dci-si":
+        options.auto.dci_si()
+
+
+
 
     # Structural LSB detectors
     elif sys.argv[1] == "sp":
