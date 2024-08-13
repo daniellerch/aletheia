@@ -30,6 +30,7 @@ COMMANDS:
   Automated tools:
   - auto:      Try different steganalysis methods.
   - dci:       Predicts a set of images using DCI evaluation.
+  - dci-si:    Predict an image using the DCI-SI method.
 
   Structural LSB detectors (Statistical attacks to LSB replacement):
   - spa:           Sample Pairs Analysis.
