@@ -30,7 +30,12 @@ import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 JPEG_METHODS = ["j_uniward", "j_uniward_color", "j_mipod", "j_mipod_color",
-                "ebs", "ebs_color", "ueb", "ued_color", "nsf5", "nsf5_color"]
+                "ebs", "ebs_color", "ueb", "ued_color", "nsf5", "nsf5_color",
+                "steghide", "outguess"]
+
+EMB_FN_SAVING_METHODS = ["j-uniward", "j-uniward-color", "j-mipod", 
+"j-mipod-color", "ebs", "ebs-color", "ueb", "ued-color", "nsf5", "nsf5-color",
+"f5", "outguess", "steganogan", "steghide" ]
 
 
 # {{{ embed_message()
@@ -41,6 +46,12 @@ def embed(params):
         basename=os.path.basename(path)
         dst_path=os.path.join(output_dir, basename)
         numpy.random.seed(i)
+
+        # fix issues with getcwd()
+        try:
+            _ = os.getcwd()
+        except FileNotFoundError:
+            os.chdir("/")
 
         if embed_fn_saving:
             if "-" in payload:
@@ -386,7 +397,8 @@ def steganogan(path, payload, dst_path):
     msg = ''.join(random.choice(string.ascii_letters+string.digits) for i in range(nbytes))
     cmd = "steganogan encode --cpu "+path+" "+msg+" -o "+dst_path
     #cmd = "steganogan encode "+path+" "+msg+" -o "+dst_path
-    os.system(cmd)                                                           
+
+    os.system(cmd)     
 
 # }}}
 
