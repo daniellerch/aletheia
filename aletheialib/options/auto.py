@@ -5,6 +5,10 @@ import glob
 import aletheialib.utils
 import numpy as np
 
+from aletheialib.utils import download_octave_code
+from aletheialib.utils import download_octave_jpeg_toolbox
+
+
 doc = "\n" \
 "  Automated tools:\n" \
 "  - auto:      Try different steganalysis methods.\n" \
@@ -329,6 +333,12 @@ def auto():
     # JPG
     if len(jpg_files)>0:
 
+        download_octave_jpeg_toolbox()
+        download_octave_code("NSF5_COLOR")
+        download_octave_code("J_UNIWARD_COLOR")
+        aletheialib.utils.check_bin("outguess")
+        aletheialib.utils.check_bin("steghide")
+
         mx = 20
         print("")
         print(' '*mx + "   Outguess      Steghide      nsF5          J-UNIWARD * ")
@@ -356,6 +366,10 @@ def auto():
 
     # BITMAP
     if len(bitmap_files)>0:
+
+        download_octave_code("S_UNIWARD_COLOR")
+        download_octave_code("HILL_COLOR")
+        aletheialib.utils.check_bin("steganogan")
 
         mx = 20
         print("")

@@ -1,7 +1,7 @@
 imageio
 numpy
 scipy
-tensorflow
+tensorflow==2.15.0.post1
 scikit-learn
 pandas
 hdf5storage

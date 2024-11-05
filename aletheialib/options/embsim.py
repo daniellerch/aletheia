@@ -368,7 +368,7 @@ def steganogan():
 
     import aletheialib.stegosim
     import aletheialib.utils
-    aletheialib.utils.check_bin("steghide")
+    aletheialib.utils.check_bin("steganogan")
 
     aletheialib.stegosim.embed_message(aletheialib.stegosim.steganogan, 
             sys.argv[2], sys.argv[3], sys.argv[4], embed_fn_saving=True)
