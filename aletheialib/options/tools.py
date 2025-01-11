@@ -10,7 +10,6 @@ doc = "\n" \
 "  - print-coeffs:          Print a range of JPEG coefficients.\n" \
 "  - rm-alpha:              Opacity of the alpha channel to 255.\n" \
 "  - plot-histogram:        Plot histogram.\n" \
-"  - plot-histogram-diff:   Plot histogram of differences.\n" \
 "  - plot-dct-histogram:    Plot DCT histogram.\n" \
 "  - eof-extrat:            Extract the data after EOF.\n" \
 "  - print-metadata:        Print Exif metadata.\n" \
@@ -121,13 +120,15 @@ def plot_histogram():
     fn = aletheialib.utils.absolute_path(sys.argv[2])
     I = imageio.imread(fn)
     data = []
-    if len(I.shape) == 1:
+    if len(I.shape) == 2:
         data.append(I.flatten())
-    else:
+    elif len(I.shape) == 3:
         for i in range(I.shape[2]):
             data.append(I[:,:,i].flatten())
 
-    plt.hist(data, range(0, 255), color=["r", "g", "b"])
+    plt.hist(data, bins=256, range=(0, 256), 
+            color=["r", "g", "b"][:len(data)], 
+            label=["R", "G", "B"][:len(data)])
     plt.show()
     sys.exit(0)
 
