@@ -62,11 +62,11 @@ def spa():
             sys.exit(0)
 
         if bitrate_R>=threshold:
-            print("Hidden data found in channel R", bitrate_R)
+            print("Hidden data found in channel R", round(bitrate_R,3))
         if bitrate_G>=threshold:
-            print("Hidden data found in channel G", bitrate_G)
+            print("Hidden data found in channel G", round(bitrate_G,3))
         if bitrate_B>=threshold:
-            print("Hidden data found in channel B", bitrate_B)
+            print("Hidden data found in channel B", round(bitrate_B,3))
     sys.exit(0)
 # }}}
 
@@ -107,11 +107,11 @@ def rs():
             sys.exit(0)
 
         if bitrate_R>=threshold:
-            print("Hidden data found in channel R", bitrate_R)
+            print("Hidden data found in channel R", round(bitrate_R,3))
         if bitrate_G>=threshold:
-            print("Hidden data found in channel G", bitrate_G)
+            print("Hidden data found in channel G", round(bitrate_G,3))
         if bitrate_B>=threshold:
-            print("Hidden data found in channel B", bitrate_B)
+            print("Hidden data found in channel B", round(bitrate_B,3))
         sys.exit(0)
 # }}}
 
@@ -135,19 +135,22 @@ def ws():
     path = aletheialib.utils.absolute_path(sys.argv[2])
     im=Image.open(path)
     if im.mode in ['RGB', 'RGBA', 'RGBX']:
-        alpha_R = O._attack('WS', path, params={"channel":1})["data"][0][0]
-        alpha_G = O._attack('WS', path, params={"channel":2})["data"][0][0]
-        alpha_B = O._attack('WS', path, params={"channel":3})["data"][0][0]
+        beta_R = O._attack('WS', path, params={"channel":1})["data"][0][0]
+        beta_G = O._attack('WS', path, params={"channel":2})["data"][0][0]
+        beta_B = O._attack('WS', path, params={"channel":3})["data"][0][0]
+        alpha_R = beta_R*2
+        alpha_G = beta_G*2
+        alpha_B = beta_B*2
 
         if alpha_R<threshold and alpha_G<threshold and alpha_B<threshold:
             print("No hidden data found")
 
         if alpha_R>=threshold:
-            print("Hidden data found in channel R", alpha_R)
+            print("Hidden data found in channel R", round(alpha_R,3))
         if alpha_G>=threshold:
-            print("Hidden data found in channel G", alpha_G)
+            print("Hidden data found in channel G", round(alpha_G,3))
         if alpha_B>=threshold:
-            print("Hidden data found in channel B", alpha_B)
+            print("Hidden data found in channel B", round(alpha_B,3))
 
     else:
         alpha = O._attack('WS', path, params={"channel":1})["data"][0][0]
@@ -181,9 +184,12 @@ def triples():
     path = aletheialib.utils.absolute_path(sys.argv[2])
     im=Image.open(path)
     if im.mode in ['RGB', 'RGBA', 'RGBX']:
-        alpha_R = O._attack('TRIPLES', path, params={"channel":1})["data"][0][0]
-        alpha_G = O._attack('TRIPLES', path, params={"channel":2})["data"][0][0]
-        alpha_B = O._attack('TRIPLES', path, params={"channel":3})["data"][0][0]
+        beta_R = O._attack('TRIPLES', path, params={"channel":1})["data"][0][0]
+        beta_G = O._attack('TRIPLES', path, params={"channel":2})["data"][0][0]
+        beta_B = O._attack('TRIPLES', path, params={"channel":3})["data"][0][0]
+        alpha_R = beta_R*2
+        alpha_G = beta_G*2
+        alpha_B = beta_B*2
 
 
         if alpha_R<threshold and alpha_G<threshold and alpha_B<threshold:
@@ -207,6 +213,7 @@ def triples():
 # }}}
 
 # {{{ aump()
+# XXX Do not work
 def aump():
     if len(sys.argv)<3:
         print(sys.argv[0], "aump <image> [threshold]\n")

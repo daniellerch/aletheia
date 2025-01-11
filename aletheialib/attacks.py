@@ -53,7 +53,7 @@ def exif(filename):
 # {{{ spa()
 """
     Sample Pair Analysis attack. 
-    Return Beta, the detected embedding rate.
+    Return alpha, the payload
 """
 def spa(filename, channel=0): 
     return spa_image(imread(filename), channel)
@@ -96,8 +96,9 @@ def spa_image(image, channel=0):
     bp=(-b+sqrt(b**2-4*a*c))/(2*a)
     bm=(-b-sqrt(b**2-4*a*c))/(2*a)
 
-    beta=min(bp.real, bm.real)
-    return beta
+    beta=min(bp.real, bm.real) # embedding rate
+    alpha = 2*beta # payload
+    return alpha
 # }}}
 
 
