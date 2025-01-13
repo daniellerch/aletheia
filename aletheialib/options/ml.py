@@ -28,12 +28,12 @@ def split_sets():
 
     if len(sys.argv)<8:
         print(sys.argv[0], "split-sets <cover-dir> <stego-dir> <output-dir> <#valid> <#test>\n")
-        print("     cover-dir:    Directory containing cover images")
-        print("     stego-dir:    Directory containing stego images")
-        print("     output-dir:   Output directory. Three sets will be created")
-        print("     #valid:       Number of images for the validation set")
-        print("     #test:        Number of images for the testing set")
-        print("     seed:         Seed for reproducible results")
+        print("  - cover-dir:    Directory containing cover images")
+        print("  - stego-dir:    Directory containing stego images")
+        print("  - output-dir:   Output directory. Three sets will be created")
+        print("  - #valid:       Number of images for the validation set")
+        print("  - #test:        Number of images for the testing set")
+        print("  - seed:         Seed for reproducible results")
         print("")
         sys.exit(0)
 
@@ -103,13 +103,13 @@ def split_sets_dci():
 
     if len(sys.argv)<9:
         print(sys.argv[0], "split-sets <cover-dir> <stego-dir> <double-dir> <output-dir> <#valid> <#test> <seed>\n")
-        print("     cover-dir:    Directory containing cover images")
-        print("     stego-dir:    Directory containing stego images")
-        print("     double-dir:   Directory containing double stego images")
-        print("     output-dir:   Output directory. Three sets will be created")
-        print("     #valid:       Number of images for the validation set")
-        print("     #test:        Number of images for the testing set")
-        print("     seed:         Seed for reproducible results")
+        print("  - cover-dir:    Directory containing cover images")
+        print("  - stego-dir:    Directory containing stego images")
+        print("  - double-dir:   Directory containing double stego images")
+        print("  - output-dir:   Output directory. Three sets will be created")
+        print("  - #valid:       Number of images for the validation set")
+        print("  - #test:        Number of images for the testing set")
+        print("  - seed:         Seed for reproducible results")
         print("")
         sys.exit(0)
 
@@ -212,13 +212,13 @@ def create_actors():
 
     if len(sys.argv)<8:
         print(sys.argv[0], "create-actors <cover-dir> <stego-dir> <output-dir> <#innocent> <#guilty> <min-max> <seed>\n")
-        print("     cover-dir:    Directory containing cover images")
-        print("     stego-dir:    Directory containing stego images")
-        print("     output-dir:   Output directory where actors will be created")
-        print("     #innocent     Number of innocent actors")
-        print("     #guilty:      Number of guilty actors")
-        print("     min-max:      Range of images for each actor")
-        print("     seed:         Seed for reproducible results")
+        print("  - cover-dir:    Directory containing cover images")
+        print("  - stego-dir:    Directory containing stego images")
+        print("  - output-dir:   Output directory where actors will be created")
+        print("  - #innocent     Number of innocent actors")
+        print("  - #guilty:      Number of guilty actors")
+        print("  - min-max:      Range of images for each actor")
+        print("  - seed:         Seed for reproducible results")
         print("")
         sys.exit(0)
 
@@ -323,14 +323,14 @@ def effnetb0():
 
     if len(sys.argv)<7:
         print(sys.argv[0], "effnetb0 <trn-cover-dir> <trn-stego-dir> <val-cover-dir> <val-stego-dir> <model-file> [dev] [ES] [BS]\n")
-        print("     trn-cover-dir:    Directory containing training cover images")
-        print("     trn-stego-dir:    Directory containing training stego images")
-        print("     val-cover-dir:    Directory containing validation cover images")
-        print("     val-stego-dir:    Directory containing validation stego images")
-        print("     model-name:       A name for the model")
-        print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
-        print("     ES:         early stopping iterations x1000 (default=10)")
-        print("     BS:         Batch size (default=16)")
+        print("  - trn-cover-dir:    Directory containing training cover images")
+        print("  - trn-stego-dir:    Directory containing training stego images")
+        print("  - val-cover-dir:    Directory containing validation cover images")
+        print("  - val-stego-dir:    Directory containing validation stego images")
+        print("  - model-name:       A name for the model")
+        print("  - dev:              Device: GPU Id or 'CPU' (default='CPU')")
+        print("  - ES:               Early stopping iterations x1000 (default=10)")
+        print("  - BS:               Batch size (default=16)")
         print("")
         sys.exit(0)
 
@@ -398,10 +398,10 @@ def effnetb0_score():
 
     if len(sys.argv)<5:
         print(sys.argv[0], "effnetb0-score <test-cover-dir> <test-stego-dir> <model-file> [dev]\n")
-        print("     test-cover-dir:    Directory containing cover images")
-        print("     test-stego-dir:    Directory containing stego images")
-        print("     model-file:        Path of the model")
-        print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
+        print("  - test-cover-dir:    Directory containing cover images")
+        print("  - test-stego-dir:    Directory containing stego images")
+        print("  - model-file:        Path of the model")
+        print("  - dev:               Device: GPU Id or 'CPU' (default='CPU')")
         print("")
         sys.exit(0)
 
@@ -445,9 +445,9 @@ def effnetb0_predict():
 
     if len(sys.argv)<4:
         print(sys.argv[0], "effnetb0-predict <test-dir/image> <model-file> [dev]\n")
-        print("     test-dir:    Directory containing test images")
-        print("     model-file:        Path of the model")
-        print("     dev:        Device: GPU Id or 'CPU' (default='CPU')")
+        print("  - test-dir:    Directory containing test images")
+        print("  - model-file:  Path of the model")
+        print("  - dev:         Device: GPU Id or 'CPU' (default='CPU')")
         print("")
         sys.exit(0)
 
@@ -494,13 +494,13 @@ def effnetb0_dci_score():
 
     if len(sys.argv)<8:
         print(sys.argv[0], "effnetb0-dci-score <A-test-cover-dir> <A-test-stego-dir> <B-test-stego-dir> <B-test-double-dir> <A-model-file> <B-model-file> [dev]\n")
-        print("     A-test-cover-dir:    Directory containing A-cover images")
-        print("     A-test-stego-dir:    Directory containing A-stego images")
-        print("     B-test-stego-dir:    Directory containing B-stego images")
-        print("     B-test-double-dir:   Directory containing B-double images")
-        print("     A-model-file:        Path of the A-model")
-        print("     B-model-file:        Path of the B-model")
-        print("     dev:                 Device: GPU Id or 'CPU' (default='CPU')")
+        print("  - A-test-cover-dir:    Directory containing A-cover images")
+        print("  - A-test-stego-dir:    Directory containing A-stego images")
+        print("  - B-test-stego-dir:    Directory containing B-stego images")
+        print("  - B-test-double-dir:   Directory containing B-double images")
+        print("  - A-model-file:        Path of the A-model")
+        print("  - B-model-file:        Path of the B-model")
+        print("  - dev:                 Device: GPU Id or 'CPU' (default='CPU')")
         print("")
         sys.exit(0)
 
@@ -591,11 +591,11 @@ def effnetb0_dci_predict():
 
     if len(sys.argv)<6:
         print(sys.argv[0], "effnetb0-dci-predict <A-test-dir> <B-test-dir> <A-model-file> <B-model-file> [dev]\n")
-        print("     A-test-dir:          Directory containing A test images")
-        print("     B-test-dir:          Directory containing B test images")
-        print("     A-model-file:        Path of the A-model")
-        print("     B-model-file:        Path of the B-model")
-        print("     dev:                 Device: GPU Id or 'CPU' (default='CPU')")
+        print("  - A-test-dir:          Directory containing A test images")
+        print("  - B-test-dir:          Directory containing B test images")
+        print("  - A-model-file:        Path of the A-model")
+        print("  - B-model-file:        Path of the B-model")
+        print("  - dev:                 Device: GPU Id or 'CPU' (default='CPU')")
         print("")
         sys.exit(0)
 
