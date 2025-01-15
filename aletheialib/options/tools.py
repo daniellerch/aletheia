@@ -159,7 +159,7 @@ def plot_dct_histogram():
         dct_list.append(dct)
         #counts, bins = np.histogram(dct, range(-5, 5))
         #plt.plot(bins[:-1], counts, channels[i])
-    plt.hist(dct_list, range(-10, 10), rwidth=1, color=["r", "g", "b"])
+    plt.hist(dct_list, range(-100, 100), rwidth=1, color=["r", "g", "b"][:len(dct_list)])
 
     plt.show()
     sys.exit(0)

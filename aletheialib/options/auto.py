@@ -526,13 +526,13 @@ def dci():
 def dci_si():
 
     if len(sys.argv)<4:
-        print(sys.argv[0], "dci-si <sim> <img> [dev]\n")
+        print(sys.argv[0], "dci-si <sim> <image|dir> [dev]\n")
         print("Example:");
         print(sys.argv[0], "dci-si steghide-sim image.jpg\n")
         sys.exit(0)
 
     method = sys.argv[2]
-    image_path = sys.argv[3]
+    path = sys.argv[3]
 
     if len(sys.argv)<5:
         dev_id = "CPU"
@@ -546,39 +546,52 @@ def dci_si():
     os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-    if not os.path.isfile(image_path):
-        print("ERROR: Please, provide a valid image file\n")
-        sys.exit(0)
-
 
     from aletheialib.stegosim import JPEG_METHODS 
+    import aletheialib.models # XXX Print logs here
 
-    # Fix uniward name
-    method = method.replace("juniw", "j-uniward")
+    if os.path.isdir(path):
+        files = glob.glob(os.path.join(path, '*.*'))
+    else:
+        files = [path]
 
-    # Check pair method/image
-    ext = os.path.splitext(image_path)[1].lower().replace('.jpeg', '.jpg')
-    m = method.replace('-sim', '').replace('-', '_')
-    if ext=='.jpg' and m not in JPEG_METHODS:
-        print("ERROR: Please, provide a compatible image for this method\n")
-        sys.exit(0)
-    elif ext!='.jpg' and m  in JPEG_METHODS:
-        print("ERROR: Please, provide a compatible image for this method\n")
-        sys.exit(0)
-
-    dci_pred_score, aa_mean = dci_si_method(image_path, method)
-
-    textpred = "cover"
-    if aa_mean > 0.5:
-        textpred = "stego"
+    mx = 20
 
     print("")
-    print(f"DCI-SI prediction: {dci_pred_score}")
-    print("*  Accuracy (confidence) of the model.")   
-    print("")
+    print('     IMAGE                  DCI-SI     PREDICTION ')
+    print('  --------------------------------------------------')
+    for image_path in files:
 
-    print(f"Prediction: {aa_mean:.3f} ({textpred})")
-    print("* Probability of steganographic content using the indicated method.")   
+        # Fix uniward name
+        method = method.replace("juniw", "j-uniward")
+
+        # Check pair method/image
+        ext = os.path.splitext(image_path)[1].lower().replace('.jpeg', '.jpg')
+        m = method.replace('-sim', '').replace('-', '_')
+        if ext=='.jpg' and m not in JPEG_METHODS:
+            print("ERROR: Please, provide a compatible image for this method\n")
+            sys.exit(0)
+        elif ext!='.jpg' and m  in JPEG_METHODS:
+            print("ERROR: Please, provide a compatible image for this method\n")
+            sys.exit(0)
+
+        dci_pred_score, aa_mean = dci_si_method(image_path, method)
+
+        textpred = "cover"
+        if aa_mean > 0.5:
+            textpred = "stego"
+
+        name = os.path.basename(image_path)
+        if len(name)>mx:
+            name = name[:mx-3]+"..."
+        else:
+            name = name.ljust(mx, ' ')
+
+        print(f"     {name}   {dci_pred_score:.3f}      {aa_mean:.3f} ({textpred})")
+
+    print("")
+    print("  DCI-SI: Accuracy (confidence) of the model.")   
+    print("  PREDICTION: Probability of steganographic content using the indicated method.")   
     print("")
 # }}}
 
