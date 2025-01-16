@@ -551,7 +551,7 @@ def dci_si():
     import aletheialib.models # XXX Print logs here
 
     if os.path.isdir(path):
-        files = glob.glob(os.path.join(path, '*.*'))
+        files = sorted(glob.glob(os.path.join(path, '*.*')))
     else:
         files = [path]
 

@@ -27,7 +27,7 @@ doc="\n" \
 def split_sets():
 
     if len(sys.argv)<8:
-        print(sys.argv[0], "split-sets <cover-dir> <stego-dir> <output-dir> <#valid> <#test>\n")
+        print(sys.argv[0], "split-sets <cover-dir> <stego-dir> <output-dir> <#valid> <#test> <seed>\n")
         print("  - cover-dir:    Directory containing cover images")
         print("  - stego-dir:    Directory containing stego images")
         print("  - output-dir:   Output directory. Three sets will be created")
