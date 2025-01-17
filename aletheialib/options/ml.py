@@ -489,6 +489,7 @@ def effnetb0_predict():
 
 # }}}
 
+
 # {{{ effnetb0_dci_score
 def effnetb0_dci_score():
 
@@ -662,8 +663,6 @@ def effnetb0_dci_predict():
     print("dci-prediction-score:", round(1-float(np.sum(inc==1))/(2*len(p_aa)),3))
 
 # }}}
-
-
 
 
 # {{{ e4s

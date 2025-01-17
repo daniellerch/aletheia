@@ -485,7 +485,133 @@ class NN:
 
 
 
-
 # }}}
 
+# {{{ UTILS
+
+def load_model(nn, model_name):
+    # {{{
+    # Get the directory where the models are installed
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    dir_path = os.path.join(dir_path, os.pardir, 'aletheia-models')
+
+    model_path = os.path.join(dir_path, model_name+".h5")
+    if not os.path.isfile(model_path):
+        print(f"ERROR: Model file not found: {model_path}\n")
+        sys.exit(-1)
+    nn.load_model(model_path, quiet=True)
+    # }}}
+    return nn
+
+
+def dci_si_method(image_path, method, modelA=None, modelB=None):
+    # {{{
+    import shutil
+    import tempfile
+    import aletheialib.stegosim
+    import aletheialib.models
+    import numpy as np
+    from imageio import imread
+
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+    fn_sim=aletheialib.stegosim.embedding_fn(method)
+    method = method.replace("-sim", "")
+
+    embed_fn_saving = False
+    if method in aletheialib.stegosim.EMB_FN_SAVING_METHODS:
+        embed_fn_saving = True
+
+    # Make some replacements to adapt the name of the method with the name
+    # of the model file
+    method = method.replace("-color", "")
+    method = method.replace("j-uniward", "juniw")
+    method = method.replace("s-uniward", "uniw")
+
+
+    A_dir=tempfile.mkdtemp()
+    shutil.copy(image_path, A_dir)
+
+    B_dir=tempfile.mkdtemp()
+    aletheialib.stegosim.embed_message(fn_sim, A_dir, "0.40", B_dir, 
+                                       embed_fn_saving=embed_fn_saving, show_debug_info=False)
+
+    A_nn = aletheialib.models.NN("effnetb0")
+    B_nn = aletheialib.models.NN("effnetb0")
+    A_files = glob.glob(os.path.join(A_dir, '*'))
+    B_files = glob.glob(os.path.join(B_dir, '*'))
+
+    if len(B_files)==0:
+        print("ERROR: Cannot prepare the B set", image_path, B_files, method, "embed_fn_saving=", embed_fn_saving)
+        sys.exit(0)
+
+    
+    if modelA!=None and modelB!=None:
+        A_nn.load_model(modelA, quiet=True)
+        B_nn.load_model(modelB, quiet=True)
+        
+    else:
+        A_nn = load_model(A_nn, "effnetb0-A-alaska2-"+method)
+        B_nn = load_model(B_nn, "effnetb0-B-alaska2-"+method)
+
+    A = imread(A_files[0])
+    B = imread(B_files[0])
+    # This function must support images with variable size
+    # Note that with big images we are only analyzing a small part
+    d0 = min(A.shape[0], A_nn.shape[0])
+    d1 = min(A.shape[1], A_nn.shape[1])
+    d2 = min(A.shape[2], A_nn.shape[2])
+    Ai = np.zeros(A_nn.shape)
+    Bi = np.zeros(A_nn.shape)
+    Ai[:d0, :d1, :d2] = A[:d0, :d1, :d2]
+    Bi[:d0, :d1, :d2] = B[:d0, :d1, :d2]
+
+    aa = []
+    ab = []
+    bb = []
+    ba = []
+    for flip in [0, 1]:
+        for rot in [0, 1, 2, 3]:
+            for roll in [0, 128, 256, 384]:
+
+                if flip:
+                    Ai = np.flip(Ai)
+                    Bi = np.flip(Bi)
+                if rot:
+                    Ai = np.rot90(Ai, rot)
+                    Bi = np.rot90(Bi, rot)
+                if roll:
+                    Ai = np.roll(Ai, roll, axis=1)
+                    Bi = np.roll(Bi, roll, axis=1)
+
+                Ax = np.array([Ai]).astype('float32')/255
+                Bx = np.array([Bi]).astype('float32')/255
+
+                p_aa = A_nn.model.predict(Ax, verbose=0)[0,1]
+                p_ab = A_nn.model.predict(Bx, verbose=0)[0,1]
+                p_bb = B_nn.model.predict(Bx, verbose=0)[0,1]
+                p_ba = B_nn.model.predict(Ax, verbose=0)[0,1]
+                aa.append(p_aa)
+                ab.append(p_ab)
+                bb.append(p_bb)
+                ba.append(p_ba)
+
+    aa_mean = np.mean(aa)
+    aa = np.array(np.round(aa)).astype('uint8')
+    ab = np.array(np.round(ab)).astype('uint8')
+    bb = np.array(np.round(bb)).astype('uint8')
+    ba = np.array(np.round(ba)).astype('uint8')
+
+    inc = ( (aa!=bb) | (ba!=0) | (ab!=1) ).astype('uint8') 
+    dci_pred_score = round(1-float(np.sum(inc==1))/(2*len(aa)),3)
+
+
+    shutil.rmtree(A_dir)
+    shutil.rmtree(B_dir)
+
+    return dci_pred_score, aa_mean
+    # }}}
+
+
+# }}}
 
