@@ -223,8 +223,9 @@ def calibration_f5(path):
         b10 = beta_kl(dct_0, dct_b, 1, 0)   
         b11 = beta_kl(dct_0, dct_b, 1, 1)
         beta = (b01+b10+b11)/3
-        if beta > 0.05:
-            print("Hidden data found in channel "+str(i)+":", beta)
+        alpha = beta*2 # payload
+        if alpha > 0.05:
+            print("Hidden data found in channel "+str(i)+":", round(alpha,3))
         else:
             print("No hidden data found in channel "+str(i))
 
@@ -290,10 +291,11 @@ def calibration_f5_octave_jpeg(filename, return_result=False):
         b10 = beta_kl(dct_0, dct_b, 1, 0)   
         b11 = beta_kl(dct_0, dct_b, 1, 1)
         beta = (b01+b10+b11)/3
-        if beta > 0.05:
+        alpha = beta*2 # payload
+        if alpha > 0.05:
             beta_avg += beta
             if not return_result:
-                print("Hidden data found in channel "+str(i)+":", beta)
+                print("Hidden data found in channel "+str(i)+":", round(alpha,3))
         else:
             if not return_result:
                 print("No hidden data found in channel "+str(i))
@@ -531,6 +533,10 @@ def print_dct_diffs(cover, stego):
 def remove_alpha_channel(input_image, output_image): 
 
     I = imread(input_image)
+    print(I.shape)
+    if I.shape[2] != 4:
+        print("Please provide a RGBA image")
+        sys.exit(0)
     I[:,:,3] = 255;
     imsave(output_image, I)
 # }}}
