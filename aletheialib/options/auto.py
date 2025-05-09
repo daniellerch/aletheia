@@ -8,6 +8,7 @@ import numpy as np
 from aletheialib.utils import download_octave_code
 from aletheialib.utils import download_octave_jpeg_toolbox
 from aletheialib.models import load_model
+from aletheialib.models import dci_si_method
 
 
 doc = "\n" \
@@ -446,7 +447,6 @@ def dci_si():
 
     from aletheialib.stegosim import JPEG_METHODS 
     import aletheialib.models # XXX Print logs here
-    from aletheialib.models import dci_si_method
 
     if os.path.isdir(path):
         files = sorted(glob.glob(os.path.join(path, '*.*')))
