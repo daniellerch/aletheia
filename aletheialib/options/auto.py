@@ -7,8 +7,7 @@ import numpy as np
 
 from aletheialib.utils import download_octave_code
 from aletheialib.utils import download_octave_jpeg_toolbox
-from aletheialib.models import load_model
-from aletheialib.models import dci_si_method
+
 
 
 doc = "\n" \
@@ -88,6 +87,8 @@ def _auto():
             bitmap_files.append(f)
 
     # TODO: Find model paths
+
+    from aletheialib.models import load_model
 
     # JPG
     if len(jpg_files)>0:
@@ -187,6 +188,7 @@ def auto():
 
     import aletheialib.models
     import aletheialib.octave_interface as O
+    from aletheialib.models import dci_si_method
 
     path = aletheialib.utils.absolute_path(sys.argv[2])
 
@@ -342,6 +344,8 @@ def dci():
     import aletheialib.stegosim
     import aletheialib.models
     import numpy as np
+    from aletheialib.models import load_model
+
 
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -447,6 +451,7 @@ def dci_si():
 
     from aletheialib.stegosim import JPEG_METHODS 
     import aletheialib.models # XXX Print logs here
+    from aletheialib.models import dci_si_method
 
     if os.path.isdir(path):
         files = sorted(glob.glob(os.path.join(path, '*.*')))
