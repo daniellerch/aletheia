@@ -318,11 +318,11 @@ def create_actors():
 # }}}
 
 
-# {{{ effnetb0
-def effnetb0():
+# {{{ nn_train
+def nn_train(network):
 
     if len(sys.argv)<7:
-        print(sys.argv[0], "effnetb0 <trn-cover-dir> <trn-stego-dir> <val-cover-dir> <val-stego-dir> <model-file> [dev] [ES] [BS]\n")
+        print(sys.argv[0], f"{network} <trn-cover-dir> <trn-stego-dir> <val-cover-dir> <val-stego-dir> <model-file> [dev] [ES] [BS]\n")
         print("  - trn-cover-dir:    Directory containing training cover images")
         print("  - trn-stego-dir:    Directory containing training stego images")
         print("  - val-cover-dir:    Directory containing validation cover images")
@@ -383,7 +383,7 @@ def effnetb0():
 
 
     import aletheialib.models
-    nn = aletheialib.models.NN("effnetb0", model_name=model_name, shape=(512,512,3))
+    nn = aletheialib.models.NN(network, model_name=model_name, shape=(512,512,3))
     nn.train(trn_cover_files, trn_stego_files, batch, # 36|40
     #nn = aletheialib.models.NN("effnetb0", model_name=model_name, shape=(32,32,3))
     #nn.train(trn_cover_files, trn_stego_files, 500, # 36|40
@@ -393,11 +393,11 @@ def effnetb0():
 
 # }}}
 
-# {{{ effnetb0_score
-def effnetb0_score():
+# {{{ nn_score
+def nn_score(network):
 
     if len(sys.argv)<5:
-        print(sys.argv[0], "effnetb0-score <test-cover-dir> <test-stego-dir> <model-file> [dev]\n")
+        print(sys.argv[0], f"{network}-score <test-cover-dir> <test-stego-dir> <model-file> [dev]\n")
         print("  - test-cover-dir:    Directory containing cover images")
         print("  - test-stego-dir:    Directory containing stego images")
         print("  - model-file:        Path of the model")
@@ -405,7 +405,9 @@ def effnetb0_score():
         print("")
         sys.exit(0)
 
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
     import aletheialib.models
+    from sklearn.metrics import roc_auc_score, average_precision_score, roc_curve
 
     cover_dir=sys.argv[2]
     stego_dir=sys.argv[3]
@@ -421,12 +423,11 @@ def effnetb0_score():
         print("Running with CPU. It could be very slow!")
 
     os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
-    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
     cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
     stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
 
-    nn = aletheialib.models.NN("effnetb0")
+    nn = aletheialib.models.NN(network)
     nn.load_model(model_file)
 
     pred_cover = nn.predict(cover_files, 10)
@@ -435,16 +436,17 @@ def effnetb0_score():
     ok = np.sum(np.round(pred_cover)==0)+np.sum(np.round(pred_stego)==1)
     score = ok/(len(pred_cover)+len(pred_stego))
 
-
     print("score:", score)
+
+
 
 # }}}
 
-# {{{ effnetb0_predict
-def effnetb0_predict():
+# {{{ nn_predict
+def nn_predict(network):
 
     if len(sys.argv)<4:
-        print(sys.argv[0], "effnetb0-predict <test-dir/image> <model-file> [dev]\n")
+        print(sys.argv[0], f"{network}-predict <test-dir/image> <model-file> [dev]\n")
         print("  - test-dir:    Directory containing test images")
         print("  - model-file:  Path of the model")
         print("  - dev:         Device: GPU Id or 'CPU' (default='CPU')")
@@ -468,7 +470,7 @@ def effnetb0_predict():
     os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-    nn = aletheialib.models.NN("effnetb0")
+    nn = aletheialib.models.NN(network)
     nn.load_model(model_file)
 
     if os.path.isdir(test_dir):

@@ -99,6 +99,7 @@ def embed_message(embed_fn, path, payload, output_dir,
             for f in filenames:
                 path=os.path.abspath(os.path.join(dirpath, f))
                 if not utils.is_valid_image(path):
+                #if False: # XXX
                     if show_debug_info:
                         print("Warning, please provide a valid image: ", f)
                 else:
@@ -106,7 +107,7 @@ def embed_message(embed_fn, path, payload, output_dir,
     else:
         files=[path]
     
-    # remove fileas already generated in a previous execution
+    # remove files already generated in a previous execution
     filtered_files = []
     for f in files:
         basename=os.path.basename(f)
@@ -209,7 +210,7 @@ def custom(path, command, dst_path):
 
 
 # {{{ lsbm()
-def lsbm(path, payload):
+def lsbm_(path, payload):
     s = int.from_bytes(os.urandom(4), 'big')
     numpy.random.seed(s)
     payload = float(payload)
@@ -222,6 +223,24 @@ def lsbm(path, payload):
     sign[(X==0)&(sign==-1)] = 1
     sign[(X==255)&(sign==1)] = -1
     X[prob<payload] += sign[prob<payload]
+    return X.astype('uint8')
+# }}}
+
+# {{{ lsbm() -- mult emb
+def lsbm(path, payload):
+    s = int.from_bytes(os.urandom(4), 'big')
+    numpy.random.seed(s)
+    payload = float(payload)
+    X = imread(path).astype('int16')
+    Z = X.copy()
+    for i in range(25):
+        prob = np.random.uniform(low=0., high=1, size=X.shape)
+        msg = np.random.randint(0, 2, size=X.shape).astype('int16')
+        sign = np.random.choice([-1, 1], size=X.shape).astype('int16')
+        sign[X%2==msg] = 0
+        sign[(X==0)&(sign==-1)] = 1
+        sign[(X==255)&(sign==1)] = -1
+        X[prob<payload] += sign[prob<payload]
     return X.astype('uint8')
 # }}}
 

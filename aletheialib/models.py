@@ -155,6 +155,67 @@ from tensorflow.keras import optimizers
 from tensorflow.keras import callbacks
 
 
+# {{{ AccumulatingModel
+import tensorflow as tf
+
+class AccumulatingModel(tf.keras.Model):
+    def __init__(self, accum_steps=2, **kwargs):
+        super().__init__(**kwargs)
+        self.accum_steps = tf.constant(accum_steps, dtype=tf.int64)
+        self._accum_step_counter = tf.Variable(0, dtype=tf.int64, trainable=False)
+        self._grad_accums = None
+
+    @tf.function
+    def train_step(self, data):
+        x, y = data
+
+        with tf.GradientTape() as tape:
+            y_pred = self(x, training=True)
+            loss_real = self.compute_loss(x, y, y_pred, training=True)
+            loss = loss_real / tf.cast(self.accum_steps, loss_real.dtype)
+
+        grads = tape.gradient(loss, self.trainable_variables)
+
+        if self._grad_accums is None:
+            self._grad_accums = [
+                tf.Variable(tf.zeros_like(v), trainable=False)
+                for v in self.trainable_variables
+            ]
+
+        for ga, g in zip(self._grad_accums, grads):
+            if g is not None:
+                ga.assign_add(g)
+
+        self._accum_step_counter.assign_add(1)
+
+        def _apply():
+            grads_and_vars = [(ga, v) for ga, v in zip(self._grad_accums, self.trainable_variables)]
+            self.optimizer.apply_gradients(grads_and_vars)
+
+            for ga in self._grad_accums:
+                ga.assign(tf.zeros_like(ga))
+            self._accum_step_counter.assign(0)
+            return tf.constant(0)
+
+        def _no_apply():
+            return tf.constant(0)
+
+        tf.cond(tf.equal(self._accum_step_counter, self.accum_steps), _apply, _no_apply)
+
+        for metric in self.metrics:
+            if metric.name == "loss":
+                metric.update_state(loss_real)
+            else:
+                metric.update_state(y, y_pred)
+
+        logs = {m.name: m.result() for m in self.metrics}
+        logs.setdefault("loss", loss_real)
+        return logs
+
+
+# }}}
+
+
 class NN:
 
     def __init__(self, network, model_name=None, shape=(512,512,3)):
@@ -162,17 +223,45 @@ class NN:
         self.model_dir = 'aletheia-models'
         self.model_name = model_name
         self.shape = shape
+        self.network = network
+
+        self.acc_grad = 1
+        self.div255 = True
+        self.subset = None
+        self.opt = optimizers.Adamax(learning_rate=1e-3) 
+        self.steps_train_limit = None
+        self.use_pairs = False
+        self.use_pairs_prob = 0.8
+    
         if network == "effnetb0":
             self.model = self.create_model_effnetb0()
+
+        elif network == "srnet":
+            self.model = self.create_model_srnet()
+            self.opt = optimizers.Adamax(learning_rate=1e-3) 
+            self.acc_grad = 1
+            self.use_pairs = False
+            self.use_pairs_prob = 0.8
+            self.subset = None
+            self.steps_train_limit = 1000
+
         else:
             print("NN __init__ Error: network not found")
             sys.exit(0)
 
+
+        if self.acc_grad>1:
+            self.model = AccumulatingModel(accum_steps=acc_grad, inputs=self.model.inputs, outputs=self.model.outputs)
+
         if model_name:
-            path = self.model_dir+'/'+self.model_name+'-best.h5'
+            path_h5 = self.model_dir+'/'+self.model_name+'-best.h5'
+            path = self.model_dir+'/'+self.model_name+'-best.keras'
             if os.path.exists(path):
                 print("Loading", path, "...")
                 self.model.load_weights(path)
+            elif os.path.exists(path_h5): 
+                print("Loading", path_h5, "...")
+                self.model.load_weights(path_h5)
             else:
                 print("New model:", path)
 
@@ -187,7 +276,15 @@ class NN:
 
     def create_model_effnetb0(self):
         # {{{
+        print("-- EFFNET --")
         input_shape = self.shape
+
+        from tensorflow.keras import layers as L, regularizers
+
+        tf.config.optimizer.set_jit(False) 
+        from tensorflow.keras import mixed_precision
+        mixed_precision.set_global_policy('mixed_float16')
+
 
         model = tf.keras.Sequential([
             efn.EfficientNetB0(
@@ -196,8 +293,113 @@ class NN:
                 include_top=False
                 ),
             L.GlobalAveragePooling2D(),
-            L.Dense(2, activation='softmax')
+
+            L.Dense(2, activation='softmax', dtype="float32")
+            #L.Dense(1, activation="sigmoid", dtype="float32", name="out")
             ])
+        return model
+        # }}}
+
+    def create_model_srnet(self):
+        # {{{
+        print("-- SRNET --")
+
+        #tf.config.optimizer.set_jit(False)
+        #from tensorflow.keras import mixed_precision
+        #mixed_precision.set_global_policy('mixed_float16')
+
+        from tensorflow.keras.models import Model
+        from tensorflow.keras.layers import add, Dense, Dropout, Activation, Input, BatchNormalization
+        from tensorflow.keras.layers import Conv2D, AveragePooling2D, GlobalAveragePooling2D
+        from tensorflow.keras import optimizers
+        from tensorflow.keras import initializers
+        from tensorflow.keras import regularizers                                                                  
+
+        # Deep Residual Network for Steganalysis of Digital Images. M. Boroumand, 
+        # M. Chen, J. Fridrich. https://ws2.binghamton.edu/fridrich/Research/SRNet.pdf
+
+        input_shape = self.shape
+
+
+        inputs = Input(shape=input_shape)
+        x = inputs
+
+        conv2d_params = {
+            'padding': 'same',
+            'data_format': 'channels_last',
+            'bias_initializer': initializers.Constant(0.2),
+            'bias_regularizer': None,
+            'kernel_initializer': initializers.VarianceScaling(),
+            'kernel_regularizer': regularizers.l2(2e-4),
+        }
+
+        avgpool_params = {
+            'padding': 'same',
+            'data_format': 'channels_last',
+            'pool_size': (3,3),
+            'strides': (2,2)
+        }
+
+        bn_params = {
+            'momentum': 0.9,
+            'center': True,
+            'scale': True
+        }
+
+
+        x = Conv2D(64, (3,3), strides=1, **conv2d_params)(x)
+        x = BatchNormalization(**bn_params)(x)
+        x = Activation("relu")(x)
+
+        x = Conv2D(16, (3,3), strides=1, **conv2d_params)(x)
+        x = BatchNormalization(**bn_params)(x)
+        x = Activation("relu")(x)
+
+        for i in range(5):
+            y = x
+            x = Conv2D(16, (3,3), **conv2d_params)(x)
+            x = BatchNormalization(**bn_params)(x)
+            x = Activation("relu")(x)
+            x = Conv2D(16, (3,3), **conv2d_params)(x)
+            x = BatchNormalization(**bn_params)(x)
+            x = add([x, y])
+            y = x
+
+
+        for f in [16, 64, 128, 256]:
+            y = Conv2D(f, (1,1), strides=2, **conv2d_params)(x)
+            y = BatchNormalization(**bn_params)(y)
+            x = Conv2D(f, (3,3), **conv2d_params)(x)
+            x = BatchNormalization(**bn_params)(x)
+            x = Activation("relu")(x)
+            x = Conv2D(f, (3,3), **conv2d_params)(x)
+            x = BatchNormalization(**bn_params)(x)
+            x = AveragePooling2D(**avgpool_params)(x)
+            x = add([x, y])
+
+        x = Conv2D(512, (3,3), **conv2d_params)(x)
+        x = BatchNormalization(**bn_params)(x)
+        x = Activation("relu")(x)
+        x = Conv2D(512, (3,3), **conv2d_params)(x)
+        x = BatchNormalization(**bn_params)(x)
+
+        x = GlobalAveragePooling2D()(x)
+
+
+        x = Dense(2, 
+            use_bias=False,
+            kernel_initializer=initializers.RandomNormal(mean=0., stddev=0.01)
+        )(x)
+
+        x = Activation('softmax')(x)
+
+        predictions = x
+
+        model = Model(inputs=inputs, outputs=predictions)
+
+
+
+
         return model
         # }}}
 
@@ -211,37 +413,65 @@ class NN:
         return I
         # }}}
 
+    def rot_flip_pair(self, I1, I2):
+        # {{{
+        rot = random.randint(0,3)
+        if random.random() < 0.5:
+            I1 = np.rot90(I1, rot)
+            I2 = np.rot90(I2, rot)
+        else:
+            I1 = np.flip(np.rot90(I1, rot))
+            I2 = np.flip(np.rot90(I2, rot))
+        return I1, I2
+        # }}}
+
     def train_generator(self, cover_list, stego_list, batch):
         # {{{
         while True:
             bs = batch//2
-            C, S, y = [], [], []
+            C, S = [], []
+
             while bs>0:
                 try:
                     C_path = random.choice(cover_list)
                     S_path = random.choice(stego_list)
+                    if self.use_pairs and random.random() < self.use_pairs_prob:
+                        basename = os.path.basename(C_path)
+                        dirname = os.path.dirname(S_path)
+                        S_path = os.path.join(dirname, basename)
+                        Ic, Is = self.rot_flip_pair(imread(C_path), imread(S_path))
+                    else:
+                        if self.replace_method:
+                           S_path = S_path.replace(self.replace_base_str,
+                                                   random.choice(self.replace_list))
+                        Ic = self.rot_flip(imread(C_path))
+                        Is = self.rot_flip(imread(S_path))
 
-                    if self.replace_method:
-                       S_path = S_path.replace(self.replace_base_str,
-                                               random.choice(self.replace_list))
-
-                    Ic = self.rot_flip(imread(C_path))
-                    Is = self.rot_flip(imread(S_path))
                     if Ic.shape!=self.shape or Is.shape!=self.shape:
                         #print("WARNING: wrong shape", Is.shape)
                         continue
                     C.append(Ic)
-                    y.append([1, 0])
                     S.append(Is)
-                    y.append([0, 1])
                     bs -= 1
                 except Exception as e:
                     #print("NN train_generator Warning: cannot read image:", C_path, S_path)
-                    #print(e)
+                    print(e)
                     continue
 
-            X = np.vstack((C,S)).astype('float32')/255
+            if self.div255:
+                X = np.vstack((C,S)).astype('float32')/255
+            else:
+                X = np.vstack((C,S)).astype('float32')
+
             y = np.hstack(([0]*len(C), [1]*len(S)))
+
+            if self.use_pairs:
+                # Break cover–stego pairing at batch level to avoid 
+                # shortcut learning and early overfitting.
+                p = np.random.permutation(len(y))
+                X = X[p]
+                y = y[p]
+
             Y = to_categorical(y, 2)
             yield X, Y
         # }}}
@@ -282,7 +512,10 @@ class NN:
                         #print("NN valid_generator warning: cannot read image:", C_path, S_path, i)
                         continue
                 else:
-                    X = np.vstack((C,S)).astype('float32')/255
+                    if self.div255:
+                        X = np.vstack((C,S)).astype('float32')/255
+                    else:
+                        X = np.vstack((C,S)).astype('float32')
                     y = np.hstack(([0]*len(C), [1]*len(S)))
                     Y = to_categorical(y, 2)
                     yield X, Y
@@ -304,6 +537,7 @@ class NN:
                 d1 = min(I.shape[1], self.shape[1])
                 d2 = min(I.shape[2], self.shape[2])
                 img[:d0, :d1, :d2] = I[:d0, :d1, :d2]
+                #img = self.rot_flip(img) # XXX
 
             except Exception as e:
                 print(str(e))
@@ -312,13 +546,19 @@ class NN:
             images.append(img)
 
             if len(images)==batch:
-                X = np.array(images).astype('float32')/255
-                yield X
+                if self.div255:
+                    X = np.array(images).astype('float32')/255
+                else:
+                    X = np.array(images).astype('float32')
+                yield (X,)
                 images = []
 
         if len(images)>0:
-            X = np.array(images).astype('float32')/255
-            yield X
+            if self.div255:
+                X = np.array(images).astype('float32')/255
+            else:
+                X = np.array(images).astype('float32')
+            yield (X,)
         # }}}
 
     def train(self,
@@ -326,40 +566,68 @@ class NN:
               val_C_list, val_S_list, val_batch,
               max_epochs, early_stopping):
         # {{{
-        opt = optimizers.Adamax(lr=0.001)
-        self.model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
+      
+        if self.subset != None:
+            trn_C_list = trn_C_list[:self.subset]
+            trn_S_list = trn_S_list[:self.subset]
+
+        #opt = optimizers.Adamax(learning_rate=0.0001) # XXX
+        self.model.compile(loss='categorical_crossentropy', optimizer=self.opt, metrics=['accuracy'])
+        #self.model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy', tf.keras.metrics.AUC(name="auc")])
 
         cb_checkpoint = callbacks.ModelCheckpoint(
-            self.model_dir+"/"+self.model_name+'-{epoch:03d}-{accuracy:.4f}-{val_accuracy:.4f}.h5',
+            self.model_dir+"/"+self.model_name+'-{epoch:03d}-{accuracy:.4f}-{val_accuracy:.4f}.keras',
+            #self.model_dir+"/"+self.model_name+'-{epoch:03d}-{loss:.4f}-{val_loss:.4f}-{val_accuracy:.4f}.keras',
             save_best_only=True,
             monitor='val_accuracy',
+            #monitor='val_loss',
             mode='max'
+            #mode='min',
         )
 
         cb_checkpoint_best = callbacks.ModelCheckpoint(
-            self.model_dir+"/"+self.model_name+'-best.h5',
+            self.model_dir+"/"+self.model_name+'-best.keras',
             save_best_only=True,
             monitor='val_accuracy',
+            #monitor='val_loss',
             mode='max'
+            #mode='min',
         )
+
+        cb_checkpoint_last = callbacks.ModelCheckpoint(
+            self.model_dir + "/" + self.model_name + "-last.keras",
+            save_best_only=False,   # guarda en cada epoch
+            save_weights_only=False,
+            verbose=0
+        )
+
 
         cb_earlystopping = callbacks.EarlyStopping(
             monitor='val_accuracy',
+            #monitor='val_loss',
             mode='max',
+            #mode='min',
             verbose=2,
             patience=early_stopping
         )
 
+
         callbacks_list = [
             cb_checkpoint,
             cb_checkpoint_best,
+            cb_checkpoint_last,
             cb_earlystopping
         ]
 
+        #callbacks_list = [] # XXX
+
         steps_train = int((len(trn_C_list)+len(trn_S_list))/trn_batch)
         g_train = self.train_generator(trn_C_list, trn_S_list, trn_batch)
-        steps_train = 1000 # XXX
-        #steps_train = 10 # XXX
+        steps_train = (len(trn_C_list)+len(trn_S_list))//trn_batch
+        steps_train -= steps_train%2
+
+        if self.steps_train_limit:
+            steps_train = self.steps_train_limit
 
         steps_valid = int((len(val_C_list)+len(val_S_list))/val_batch)
         g_valid = self.valid_generator(val_C_list, val_S_list, val_batch)
@@ -495,7 +763,7 @@ def load_model(nn, model_name):
     dir_path = os.path.dirname(os.path.realpath(__file__))
     dir_path = os.path.join(dir_path, os.pardir, 'aletheia-models')
 
-    model_path = os.path.join(dir_path, model_name+".h5")
+    model_path = os.path.join(dir_path, model_name+".keras")
     if not os.path.isfile(model_path):
         print(f"ERROR: Model file not found: {model_path}\n")
         sys.exit(-1)

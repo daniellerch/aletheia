@@ -34,7 +34,7 @@ def check_octave():
 
 # {{{ embed()
 def embed(sim, path, payload, dst_path=None):
-    
+
     check_octave()
 
     currdir=os.path.dirname(__file__)
@@ -132,7 +132,7 @@ def embed(sim, path, payload, dst_path=None):
             return
 
         except:
-            print("Error, retry!")
+            print("Error, retry!", path)
             continue
     return
 # }}}
@@ -255,7 +255,7 @@ def _jpeg(fn_name, path):
             return
 
         except:
-            print("Error, retry!")
+            print("Error, retry!", path)
             continue
     return
 # }}}

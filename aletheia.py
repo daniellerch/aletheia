@@ -17,7 +17,6 @@ import subprocess
 
 import numpy as np
 
-from scipy import misc
 from imageio import imread
 
 import aletheialib.options as options
@@ -191,14 +190,24 @@ def main():
     elif sys.argv[1] == "create-actors":
         options.ml.create_actors()
 
+
+    elif sys.argv[1] == "srnet":
+        options.ml.nn_train("srnet")
+
+    elif sys.argv[1] == "srnet-score":
+        options.ml.nn_score("srnet")
+
+    elif sys.argv[1] == "srnet-predict":
+        options.ml.nn_predict("srnet")
+
     elif sys.argv[1] == "effnetb0":
-        options.ml.effnetb0()
+        options.ml.nn_train("effnetb0")
 
     elif sys.argv[1] == "effnetb0-score":
-        options.ml.effnetb0_score()
+        options.ml.nn_score("effnetb0")
 
     elif sys.argv[1] == "effnetb0-predict":
-        options.ml.effnetb0_predict()
+        options.ml.nn_predict("effnetb0")
 
     elif sys.argv[1] == "effnetb0-dci-score":
         options.ml.effnetb0_dci_score()
