@@ -75,14 +75,14 @@ $ ./aletheia.py auto sample_images/alaska2
 
 - [Installation](/INSTALL.md)
 - Doc by example:
-	* [Introduction to steganalysis using Aletheia](https://daniellerch.me/stego/aletheia/intro-en/)
-   * [Identifying the steganographic scheme](https://daniellerch.me/stego/aletheia/identify-en)
-	* [Practical attack on Steghide](https://daniellerch.me/stego/aletheia/steghide-attack-en/)
-	* [Practical attack on F5](https://daniellerch.me/stego/aletheia/f5-attack-en/)
-	* [Practical attack on LSB replacement: OpenStego and OpenPuff](https://daniellerch.me/stego/aletheia/lsbr-attack-en/)
-   * [Solving Stego-Puzzles with Aletheia](https://daniellerch.me/stego/aletheia/stego-puzzles-en/)
-   * [Comparison of Image Steganography Tools](https://daniellerch.me/stego/aletheia/tool-comparison-en/).
-   * [Training models for Aletheia](https://daniellerch.me/stego/aletheia/training-en/).
+	* [Introduction to steganalysis using Aletheia](https://daniellerch.me/stego/aletheia/v03/intro-en/)
+   * [Identifying the steganographic scheme](https://daniellerch.me/stego/aletheia/v03/identify-en)
+	* [Practical attack on Steghide](https://daniellerch.me/stego/aletheia/v03/steghide-attack-en/)
+	* [Practical attack on F5](https://daniellerch.me/stego/aletheia/v03/f5-attack-en/)
+	* [Practical attack on LSB replacement: OpenStego and OpenPuff](https://daniellerch.me/stego/aletheia/v03/lsbr-attack-en/)
+   * [Solving Stego-Puzzles with Aletheia](https://daniellerch.me/stego/aletheia/v03/stego-puzzles-en/)
+   * [Comparison of Image Steganography Tools](https://daniellerch.me/stego/aletheia/v03/tool-comparison-en/).
+   * [Training models for Aletheia](https://daniellerch.me/stego/aletheia/v03/training-en/).
 
 - [Available models](/aletheia-models/README.md)
 - [External resources](/EXTERNAL.md)
