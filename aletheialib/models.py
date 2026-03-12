@@ -235,6 +235,18 @@ class NN:
     
         if network == "effnetb0":
             self.model = self.create_model_effnetb0()
+            self.steps_train_limit = 1000
+            self.acc_grad = 1
+            self.use_pairs = False
+            self.subset = None
+            self.steps_train_limit = 1000
+            #self.opt = optimizers.Adamax(learning_rate=1e-4) # nan suniw
+            #self.opt = optimizers.Adamax(learning_rate=1e-5) # nan suniw
+
+            # XXX SISUNIW
+            #self.use_pairs = True 
+            #self.use_pairs_prob = 0.5
+
 
         elif network == "srnet":
             self.model = self.create_model_srnet()
