@@ -768,15 +768,13 @@ B_models = {}
 
 
 def _load_model(nn, model_name):
+    from aletheialib.models import resolve_model_path
 
     # Get the directory where the models are installed
     dir_path = os.path.dirname(os.path.realpath(__file__))
     dir_path = os.path.join(dir_path, os.pardir, os.pardir, 'aletheia-models')
 
-    model_path = os.path.join(dir_path, model_name+".h5")
-    if not os.path.isfile(model_path):
-        print(f"ERROR: Model file not found: {model_path}\n")
-        sys.exit(-1)
+    model_path = resolve_model_path(dir_path, model_name)
     nn.load_model(model_path, quiet=False)
     return nn
 
@@ -1038,5 +1036,4 @@ def ats():
     shutil.rmtree(fea_dir)
 
 # }}}
-
 
