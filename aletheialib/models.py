@@ -220,7 +220,8 @@ class NN:
 
     def __init__(self, network, model_name=None, shape=(512,512,3)):
         # {{{
-        self.model_dir = 'aletheia-models'
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+        self.model_dir = os.path.join(base_dir, 'aletheia-models')
         self.model_name = model_name
         self.shape = shape
         self.network = network
