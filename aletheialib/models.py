@@ -288,7 +288,6 @@ class NN:
 
     def create_model_effnetb0(self):
         # {{{
-        print("-- EFFNET --")
         input_shape = self.shape
 
         from tensorflow.keras import layers as L, regularizers
@@ -320,8 +319,6 @@ class NN:
 
     def create_model_srnet(self):
         # {{{
-        print("-- SRNET --")
-
         #tf.config.optimizer.set_jit(False)
         #from tensorflow.keras import mixed_precision
         #mixed_precision.set_global_policy('mixed_float16')
