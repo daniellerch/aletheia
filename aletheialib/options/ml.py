@@ -362,10 +362,13 @@ def nn_train(network):
 
     if dev_id == "CPU":
         print("Running with CPU. It could be very slow!")
+        dev_id = "-1"
 
 
+    import aletheialib.utils
     os.environ["CUDA_VISIBLE_DEVICES"]=dev_id
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+    aletheialib.utils.init_tensorflow_safe()
 
 
     trn_cover_files = sorted(glob.glob(os.path.join(trn_cover_dir, '*')))
@@ -406,6 +409,7 @@ def nn_score(network):
         sys.exit(0)
 
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+    import aletheialib.utils
     import aletheialib.models
     from sklearn.metrics import roc_auc_score, average_precision_score, roc_curve
 
@@ -421,8 +425,10 @@ def nn_score(network):
 
     if dev_id == "CPU":
         print("Running with CPU. It could be very slow!")
+        dev_id = "-1"
 
     os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
+    aletheialib.utils.init_tensorflow_safe()
 
     cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
     stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
@@ -453,6 +459,7 @@ def nn_predict(network):
         print("")
         sys.exit(0)
 
+    import aletheialib.utils
     import aletheialib.models
 
     test_dir=sys.argv[2]
@@ -466,9 +473,11 @@ def nn_predict(network):
 
     if dev_id == "CPU":
         print("Running with CPU. It could be very slow!")
+        dev_id = "-1"
 
     os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+    aletheialib.utils.init_tensorflow_safe()
 
     nn = aletheialib.models.NN(network)
     nn.load_model(model_file)
@@ -507,6 +516,7 @@ def effnetb0_dci_score():
         print("")
         sys.exit(0)
 
+    import aletheialib.utils
     import aletheialib.models
     from sklearn.metrics import accuracy_score
 
@@ -525,9 +535,11 @@ def effnetb0_dci_score():
 
     if dev_id == "CPU":
         print("Running with CPU. It could be very slow!")
+        dev_id = "-1"
 
     os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+    aletheialib.utils.init_tensorflow_safe()
 
     A_cover_files = sorted(glob.glob(os.path.join(A_cover_dir, '*')))
     A_stego_files = sorted(glob.glob(os.path.join(A_stego_dir, '*')))
@@ -602,6 +614,7 @@ def effnetb0_dci_predict():
         print("")
         sys.exit(0)
 
+    import aletheialib.utils
     import aletheialib.models
     from sklearn.metrics import accuracy_score
 
@@ -618,9 +631,11 @@ def effnetb0_dci_predict():
 
     if dev_id == "CPU":
         print("Running with CPU. It could be very slow!")
+        dev_id = "-1"
 
     os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+    aletheialib.utils.init_tensorflow_safe()
 
     A_files = sorted(glob.glob(os.path.join(A_dir, '*')))
     B_files = sorted(glob.glob(os.path.join(B_dir, '*')))
@@ -800,6 +815,7 @@ def _actor(image_dir, output_file, dev_id="cpu"):
 
     os.environ["CUDA_VISIBLE_DEVICES"] = dev_id
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+    aletheialib.utils.init_tensorflow_safe()
 
     A_nn = aletheialib.models.NN("effnetb0")
     A_files = files

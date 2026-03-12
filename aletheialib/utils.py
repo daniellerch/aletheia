@@ -64,6 +64,77 @@ def check_bin(cmd):
         print("ERROR: you need to install "+cmd+" to run this command!");
         sys.exit(0)
 
+# {{{ init_tensorflow_safe()
+def init_tensorflow_safe(prefer_gpu: bool = True, quiet: bool = True):
+    """
+    Bomb-proof TensorFlow init with real GPU validation.
+
+    Strategy:
+      1) BEFORE importing tensorflow in the current process, run a tiny probe in a
+         separate subprocess to check whether CUDA/GPU initialization actually works.
+      2) If the probe fails (VirtualBox, missing drivers, broken CUDA/cuDNN, no device),
+         force CPU-only via CUDA_VISIBLE_DEVICES=-1 in the current process.
+      3) Import tensorflow only after the decision is made.
+
+    IMPORTANT:
+      - Call this function before importing tensorflow/keras anywhere else.
+      - Call it only once (e.g., in your main entry point).
+    """
+    import os
+    import sys
+    import subprocess
+
+    # Reduce TF native logs (C++). Setting to "3" hides ERROR lines too.
+    if quiet:
+        os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "3")
+
+    def gpu_probe_ok() -> bool:
+        """Return True only if TF can see a GPU and execute a tiny op successfully."""
+        if not prefer_gpu:
+            return False
+
+        # Quick heuristic: if there are no NVIDIA device files, GPU won't work.
+        # This is very common in VMs/containers without GPU passthrough.
+        if sys.platform.startswith("linux"):
+            try:
+                import glob
+                if not glob.glob("/dev/nvidia*"):
+                    return False
+            except Exception:
+                pass
+
+        # Run a separate Python process to avoid polluting the main process.
+        probe_code = r"""
+import os
+os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "3")
+import tensorflow as tf
+gpus = tf.config.list_physical_devices("GPU")
+if not gpus:
+    raise SystemExit(2)
+# Force a minimal GPU-related init path; if CUDA is broken, this often fails here.
+x = tf.constant([1.0]) + tf.constant([2.0])
+_ = x.numpy()
+"""
+
+        try:
+            p = subprocess.run(
+                [sys.executable, "-c", probe_code],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,  # keep it silent even if CUDA prints errors
+                env=os.environ.copy(),
+            )
+            return p.returncode == 0
+        except Exception:
+            return False
+
+    # Decide CPU vs GPU BEFORE importing TensorFlow in this process
+    if not gpu_probe_ok():
+        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+    import tensorflow as tf
+    return tf
+
+# }}}
 
 # {{{ download_octave_code()
 def download_octave_code(method):
