@@ -266,16 +266,12 @@ class NN:
             self.model = AccumulatingModel(accum_steps=acc_grad, inputs=self.model.inputs, outputs=self.model.outputs)
 
         if model_name:
-            path_h5 = self.model_dir+'/'+self.model_name+'-best.h5'
-            path = self.model_dir+'/'+self.model_name+'-best.keras'
-            if os.path.exists(path):
-                print("Loading", path, "...")
-                self.model.load_weights(path)
-            elif os.path.exists(path_h5): 
-                print("Loading", path_h5, "...")
-                self.model.load_weights(path_h5)
+            model_path = resolve_model_path(self.model_dir, self.model_name+'-best', required=False)
+            if model_path is not None:
+                print("Loading", model_path, "...")
+                self.model.load_weights(model_path)
             else:
-                print("New model:", path)
+                print("New model:", os.path.join(self.model_dir, self.model_name+'-best.keras'))
 
         self.replace_method = False
 
@@ -772,16 +768,33 @@ class NN:
 
 # {{{ UTILS
 
+def resolve_model_path(model_dir, model_name, required=True):
+    # {{{
+    keras_path = os.path.join(model_dir, model_name+".keras")
+    h5_path = os.path.join(model_dir, model_name+".h5")
+
+    if os.path.isfile(keras_path):
+        return keras_path
+    if os.path.isfile(h5_path):
+        return h5_path
+
+    if required:
+        print("ERROR: Model file not found.\n")
+        print("Tried:", keras_path)
+        print("Tried:", h5_path)
+        print("")
+        sys.exit(-1)
+
+    return None
+    # }}}
+
 def load_model(nn, model_name):
     # {{{
     # Get the directory where the models are installed
     dir_path = os.path.dirname(os.path.realpath(__file__))
     dir_path = os.path.join(dir_path, os.pardir, 'aletheia-models')
 
-    model_path = os.path.join(dir_path, model_name+".keras")
-    if not os.path.isfile(model_path):
-        print(f"ERROR: Model file not found: {model_path}\n")
-        sys.exit(-1)
+    model_path = resolve_model_path(dir_path, model_name)
     nn.load_model(model_path, quiet=True)
     # }}}
     return nn
