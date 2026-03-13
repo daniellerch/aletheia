@@ -253,6 +253,7 @@ def auto():
     # BITMAP
     if len(bitmap_files)>0:
 
+        download_octave_code("WS")
         download_octave_code("S_UNIWARD_COLOR")
         download_octave_code("HILL_COLOR")
         aletheialib.utils.check_bin("steganogan")
