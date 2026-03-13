@@ -70,7 +70,7 @@ def _auto():
     else:
         files = [path]
 
-    nn = aletheialib.models.NN("effnetb0")
+    nn = aletheialib.models.NN("effnetb0", inference=True)
     files = nn.filter_images(files)
     if len(files)==0:
         print("ERROR: please provide valid files")
@@ -199,7 +199,7 @@ def auto():
     else:
         files = [path]
 
-    nn = aletheialib.models.NN("effnetb0")
+    nn = aletheialib.models.NN("effnetb0", inference=True)
     files = nn.filter_images(files)
     if len(files)==0:
         print("ERROR: please provide valid files")
@@ -349,7 +349,7 @@ def dci():
 
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-    A_nn = aletheialib.models.NN("effnetb0")
+    A_nn = aletheialib.models.NN("effnetb0", inference=True)
     A_files = files
 
     fn_sim=aletheialib.stegosim.embedding_fn(sys.argv[2])
@@ -361,7 +361,7 @@ def dci():
     aletheialib.stegosim.embed_message(fn_sim, sys.argv[3], "0.40", B_dir, 
                                        embed_fn_saving=embed_fn_saving)
 
-    B_nn = aletheialib.models.NN("effnetb0")
+    B_nn = aletheialib.models.NN("effnetb0", inference=True)
     B_files = glob.glob(os.path.join(B_dir, '*'))
 
     # Make some replacements to adapt the name of the method with the name
@@ -497,7 +497,6 @@ def dci_si():
     print("  PREDICTION: Probability of steganographic content using the indicated method.")   
     print("")
 # }}}
-
 
 
 

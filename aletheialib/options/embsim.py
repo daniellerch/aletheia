@@ -422,7 +422,7 @@ def adversarial_adaptive():
     import aletheialib.stegosim
     import aletheialib.models
 
-    nn = aletheialib.models.NN("effnetb0")
+    nn = aletheialib.models.NN("effnetb0", inference=True)
     nn.load_model(model_file)
 
     # Generate gradient files
@@ -471,7 +471,7 @@ def adversarial_fix():
     import aletheialib.stegosim
     import aletheialib.models
 
-    nn = aletheialib.models.NN("effnetb0")
+    nn = aletheialib.models.NN("effnetb0", inference=True)
     nn.load_model(model_file)
 
     # Generate gradient files
@@ -520,7 +520,6 @@ def adversarial_fix():
 
     sys.exit(0);
 # }}}
-
 
 
 
