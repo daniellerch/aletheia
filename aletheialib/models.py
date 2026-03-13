@@ -218,13 +218,14 @@ class AccumulatingModel(tf.keras.Model):
 
 class NN:
 
-    def __init__(self, network, model_name=None, shape=(512,512,3)):
+    def __init__(self, network, model_name=None, shape=(512,512,3), inference=False):
         # {{{
         base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
         self.model_dir = os.path.join(base_dir, 'aletheia-models')
         self.model_name = model_name
         self.shape = shape
         self.network = network
+        self.inference = inference
 
         self.acc_grad = 1
         self.div255 = True
@@ -291,7 +292,10 @@ class NN:
 
         tf.config.optimizer.set_jit(False) 
         from tensorflow.keras import mixed_precision
-        mixed_precision.set_global_policy('mixed_float16')
+        if self.inference:
+            mixed_precision.set_global_policy('float32')
+        else:
+            mixed_precision.set_global_policy('mixed_float16')
 
         base_model = efn.EfficientNetB0(
             input_shape=input_shape,
@@ -833,8 +837,8 @@ def dci_si_method(image_path, method, modelA=None, modelB=None):
     aletheialib.stegosim.embed_message(fn_sim, A_dir, "0.40", B_dir, 
                                        embed_fn_saving=embed_fn_saving, show_debug_info=False)
 
-    A_nn = aletheialib.models.NN("effnetb0")
-    B_nn = aletheialib.models.NN("effnetb0")
+    A_nn = aletheialib.models.NN("effnetb0", inference=True)
+    B_nn = aletheialib.models.NN("effnetb0", inference=True)
     A_files = glob.glob(os.path.join(A_dir, '*'))
     B_files = glob.glob(os.path.join(B_dir, '*'))
 

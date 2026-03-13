@@ -433,7 +433,7 @@ def nn_score(network):
     cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
     stego_files = sorted(glob.glob(os.path.join(stego_dir, '*')))
 
-    nn = aletheialib.models.NN(network)
+    nn = aletheialib.models.NN(network, inference=True)
     nn.load_model(model_file)
 
     pred_cover = nn.predict(cover_files, 10)
@@ -479,7 +479,7 @@ def nn_predict(network):
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     aletheialib.utils.init_tensorflow_safe()
 
-    nn = aletheialib.models.NN(network)
+    nn = aletheialib.models.NN(network, inference=True)
     nn.load_model(model_file)
 
     if os.path.isdir(test_dir):
@@ -546,9 +546,9 @@ def effnetb0_dci_score():
     B_stego_files = sorted(glob.glob(os.path.join(B_stego_dir, '*')))
     B_double_files = sorted(glob.glob(os.path.join(B_double_dir, '*')))
 
-    A_nn = aletheialib.models.NN("effnetb0")
+    A_nn = aletheialib.models.NN("effnetb0", inference=True)
     A_nn.load_model(A_model_file)
-    B_nn = aletheialib.models.NN("effnetb0")
+    B_nn = aletheialib.models.NN("effnetb0", inference=True)
     B_nn.load_model(B_model_file)
 
 
@@ -640,9 +640,9 @@ def effnetb0_dci_predict():
     A_files = sorted(glob.glob(os.path.join(A_dir, '*')))
     B_files = sorted(glob.glob(os.path.join(B_dir, '*')))
 
-    A_nn = aletheialib.models.NN("effnetb0")
+    A_nn = aletheialib.models.NN("effnetb0", inference=True)
     A_nn.load_model(A_model_file)
-    B_nn = aletheialib.models.NN("effnetb0")
+    B_nn = aletheialib.models.NN("effnetb0", inference=True)
     B_nn.load_model(B_model_file)
 
 
@@ -815,7 +815,7 @@ def _actor(image_dir, output_file, dev_id="cpu"):
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     aletheialib.utils.init_tensorflow_safe()
 
-    A_nn = aletheialib.models.NN("effnetb0")
+    A_nn = aletheialib.models.NN("effnetb0", inference=True)
     A_files = files
 
     output = ""
@@ -847,7 +847,7 @@ def _actor(image_dir, output_file, dev_id="cpu"):
                         embed_fn_saving=embed_fn_saving, show_debug_info=False)
 
 
-        B_nn = aletheialib.models.NN("effnetb0")
+        B_nn = aletheialib.models.NN("effnetb0", inference=True)
         B_files = glob.glob(os.path.join(B_dir, '*'))
 
         if method in A_models:
@@ -855,7 +855,7 @@ def _actor(image_dir, output_file, dev_id="cpu"):
             A_nn = A_models[method]
             gc.collect()
         else:
-            A_nn = aletheialib.models.NN("effnetb0")
+            A_nn = aletheialib.models.NN("effnetb0", inference=True)
             A_nn = _load_model(A_nn, "effnetb0-A-alaska2-"+method)
             A_models[method] = A_nn
 
@@ -864,7 +864,7 @@ def _actor(image_dir, output_file, dev_id="cpu"):
             B_nn = B_models[method]
             gc.collect()
         else:
-            B_nn = aletheialib.models.NN("effnetb0")
+            B_nn = aletheialib.models.NN("effnetb0", inference=True)
             B_nn = _load_model(B_nn, "effnetb0-B-alaska2-"+method)
             B_models[method] = B_nn
 
@@ -1036,4 +1036,3 @@ def ats():
     shutil.rmtree(fea_dir)
 
 # }}}
-
