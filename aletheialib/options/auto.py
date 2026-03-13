@@ -135,9 +135,6 @@ def _auto():
         nn = load_model(nn, "effnetb0-A-alaska2-lsbm")
         lsbm_pred = nn.predict(bitmap_files, 10)
 
-        nn = load_model(nn, "effnetb0-A-alaska2-steganogan")
-        steganogan_pred = nn.predict(bitmap_files, 10)
-
         nn = load_model(nn, "effnetb0-A-alaska2-hill")
         hill_pred = nn.predict(bitmap_files, 10)
 
@@ -145,8 +142,8 @@ def _auto():
 
         mx = 20
         print("")
-        print(' '*mx + "   LSBR      LSBM  SteganoGAN  HILL *")
-        print('-'*mx + "-------------------------------------")
+        print(' '*mx + "   LSBR      LSBM      HILL *")
+        print('-'*mx + "-----------------------------")
         for i in range(len(bitmap_files)):
             name = os.path.basename(bitmap_files[i])
             if len(name)>mx:
@@ -157,7 +154,6 @@ def _auto():
             print(name, 
                   _format_line(lsbr_pred[i], 10),
                   _format_line(lsbm_pred[i], 8),
-                  _format_line(steganogan_pred[i], 8),
                   _format_line(hill_pred[i], 8),
                   )
 
@@ -256,12 +252,10 @@ def auto():
         download_octave_code("WS")
         download_octave_code("S_UNIWARD_COLOR")
         download_octave_code("HILL_COLOR")
-        aletheialib.utils.check_bin("steganogan")
-
         mx = 20
         print("")
-        print(' '*mx + "  LSBR^   LSBM          SteganoGAN    HILL          UNIWARD *")
-        print('-'*mx + "-------------------------------------------------------------")
+        print(' '*mx + "  LSBR^   LSBM          HILL          UNIWARD *")
+        print('-'*mx + "------------------------------------------------")
         for i in range(len(bitmap_files)):
             name = os.path.basename(bitmap_files[i])
             if len(name)>mx:
@@ -275,14 +269,12 @@ def auto():
      
             lsbr_pred = beta*2
             lsbm_dci, lsbm_pred = dci_si_method(bitmap_files[i], "lsbm-sim")
-            steganogan_dci, steganogan_pred = dci_si_method(bitmap_files[i], "steganogan-sim")
             hill_dci, hill_pred = dci_si_method(bitmap_files[i], "hill-color-sim")
             uniw_dci, uniw_pred = dci_si_method(bitmap_files[i], "s-uniward-color-sim")
 
             print(name, 
                   _format_line(lsbr_pred, 6, 0),
                   _format_line_2(lsbm_pred, lsbm_dci, 13),
-                  _format_line_2(steganogan_pred, steganogan_dci, 13),
                   _format_line_2(hill_pred, hill_dci, 13),
                   _format_line_2(uniw_pred, uniw_dci, 13),
                   )
@@ -498,7 +490,6 @@ def dci_si():
     print("  PREDICTION: Probability of steganographic content using the indicated method.")   
     print("")
 # }}}
-
 
 
 
