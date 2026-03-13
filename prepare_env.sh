@@ -8,6 +8,7 @@ REQ_FILE="${ROOT_DIR}/requirements.txt"
 PYTHON_VERSION="${PYTHON_VERSION:-3.11.11}"
 PYTHON_BIN="${PYTHON_BIN:-python3.11}"
 
+
 if command -v pyenv >/dev/null 2>&1; then
     export PYENV_ROOT="${PYENV_ROOT:-$HOME/.pyenv}"
     eval "$(pyenv init -)"

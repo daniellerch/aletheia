@@ -1,4 +1,4 @@
-liboctave-dev
+liboctave-dev (or octave-dev)
 imagemagick
 steghide
 outguess
