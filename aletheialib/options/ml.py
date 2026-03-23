@@ -197,7 +197,7 @@ def split_sets_dci():
     for f in stego_files[test_S_indices]:
         shutil.copy(f, A_test_S_dir)
 
-    for f in stego_files[test_C_indices]:
+    for f in stego_files[test_S_indices]:
         shutil.copy(f, B_test_S_dir)
 
     for f in double_files[test_S_indices]:
@@ -266,7 +266,7 @@ def create_actors():
             # random image
             k = random.randint(0, len(cover_files)-1)
             src_file = cover_files[k]
-            n, ext = os.path.splitext(src_file)
+            _, ext = os.path.splitext(src_file)
             dst_file = os.path.join(innocent_actors, f"actor{i}/{j}{ext}")
             if os.path.exists(dst_file):
                 print(f"Already exists actor{i}/{j}{ext}")
@@ -297,11 +297,11 @@ def create_actors():
             prob_stego = round(random.uniform(0.1, 1), 2)
             if random.random()<prob_stego:
                 src_file = stego_files[k]
-                n, ext = os.path.splitext(src_file)
+                _, ext = os.path.splitext(src_file)
                 f.write(f'{j}{ext}, 1\n')
             else:
                 src_file = cover_files[k]
-                n, ext = os.path.splitext(src_file)
+                _, ext = os.path.splitext(src_file)
                 f.write(f'{j}{ext}, 0\n')
 
             dst_file = os.path.join(guilty_actors, f"actor{i}/{j}{ext}")

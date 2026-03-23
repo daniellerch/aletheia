@@ -89,7 +89,7 @@ def gfr():
         print("Number of rotations for Gabor kernel no provided, using:", \
               rotations)
     else:
-        rotations = sys.argv[6]
+        rotations = sys.argv[5]
 
 
     params = {
