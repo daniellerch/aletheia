@@ -17,7 +17,7 @@ from scipy import ndimage
 from cmath import sqrt
 from imageio import imread, imsave
 
-from PIL import Image
+from PIL import Image, JpegImagePlugin
 from PIL.ExifTags import TAGS
 
 from aletheialib.jpeg import JPEG
@@ -204,13 +204,27 @@ def beta_kl(dct_0, dct_b, k, l):
     return (h01*(hb0-h00) + (hb1-h01)*(h02-h01)) / (h01**2 + (h02-h01)**2)
 
 
+def _calibration_chop(src_path, dst_path):
+    # Replicates the calibration from Fridrich et al. 2002 (Breaking F5):
+    # chop 4 pixels from top and left then re-encode with the *identical* 
+    # quantization tables and subsampling from the source
+    # so the reference image is comparable in the DCT coefficient domain.
+    src = Image.open(src_path)
+    cropped = src.crop((4, 4, src.size[0], src.size[1]))
+    qtables = src.quantization
+    subsampling = JpegImagePlugin.get_sampling(src)
+    if subsampling == -1:
+        raise ValueError(f"Unsupported or unrecognized JPEG subsampling in {src_path}")
+    cropped.save(dst_path, qtables=qtables, subsampling=subsampling)
+
+
 def calibration_f5(path):
     """ it uses jpeg_toolbox """
     import jpeg_toolbox as jt
 
     tmpdir = tempfile.mkdtemp()
     predfile = os.path.join(tmpdir, 'img.jpg')
-    os.system("convert -chop 4x4 "+path+" "+predfile)
+    _calibration_chop(path, predfile)
     im_jpeg = jt.load(path)
     impred_jpeg = jt.load(predfile)
     shutil.rmtree(tmpdir)
@@ -237,7 +251,7 @@ def calibration_chisquare_mode(path):
 
     tmpdir = tempfile.mkdtemp()
     predfile = os.path.join(tmpdir, 'img.jpg')
-    os.system("convert -chop 4x4 "+path+" "+predfile)
+    _calibration_chop(path, predfile)
     im_jpeg = jt.load(path)
     impred_jpeg = jt.load(predfile)
     shutil.rmtree(tmpdir)
@@ -279,7 +293,7 @@ def calibration_f5_octave_jpeg(filename, return_result=False):
     """ It uses JPEG from octave """
     tmpdir = tempfile.mkdtemp()
     predfile = os.path.join(tmpdir, 'img.jpg')
-    os.system("convert -chop 4x4 "+filename+" "+predfile)
+    _calibration_chop(filename, predfile)
 
     im_jpeg = JPEG(filename)
     impred_jpeg = JPEG(predfile)
