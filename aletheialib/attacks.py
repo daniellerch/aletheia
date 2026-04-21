@@ -17,7 +17,7 @@ from scipy import ndimage
 from cmath import sqrt
 from imageio import imread, imsave
 
-from PIL import Image
+from PIL import Image, JpegImagePlugin
 from PIL.ExifTags import TAGS
 
 from aletheialib.jpeg import JPEG
@@ -212,7 +212,9 @@ def _calibration_chop(src_path, dst_path):
     src = Image.open(src_path)
     cropped = src.crop((4, 4, src.size[0], src.size[1]))
     qtables = src.quantization
-    subsampling = src.info.get('subsampling', -1)
+    subsampling = JpegImagePlugin.get_sampling(src)
+    if subsampling == -1:
+        raise ValueError(f"Unsupported or unrecognized JPEG subsampling in {src_path}")
     cropped.save(dst_path, qtables=qtables, subsampling=subsampling)
 
 
