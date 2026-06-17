@@ -22,11 +22,7 @@ from PIL.ExifTags import TAGS
 
 from aletheialib.jpeg import JPEG
 
-import multiprocessing
-#from multiprocessing.dummy import Pool as ThreadPool
-from multiprocessing import Pool as ThreadPool 
-from multiprocessing import cpu_count
-from multiprocessing import Pool
+from numpy.lib.stride_tricks import sliding_window_view
 
 
 
@@ -110,49 +106,40 @@ def solve(a, b, c):
     return ( -b + sq ) / ( 2*a ), ( -b - sq ) / ( 2*a )
 # }}}
 
-# {{{ smoothness()
-def smoothness(I):
-    return ( np.sum(np.abs( I[:-1,:] - I[1:,:] )) +
-             np.sum(np.abs( I[:,:-1] - I[:,1:] )) )
-# }}}
-
-# {{{ groups()
-def groups(I, mask):
-    grp=[]
-    m, n = I.shape
-    x, y = np.abs(mask).shape
-    for i in range(m-x):
-        for j in range(n-y):
-            yield I[i:(i+x), j:(j+y)]
-# }}}
-
-class RSAnalysis(object):
-    def __init__(self, mask):
-        self.mask = mask
-        self.cmask = - mask
-        self.cmask[(mask > 0)] = 0
-        self.abs_mask = np.abs(mask)
-
-    def call(self, group):
-        flip = (group + self.cmask) ^ self.abs_mask - self.cmask
-        return  np.sign(smoothness(flip) - smoothness(group))
-
-
 # {{{ difference()
+def window_smoothness(windows):
+    """ The RS smoothness measure (sum of absolute horizontal and vertical
+        first differences) evaluated independently over the trailing
+        (x, y) axes of a stack of windows. """
+    horizontal = np.abs(windows[..., :, :-1] - windows[..., :, 1:]).sum(axis=(-2, -1))
+    vertical = np.abs(windows[..., :-1, :] - windows[..., 1:, :]).sum(axis=(-2, -1))
+    return horizontal + vertical
+
+
 def difference(I, mask):
-    pool = Pool(multiprocessing.cpu_count())
-    analysis = pool.map(RSAnalysis(mask).call, groups(I, mask))
-    pool.close()
-    pool.join()
+    """ R-S over every sliding window of I, vectorised.
 
-    counts = [0, 0, 0]
-    for v in analysis:
-        counts[v] += 1
+        Equivalent to running the old per-window RSAnalysis.call on each
+        window the groups(I, mask) generator yielded, but expressed as
+        NumPy array operations instead of a multiprocessing map over
+        ~(m*n) tiny tasks, which is where almost all of the runtime went. """
+    cmask = -mask
+    cmask[mask > 0] = 0
+    abs_mask = np.abs(mask)
+    x, y = abs_mask.shape
 
-    N = sum(counts)
-    R = float(counts[1])/N
-    S = float(counts[-1])/N
-    return R-S
+    # The same windows the generator produced: top-left corners over
+    # range(m-x) x range(n-y), each of shape (x, y).
+    windows = sliding_window_view(I, (x, y))
+    windows = windows[:I.shape[0]-x, :I.shape[1]-y]
+
+    flipped = (windows + cmask) ^ (abs_mask - cmask)
+
+    sign = np.sign(window_smoothness(flipped) - window_smoothness(windows))
+    N = sign.size
+    R = np.count_nonzero(sign == 1)
+    S = np.count_nonzero(sign == -1)
+    return float(R)/N - float(S)/N
 # }}}
 
 # {{{ rs()
