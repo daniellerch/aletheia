@@ -29,6 +29,15 @@ from multiprocessing import cpu_count
 from multiprocessing import Pool
 
 
+def _as_native_int_tuples(items):
+    return [tuple(int(v) for v in item) for item in items]
+
+
+def _print_list(items, line_size):
+    for i in range(0, len(items), line_size):
+        print(items[i:i+line_size])
+
+
 
 # -- EXIF --
 
@@ -436,11 +445,6 @@ def imgdiff_pixels(image1, image2):
 # {{{ print_diffs()
 def print_diffs(cover, stego): 
 
-    def print_list(l, ln):
-        for i in range(0, len(l), ln):
-            print(l[i:i+ln])
-
-
     C = imread(cover).astype('int16')
     S = imread(stego).astype('int16')
     np.set_printoptions(threshold=sys.maxsize)
@@ -452,8 +456,8 @@ def print_diffs(cover, stego):
     if len(C.shape) == 2:
         D = S - C
         pairs = list(zip(C.ravel(), S.ravel(), D.ravel()))
-        pairs_diff = [p for p in pairs if p[2]!=0]
-        print_list(pairs_diff, 5)
+        pairs_diff = _as_native_int_tuples(p for p in pairs if p[2]!=0)
+        _print_list(pairs_diff, 5)
 
 
     elif len(C.shape) == 3:
@@ -462,16 +466,16 @@ def print_diffs(cover, stego):
         D3 = S[:,:,2] - C[:,:,2]
         print("\nChannel 1:")
         pairs = list(zip(C[:,:,0].ravel(), S[:,:,0].ravel(), D1.ravel()))
-        pairs_diff = [p for p in pairs if p[2]!=0]
-        print_list(pairs_diff, 5)
+        pairs_diff = _as_native_int_tuples(p for p in pairs if p[2]!=0)
+        _print_list(pairs_diff, 5)
         print("\nChannel 2:")
         pairs = list(zip(C[:,:,1].ravel(), S[:,:,1].ravel(), D2.ravel()))
-        pairs_diff = [p for p in pairs if p[2]!=0]
-        print_list(pairs_diff, 5)
+        pairs_diff = _as_native_int_tuples(p for p in pairs if p[2]!=0)
+        _print_list(pairs_diff, 5)
         print("\nChannel 3:")
         pairs = list(zip(C[:,:,2].ravel(), S[:,:,2].ravel(), D3.ravel()))
-        pairs_diff = [p for p in pairs if p[2]!=0]
-        print_list(pairs_diff, 5)
+        pairs_diff = _as_native_int_tuples(p for p in pairs if p[2]!=0)
+        _print_list(pairs_diff, 5)
     else:
         print("Error, too many dimensions:", C.shape)
 
@@ -483,7 +487,7 @@ def print_diffs(cover, stego):
 def print_dct_diffs(cover, stego): 
     #import jpeg_toolbox as jt
 
-    def print_list(l, ln):
+    def print_dct_list(l, ln):
         mooc = 0
         for i in range(0, len(l), ln):
             print(l[i:i+ln])
@@ -507,8 +511,8 @@ def print_dct_diffs(cover, stego):
         D = S-C
         print("\nChannel "+str(i)+":")
         pairs = list(zip(C.ravel(), S.ravel(), D.ravel()))
-        pairs_diff = [p for p in pairs if p[2]!=0]
-        print_list(pairs_diff, 5)
+        pairs_diff = _as_native_int_tuples(p for p in pairs if p[2]!=0)
+        print_dct_list(pairs_diff, 5)
 
 
     print("\nCommon DCT coefficients frequency variation:")
@@ -575,6 +579,5 @@ def eof_extract(input_image, output_data):
     print("\nData extracted from", input_image, "to", output_data, "("+ft+")\n")
 
 # }}}
-
 
 
