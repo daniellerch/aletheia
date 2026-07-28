@@ -539,6 +539,45 @@ class NN:
                     bs = batch//2
         # }}}
 
+    @staticmethod
+    def _patch_starts(image_size, patch_size):
+        # {{{
+        if image_size <= patch_size:
+            return [0]
+
+        starts = list(range(0, image_size-patch_size+1, patch_size))
+        last = image_size-patch_size
+        if starts[-1] != last:
+            starts.append(last)
+        return starts
+        # }}}
+
+    def _image_patches(self, path):
+        # {{{
+        try:
+            image = imread(path)
+            if len(image.shape) != 3:
+                raise ValueError("expected an image with channels")
+
+            row_starts = self._patch_starts(image.shape[0], self.shape[0])
+            col_starts = self._patch_starts(image.shape[1], self.shape[1])
+            channel_count = min(image.shape[2], self.shape[2])
+
+            for row in row_starts:
+                for col in col_starts:
+                    patch = np.zeros(self.shape, dtype=image.dtype)
+                    height = min(self.shape[0], image.shape[0]-row)
+                    width = min(self.shape[1], image.shape[1]-col)
+                    patch[:height, :width, :channel_count] = \
+                        image[row:row+height, col:col+width, :channel_count]
+                    yield patch
+
+        except Exception as e:
+            print(str(e))
+            print("NN prediction warning: cannot read image:", path)
+            yield np.zeros(self.shape)
+        # }}}
+
     def pred_generator(self, image_list, batch):
         # {{{
         images = []
@@ -691,21 +730,46 @@ class NN:
 
     def predict(self, files, batch, verbose=None):
         # {{{
+        files = list(files)
+        if not files:
+            return np.array([])
+
         verb = 1
         if len(files)<batch:
-            batch=1
             verb = 0
         if verbose != None:
             verb = verbose
-        steps = len(files)//batch
-        #print("steps:", steps, "batch:", batch)
-        #print("files:", files[:steps*batch])
-        g = self.pred_generator(files[:steps*batch], batch)
-        pred = self.model.predict(g, steps=steps, verbose=verb)[:,-1]
-        if steps*batch<len(files):
-            g = self.pred_generator(files[steps*batch:], batch)
-            pred = pred.tolist() + self.model.predict(g, steps=1, verbose=verb)[:,-1].tolist()
-        return np.array(pred)
+        batch = max(1, batch)
+
+        prediction_sums = np.zeros(len(files), dtype='float64')
+        patch_counts = np.zeros(len(files), dtype='int64')
+        images, owners = [], []
+
+        def predict_batch():
+            X = np.asarray(images, dtype='float32')
+            if self.div255:
+                X /= 255
+            values = self.model.predict(X, verbose=0)[:, -1]
+            for owner, value in zip(owners, values):
+                prediction_sums[owner] += value
+                patch_counts[owner] += 1
+
+        for file_index, path in enumerate(files):
+            for patch in self._image_patches(path):
+                images.append(patch)
+                owners.append(file_index)
+                if len(images) == batch:
+                    predict_batch()
+                    images, owners = [], []
+            if verb:
+                print("Predicting:", file_index+1, "/", len(files), end='\r')
+
+        if images:
+            predict_batch()
+        if verb:
+            print("")
+
+        return prediction_sums/patch_counts
         # }}}
 
     def get_gradients_from_array(self, arr):
