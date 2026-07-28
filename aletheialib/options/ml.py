@@ -11,6 +11,9 @@ doc="\n" \
 "  - split-sets:            Prepare sets for training and testing.\n" \
 "  - split-sets-dci:        Prepare sets for training and testing (DCI).\n" \
 "  - create-actors:         Prepare actors for training and testing.\n" \
+"  - srnet:                 Train a model with SRNet.\n" \
+"  - srnet-score:           Score with SRNet.\n" \
+"  - srnet-predict:         Predict with SRNet.\n" \
 "  - effnetb0:              Train a model with EfficientNet B0.\n" \
 "  - effnetb0-score:        Score with EfficientNet B0.\n" \
 "  - effnetb0-predict:      Predict with EfficientNet B0.\n" \
