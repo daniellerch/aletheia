@@ -218,7 +218,8 @@ class AccumulatingModel(tf.keras.Model):
 
 class NN:
 
-    def __init__(self, network, model_name=None, shape=(512,512,3), inference=False):
+    def __init__(self, network, model_name=None, shape=(512,512,3),
+                 inference=False, initial_weights=None):
         # {{{
         base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
         self.model_dir = os.path.join(base_dir, 'aletheia-models')
@@ -272,6 +273,12 @@ class NN:
             if model_path is not None:
                 print("Loading", model_path, "...")
                 self.model.load_weights(model_path)
+            elif initial_weights:
+                if not os.path.isfile(initial_weights):
+                    raise FileNotFoundError(
+                        f"Initial weights not found: {initial_weights}")
+                print("Initializing with", initial_weights, "...")
+                self.model.load_weights(initial_weights)
             else:
                 print("New model:", os.path.join(self.model_dir, self.model_name+'-best.keras'))
 
@@ -441,6 +448,24 @@ class NN:
         return I1, I2
         # }}}
 
+    @staticmethod
+    def _stego_sets(stego_list):
+        # {{{
+        if (len(stego_list) > 0 and
+            isinstance(stego_list[0], (list, tuple, np.ndarray))):
+            return stego_list
+        return [stego_list]
+        # }}}
+
+    @classmethod
+    def _random_stego(cls, stego_list):
+        # {{{
+        stego_sets = cls._stego_sets(stego_list)
+        if len(stego_sets) == 1:
+            return random.choice(stego_sets[0])
+        return random.choice(random.choice(stego_sets))
+        # }}}
+
     def train_generator(self, cover_list, stego_list, batch):
         # {{{
         while True:
@@ -450,7 +475,7 @@ class NN:
             while bs>0:
                 try:
                     C_path = random.choice(cover_list)
-                    S_path = random.choice(stego_list)
+                    S_path = self._random_stego(stego_list)
                     if self.use_pairs and random.random() < self.use_pairs_prob:
                         basename = os.path.basename(C_path)
                         dirname = os.path.dirname(S_path)
@@ -494,7 +519,9 @@ class NN:
 
     def valid_generator(self, cover_list, stego_list, batch):
         # {{{
-        if len(cover_list)!=len(stego_list):
+        stego_sets = self._stego_sets(stego_list)
+        multiple_stego_sets = len(stego_sets) > 1
+        if not multiple_stego_sets and len(cover_list) != len(stego_sets[0]):
             print("NN valid_generator error: we expect same number of cover and stego images")
             sys.exit(0)
         if len(cover_list)*2 % batch != 0:
@@ -508,7 +535,10 @@ class NN:
                 if bs>0:
                     try:
                         C_path = cover_list[i]
-                        S_path = stego_list[i]
+                        if multiple_stego_sets:
+                            S_path = self._random_stego(stego_sets)
+                        else:
+                            S_path = stego_sets[0][i]
 
                         if self.replace_method:
                            S_path = S_path.replace(self.replace_base_str,
@@ -624,7 +654,12 @@ class NN:
       
         if self.subset != None:
             trn_C_list = trn_C_list[:self.subset]
-            trn_S_list = trn_S_list[:self.subset]
+            trn_S_list = [
+                files[:self.subset]
+                for files in self._stego_sets(trn_S_list)
+            ]
+            if len(trn_S_list) == 1:
+                trn_S_list = trn_S_list[0]
 
         #opt = optimizers.Adamax(learning_rate=0.0001) # XXX
         self.model.compile(loss='categorical_crossentropy', optimizer=self.opt, metrics=['accuracy'])
@@ -676,15 +711,21 @@ class NN:
 
         #callbacks_list = [] # XXX
 
-        steps_train = int((len(trn_C_list)+len(trn_S_list))/trn_batch)
+        trn_S_sets = self._stego_sets(trn_S_list)
+        val_S_sets = self._stego_sets(val_S_list)
+        trn_S_len = (len(trn_S_sets[0]) if len(trn_S_sets) == 1
+                     else len(trn_C_list))
+        val_S_len = (len(val_S_sets[0]) if len(val_S_sets) == 1
+                     else len(val_C_list))
+        steps_train = int((len(trn_C_list)+trn_S_len)/trn_batch)
         g_train = self.train_generator(trn_C_list, trn_S_list, trn_batch)
-        steps_train = (len(trn_C_list)+len(trn_S_list))//trn_batch
+        steps_train = (len(trn_C_list)+trn_S_len)//trn_batch
         steps_train -= steps_train%2
 
         if self.steps_train_limit:
             steps_train = self.steps_train_limit
 
-        steps_valid = int((len(val_C_list)+len(val_S_list))/val_batch)
+        steps_valid = int((len(val_C_list)+val_S_len)/val_batch)
         g_valid = self.valid_generator(val_C_list, val_S_list, val_batch)
 
         self.model.fit(g_train, steps_per_epoch=steps_train,

@@ -322,18 +322,31 @@ def create_actors():
 
 
 # {{{ nn_train
+def _files_from_dir_list(dir_list):
+    directories = [path.strip() for path in dir_list.split(',') if path.strip()]
+    file_sets = [
+        sorted(glob.glob(os.path.join(directory, '*')))
+        for directory in directories
+    ]
+
+    if len(file_sets) == 1:
+        return file_sets[0]
+    return file_sets
+
+
 def nn_train(network):
 
     if len(sys.argv)<7:
-        print(sys.argv[0], f"{network} <trn-cover-dir> <trn-stego-dir> <val-cover-dir> <val-stego-dir> <model-file> [dev] [ES] [BS]\n")
+        print(sys.argv[0], f"{network} <trn-cover-dir> <trn-stego-dir[,dir...]> <val-cover-dir> <val-stego-dir[,dir...]> <model-file> [dev] [ES] [BS] [initial-weights]\n")
         print("  - trn-cover-dir:    Directory containing training cover images")
-        print("  - trn-stego-dir:    Directory containing training stego images")
+        print("  - trn-stego-dir:    One or more comma-separated directories containing training stego images")
         print("  - val-cover-dir:    Directory containing validation cover images")
-        print("  - val-stego-dir:    Directory containing validation stego images")
+        print("  - val-stego-dir:    One or more comma-separated directories containing validation stego images")
         print("  - model-name:       A name for the model")
         print("  - dev:              Device: GPU Id or 'CPU' (default='CPU')")
         print("  - ES:               Early stopping iterations x1000 (default=10)")
         print("  - BS:               Batch size (default=16)")
+        print("  - initial-weights:  Optional weights used only when starting a new model")
         print("")
         sys.exit(0)
 
@@ -361,6 +374,10 @@ def nn_train(network):
     else:
         batch = int(sys.argv[9])
 
+    if len(sys.argv)<11:
+        initial_weights = None
+    else:
+        initial_weights = sys.argv[10]
 
 
     if dev_id == "CPU":
@@ -375,21 +392,37 @@ def nn_train(network):
 
 
     trn_cover_files = sorted(glob.glob(os.path.join(trn_cover_dir, '*')))
-    trn_stego_files = sorted(glob.glob(os.path.join(trn_stego_dir, '*')))
+    trn_stego_files = _files_from_dir_list(trn_stego_dir)
     val_cover_files = sorted(glob.glob(os.path.join(val_cover_dir, '*')))
-    val_stego_files = sorted(glob.glob(os.path.join(val_stego_dir, '*')))
+    val_stego_files = _files_from_dir_list(val_stego_dir)
 
-    print("train:", len(trn_cover_files),"+",len(trn_stego_files))
-    print("valid:", len(val_cover_files),"+",len(val_stego_files))
+    trn_stego_sets = (trn_stego_files if trn_stego_files and
+                      isinstance(trn_stego_files[0], list)
+                      else [trn_stego_files])
+    val_stego_sets = (val_stego_files if val_stego_files and
+                      isinstance(val_stego_files[0], list)
+                      else [val_stego_files])
 
-    if (not len(trn_cover_files) or not len(trn_stego_files) or
-        not len(val_cover_files) or not len(val_stego_files)):
+    print("train:", len(trn_cover_files), "+",
+          ", ".join(str(len(files)) for files in trn_stego_sets))
+    print("valid:", len(val_cover_files), "+",
+          ", ".join(str(len(files)) for files in val_stego_sets))
+
+    if (not trn_cover_files or not val_cover_files or
+        not trn_stego_sets or not val_stego_sets or
+        any(not files for files in trn_stego_sets) or
+        any(not files for files in val_stego_sets)):
         print("ERROR: directory without files found")
         sys.exit(0)
 
 
     import aletheialib.models
-    nn = aletheialib.models.NN(network, model_name=model_name, shape=(512,512,3))
+    nn = aletheialib.models.NN(
+        network,
+        model_name=model_name,
+        shape=(512,512,3),
+        initial_weights=initial_weights
+    )
     nn.train(trn_cover_files, trn_stego_files, batch, # 36|40
     #nn = aletheialib.models.NN("effnetb0", model_name=model_name, shape=(32,32,3))
     #nn.train(trn_cover_files, trn_stego_files, 500, # 36|40
