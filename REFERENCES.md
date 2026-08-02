@@ -15,6 +15,9 @@ This tool implements steganalysis techniques that are the result of the research
 
 - **AUMP**: L. Fillatre, Adaptive steganalysis of Least Significant Bit replacement in grayscale natural images. Signal Processing, IEEE Transactions on, vol. 60, issue 2, pp. 556-569, February 2012.
 
+## Calibration-based steganalysis
+
+- **Calibration attack**: Fridrich, J., Goljan, M., Hogea, D. (2003). Steganalysis of JPEG Images: Breaking the F5 Algorithm. In: Petitcolas, F.A.P. (eds) Information Hiding. IH 2002. Lecture Notes in Computer Science, vol 2578. Springer, Berlin, Heidelberg.
 
 ## Feature extractors
 
