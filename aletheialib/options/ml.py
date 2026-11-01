@@ -994,6 +994,33 @@ def actors_predict_fea():
 
 
 # {{{ ats
+def _download_sim_code(method):
+    """ Download the external code needed by an embedding simulator """
+    from aletheialib.utils import download_octave_code, download_octave_aux_file
+    from aletheialib.utils import download_octave_jpeg_toolbox, download_F5
+
+    octave_sims = ["hugo", "wow", "s-uniward", "s-uniward-color", "hill",
+                   "hill-color", "j-uniward", "j-uniward-color", "j-mipod",
+                   "j-mipod-color", "ebs", "ebs-color", "ued", "ued-color",
+                   "nsf5", "nsf5-color"]
+    if method.startswith("j-") or method in ["ebs", "ebs-color", "ued",
+            "ued-color", "nsf5", "nsf5-color", "wow", "f5"]:
+        download_octave_jpeg_toolbox()
+    if method in octave_sims:
+        download_octave_code(method.upper().replace("-", "_"))
+    if method.startswith("j-mipod"):
+        download_octave_aux_file("ixlnx3_5.mat")
+    if method == "f5":
+        download_F5()
+
+def _download_feaext_code(name):
+    """ Download the external code needed by a feature extractor """
+    from aletheialib.utils import download_octave_code
+    from aletheialib.utils import download_octave_jpeg_toolbox
+    if name in ["gfr", "dctr"]:
+        download_octave_jpeg_toolbox()
+    download_octave_code(name.upper())
+
 def ats():
 
     import aletheialib.options
@@ -1011,6 +1038,7 @@ def ats():
         sys.exit(0)
 
 
+    import tempfile
     import aletheialib.models
     import aletheialib.utils
     import aletheialib.stegosim
@@ -1025,38 +1053,41 @@ def ats():
         A_dir=sys.argv[5]
         fn_sim=aletheialib.stegosim.embedding_fn(emb_sim)
         fn_feaextract=aletheialib.feaext.extractor_fn(feaextract)
-        if emb_sim in ["j-uniward-sim", "j-uniward-color-sim", 
-                       "ued-sim", "ued-color-sim", "ebs-sim", "ebs-color-sim",
-                       "nsf5-sim", "nsf5-color-sim"]:
+        method = emb_sim.replace("-sim", "")
+        if method in aletheialib.stegosim.EMB_FN_SAVING_METHODS:
             embed_fn_saving = True
+        _download_sim_code(method)
     else:
         print("custom command")
-        payload=sys.argv[2] # uggly hack
+        payload=sys.argv[2] # the command is passed as payload, see custom()
         feaextract=sys.argv[3]
         A_dir=sys.argv[4]
         fn_sim=aletheialib.stegosim.custom
         embed_fn_saving = True
         fn_feaextract=aletheialib.feaext.extractor_fn(feaextract)
 
+    _download_feaext_code(feaextract)
+    download_e4s()
+
     B_dir=tempfile.mkdtemp()
     C_dir=tempfile.mkdtemp()
-    stegosim.embed_message(fn_sim, A_dir, payload, B_dir, embed_fn_saving=embed_fn_saving)
-    stegosim.embed_message(fn_sim, B_dir, payload, C_dir, embed_fn_saving=embed_fn_saving)
+    aletheialib.stegosim.embed_message(fn_sim, A_dir, payload, B_dir, embed_fn_saving=embed_fn_saving)
+    aletheialib.stegosim.embed_message(fn_sim, B_dir, payload, C_dir, embed_fn_saving=embed_fn_saving)
 
     fea_dir=tempfile.mkdtemp()
     A_fea=os.path.join(fea_dir, "A.fea")
     C_fea=os.path.join(fea_dir, "C.fea")
-    feaext.extract_features(fn_feaextract, A_dir, A_fea)
-    feaext.extract_features(fn_feaextract, C_dir, C_fea)
+    aletheialib.feaext.extract_features(fn_feaextract, A_dir, A_fea)
+    aletheialib.feaext.extract_features(fn_feaextract, C_dir, C_fea)
 
-    A = pandas.read_csv(A_fea, delimiter=" ", header=None).values
-    C = pandas.read_csv(C_fea, delimiter=" ", header=None).values
+    # Feature files are written by numpy.savetxt, without header
+    A = np.loadtxt(A_fea, ndmin=2)
+    C = np.loadtxt(C_fea, ndmin=2)
 
-    X=numpy.vstack((A, C))
-    y=numpy.hstack(([0]*len(A), [1]*len(C)))
+    X=np.vstack((A, C))
+    y=np.hstack(([0]*len(A), [1]*len(C)))
 
-    from aletheialib import models
-    clf=models.Ensemble4Stego()
+    clf=aletheialib.models.Ensemble4Stego()
     clf.fit(X, y)
 
 
@@ -1064,7 +1095,7 @@ def ats():
     for dirpath,_,filenames in os.walk(B_dir):
         for f in filenames:
             path=os.path.abspath(os.path.join(dirpath, f))
-            if not utils.is_valid_image(path):
+            if not aletheialib.utils.is_valid_image(path):
                 print("Warning, this is not a valid image: ", f)
             else:
                 files.append(path)

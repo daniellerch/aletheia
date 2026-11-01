@@ -40,6 +40,19 @@ EMB_FN_SAVING_METHODS = ["j-uniward", "j-uniward-color", "j-mipod",
 
 # {{{ embed_message()
 
+def _resolve_payload(payload):
+    """
+    A range like '0.10-0.50' returns a random value inside it. Anything else
+    (a single payload or a custom command, see custom()) is returned as is.
+    """
+    rng = str(payload).split('-')
+    if len(rng) == 2:
+        try:
+            return numpy.random.uniform(float(rng[0]), float(rng[1]))
+        except ValueError:
+            pass
+    return payload
+
 def embed(params):
     i, path, output_dir, payload, dst_path, embed_fn_saving, embed_fn = params
     try:
@@ -53,26 +66,11 @@ def embed(params):
         except FileNotFoundError:
             os.chdir("/")
 
+        payload = _resolve_payload(payload)
         if embed_fn_saving:
-            if "-" in payload:
-                rng = payload.split('-')
-                rini = float(rng[0])
-                rend = float(rng[1])
-                rnd_payload = numpy.random.uniform(rini, rend)
-                #print("rnd_payload:", rnd_payload)
-                embed_fn(path, rnd_payload, dst_path)
-            else:
-                embed_fn(path, payload, dst_path)
+            embed_fn(path, payload, dst_path)
         else:
-            if "-" in payload:
-                rng = payload.split('-')
-                rini = float(rng[0])
-                rend = float(rng[1])
-                rnd_payload = numpy.random.uniform(rini, rend)
-                #print("rnd_payload:", rnd_payload)
-                X=embed_fn(path, rnd_payload)
-            else:
-                X=embed_fn(path, payload)
+            X=embed_fn(path, payload)
             try:
                 imwrite(dst_path, X.astype('uint8'))
             except Exception as e:
