@@ -153,9 +153,10 @@ def ws():
             print("Hidden data found in channel B", round(alpha_B,3))
 
     else:
-        alpha = O._attack('WS', path, params={"channel":1})["data"][0][0]
+        beta = O._attack('WS', path, params={"channel":1})["data"][0][0]
+        alpha = beta*2
         if alpha>=threshold:
-            print("Hidden data found", alpha)
+            print("Hidden data found", round(alpha,3))
         else:
             print("No hidden data found")
 
@@ -203,7 +204,8 @@ def triples():
             print("Hidden data found in channel B", alpha_B)
 
     else:
-        alpha = O._attack('TRIPLES', path, params={"channel":1})["data"][0][0]
+        beta = O._attack('TRIPLES', path, params={"channel":1})["data"][0][0]
+        alpha = beta*2
         if alpha>=threshold:
             print("Hidden data found", alpha)
         else:
@@ -336,12 +338,12 @@ def ws_detect(f):
     path = aletheialib.utils.absolute_path(f)
     im=Image.open(path)
     if im.mode in ['RGB', 'RGBA', 'RGBX']:
-        alpha_R = O._attack('WS', path, params={"channel":1})["data"][0][0]
-        alpha_G = O._attack('WS', path, params={"channel":2})["data"][0][0]
-        alpha_B = O._attack('WS', path, params={"channel":3})["data"][0][0]
-        alpha = max(alpha_R, alpha_G, alpha_B)
+        beta_R = O._attack('WS', path, params={"channel":1})["data"][0][0]
+        beta_G = O._attack('WS', path, params={"channel":2})["data"][0][0]
+        beta_B = O._attack('WS', path, params={"channel":3})["data"][0][0]
+        alpha = max(beta_R, beta_G, beta_B)*2
     else:
-        alpha = O._attack('WS', path, params={"channel":1})["data"][0][0]
+        alpha = O._attack('WS', path, params={"channel":1})["data"][0][0]*2
 
     if alpha<threshold:
         return False
