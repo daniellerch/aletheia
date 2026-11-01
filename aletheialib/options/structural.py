@@ -301,18 +301,20 @@ def spa_score():
     n_core = cpu_count()
 
     # Process thread pool in batches
+    pred_cover = []
     for i in range(0, len(cover_files), batch):
         params_batch = zip(cover_files[i:i+batch], [threshold]*batch)
         pool = ThreadPool(n_core)
-        pred_cover = pool.map(spa_detect, params_batch)
+        pred_cover += pool.map(spa_detect, params_batch)
         pool.close()
         pool.terminate()
         pool.join()
 
+    pred_stego = []
     for i in range(0, len(stego_files), batch):
         params_batch = zip(stego_files[i:i+batch], [threshold]*batch)
         pool = ThreadPool(n_core)
-        pred_stego = pool.map(spa_detect, params_batch)
+        pred_stego += pool.map(spa_detect, params_batch)
         pool.close()
         pool.terminate()
         pool.join()
@@ -348,7 +350,7 @@ def ws_detect(f):
 
 def ws_score():
 
-    if len(sys.argv)<3:
+    if len(sys.argv)<4:
         print(sys.argv[0], "ws-score <test-cover-dir> <test-stego-dir>\n")
         print("     test-cover-dir:    Directory containing cover images")
         print("     test-stego-dir:    Directory containing stego images")
@@ -366,18 +368,20 @@ def ws_score():
     n_core = cpu_count()
 
     # Process thread pool in batches
+    pred_cover = []
     for i in range(0, len(cover_files), batch):
         params_batch = cover_files[i:i+batch]
         pool = ThreadPool(n_core)
-        pred_cover = pool.map(ws_detect, params_batch)
+        pred_cover += pool.map(ws_detect, params_batch)
         pool.close()
         pool.terminate()
         pool.join()
 
+    pred_stego = []
     for i in range(0, len(stego_files), batch):
         params_batch = stego_files[i:i+batch]
         pool = ThreadPool(n_core)
-        pred_stego = pool.map(ws_detect, params_batch)
+        pred_stego += pool.map(ws_detect, params_batch)
         pool.close()
         pool.terminate()
         pool.join()
