@@ -432,7 +432,7 @@ class NN:
         if random.random() < 0.5:
             I = np.rot90(I, rot)
         else:
-            I = np.flip(np.rot90(I, rot))
+            I = np.flip(np.rot90(I, rot), axis=1)
         return I
         # }}}
 
@@ -443,8 +443,8 @@ class NN:
             I1 = np.rot90(I1, rot)
             I2 = np.rot90(I2, rot)
         else:
-            I1 = np.flip(np.rot90(I1, rot))
-            I2 = np.flip(np.rot90(I2, rot))
+            I1 = np.flip(np.rot90(I1, rot), axis=1)
+            I2 = np.flip(np.rot90(I2, rot), axis=1)
         return I1, I2
         # }}}
 
@@ -980,18 +980,20 @@ def dci_si_method(image_path, method, modelA=None, modelB=None):
         for rot in [0, 1, 2, 3]:
             for roll in [0, 128, 256, 384]:
 
+                # Each transformation is applied to the original images
+                At, Bt = Ai, Bi
                 if flip:
-                    Ai = np.flip(Ai)
-                    Bi = np.flip(Bi)
+                    At = np.flip(At, axis=1)
+                    Bt = np.flip(Bt, axis=1)
                 if rot:
-                    Ai = np.rot90(Ai, rot)
-                    Bi = np.rot90(Bi, rot)
+                    At = np.rot90(At, rot)
+                    Bt = np.rot90(Bt, rot)
                 if roll:
-                    Ai = np.roll(Ai, roll, axis=1)
-                    Bi = np.roll(Bi, roll, axis=1)
+                    At = np.roll(At, roll, axis=1)
+                    Bt = np.roll(Bt, roll, axis=1)
 
-                Ax = np.array([Ai]).astype('float32')/255
-                Bx = np.array([Bi]).astype('float32')/255
+                Ax = np.array([At]).astype('float32')/255
+                Bx = np.array([Bt]).astype('float32')/255
 
                 p_aa = A_nn.model.predict(Ax, verbose=0)[0,1]
                 p_ab = A_nn.model.predict(Bx, verbose=0)[0,1]
