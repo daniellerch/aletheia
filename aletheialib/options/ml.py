@@ -737,19 +737,19 @@ def e4s():
 
     import aletheialib.utils
     import aletheialib.models
+    import pandas
     from sklearn.model_selection import train_test_split
 
     cover_fea=sys.argv[2]
     stego_fea=sys.argv[3]
     model_file = aletheialib.utils.absolute_path(sys.argv[4])
 
-    X_cover = pandas.read_csv(cover_fea, delimiter = " ").values
-    X_stego = pandas.read_csv(stego_fea, delimiter = " ").values
-    #X_cover=numpy.loadtxt(cover_fea)
-    #X_stego=numpy.loadtxt(stego_fea)
+    # Feature files are written by numpy.savetxt, without header
+    X_cover = pandas.read_csv(cover_fea, delimiter=" ", header=None).values
+    X_stego = pandas.read_csv(stego_fea, delimiter=" ", header=None).values
 
-    X=numpy.vstack((X_cover, X_stego))
-    y=numpy.hstack(([0]*len(X_cover), [1]*len(X_stego)))
+    X=np.vstack((X_cover, X_stego))
+    y=np.hstack(([0]*len(X_cover), [1]*len(X_stego)))
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.10)
 
     clf = aletheialib.models.Ensemble4Stego()
@@ -1049,8 +1049,8 @@ def ats():
     feaext.extract_features(fn_feaextract, A_dir, A_fea)
     feaext.extract_features(fn_feaextract, C_dir, C_fea)
 
-    A = pandas.read_csv(A_fea, delimiter = " ").values
-    C = pandas.read_csv(C_fea, delimiter = " ").values
+    A = pandas.read_csv(A_fea, delimiter=" ", header=None).values
+    C = pandas.read_csv(C_fea, delimiter=" ", header=None).values
 
     X=numpy.vstack((A, C))
     y=numpy.hstack(([0]*len(A), [1]*len(C)))
