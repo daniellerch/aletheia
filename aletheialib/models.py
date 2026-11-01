@@ -49,11 +49,11 @@ class Ensemble4Stego:
 
         pcover=self.__tmpdir+"/F_train_cover.mat"
         #savemat(pcover, mdict={'F': numpy.array(Xc)}, oned_as='column')
-        hdf5storage.write({u'F': numpy.array(Xc)}, '.', pcover, matlab_compatible=True)
+        hdf5storage.savemat(pcover, {'F': numpy.array(Xc)})
 
         pstego=self.__tmpdir+"/F_train_stego.mat"
         #savemat(pstego, mdict={'F': numpy.array(Xs)}, oned_as='column')
-        hdf5storage.write({u'F': numpy.array(Xs)}, '.', pstego, matlab_compatible=True)
+        hdf5storage.savemat(pstego, {'F': numpy.array(Xs)})
 
         pclf=self.__tmpdir+"/clf.mat"
 
@@ -89,7 +89,7 @@ class Ensemble4Stego:
 
         path=self.__tmpdir+"/F_test.mat"
         #savemat(path, mdict={'F': numpy.array(X)}, oned_as='column')
-        hdf5storage.write({u'F': numpy.array(X)}, '.', path, matlab_compatible=True)
+        hdf5storage.savemat(path, {'F': numpy.array(X)})
 
         pclf=self.__tmpdir+"/clf.mat"
         savemat(pclf, self.__mat_clf)
