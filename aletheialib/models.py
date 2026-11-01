@@ -42,11 +42,10 @@ class Ensemble4Stego:
         Xc=X[y==0]
         Xs=X[y==1]
 
-        if len(Xc)>len(Xs):
-            Xs=Xs[:len(Xc)]
-
-        if len(Xs)>len(Xc):
-            Xc=Xc[:len(Xs)]
+        # Use the same number of cover and stego samples
+        n = min(len(Xc), len(Xs))
+        Xc=Xc[:n]
+        Xs=Xs[:n]
 
         pcover=self.__tmpdir+"/F_train_cover.mat"
         #savemat(pcover, mdict={'F': numpy.array(Xc)}, oned_as='column')
