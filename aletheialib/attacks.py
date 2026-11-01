@@ -69,11 +69,9 @@ def spa(filename, channel=0):
 
 def spa_image(image, channel=0):
     if channel!=None:
-        width, height, channels = image.shape
         I = image[:,:,channel]
     else:
         I = image
-        width, height = I.shape
 
     r = I[:-1,:]
     s = I[1:,:]
@@ -99,7 +97,7 @@ def spa_image(image, channel=0):
         sys.exit(0)
 
     a=2*k
-    b=2*(2*x-width*(height-1))
+    b=2*(2*x-r.size)
     c=y-x
 
     bp=(-b+sqrt(b**2-4*a*c))/(2*a)
