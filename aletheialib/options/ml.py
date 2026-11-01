@@ -577,10 +577,15 @@ def effnetb0_dci_score():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
     aletheialib.utils.init_tensorflow_safe()
 
-    A_cover_files = sorted(glob.glob(os.path.join(A_cover_dir, '*')))
-    A_stego_files = sorted(glob.glob(os.path.join(A_stego_dir, '*')))
-    B_stego_files = sorted(glob.glob(os.path.join(B_stego_dir, '*')))
-    B_double_files = sorted(glob.glob(os.path.join(B_double_dir, '*')))
+    # B-stego images are the A-cover images with an embedded message, and
+    # B-double images are the A-stego ones, so pair them by file name.
+    A_cover_files, B_stego_files = aletheialib.utils.pair_by_basename(
+        glob.glob(os.path.join(A_cover_dir, '*')), B_stego_dir)
+    A_stego_files, B_double_files = aletheialib.utils.pair_by_basename(
+        glob.glob(os.path.join(A_stego_dir, '*')), B_double_dir)
+    if len(A_cover_files)==0 or len(A_stego_files)==0:
+        print("ERROR: no paired images found, check the directories\n")
+        sys.exit(0)
 
     A_nn = aletheialib.models.NN("effnetb0", inference=True)
     A_nn.load_model(A_model_file)
@@ -673,8 +678,11 @@ def effnetb0_dci_predict():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
     aletheialib.utils.init_tensorflow_safe()
 
-    A_files = sorted(glob.glob(os.path.join(A_dir, '*')))
-    B_files = sorted(glob.glob(os.path.join(B_dir, '*')))
+    A_files, B_files = aletheialib.utils.pair_by_basename(
+        glob.glob(os.path.join(A_dir, '*')), B_dir)
+    if len(A_files)==0:
+        print("ERROR: no paired images found, check the directories\n")
+        sys.exit(0)
 
     A_nn = aletheialib.models.NN("effnetb0", inference=True)
     A_nn.load_model(A_model_file)
@@ -884,7 +892,10 @@ def _actor(image_dir, output_file, dev_id="cpu"):
 
 
         B_nn = aletheialib.models.NN("effnetb0", inference=True)
-        B_files = glob.glob(os.path.join(B_dir, '*'))
+        A_sim_files, B_files = aletheialib.utils.pair_by_basename(A_files, B_dir)
+        if len(A_sim_files)==0:
+            print("ERROR: Cannot prepare the B set:", B_dir)
+            sys.exit(0)
 
         if method in A_models:
             ops.reset_default_graph()
@@ -906,10 +917,10 @@ def _actor(image_dir, output_file, dev_id="cpu"):
 
 
         # Predictions for the DCI method
-        _p_aa = A_nn.predict(A_files, 50)
+        _p_aa = A_nn.predict(A_sim_files, 50)
         _p_ab = A_nn.predict(B_files, 50)
         _p_bb = B_nn.predict(B_files, 50)
-        _p_ba = B_nn.predict(A_files, 50)
+        _p_ba = B_nn.predict(A_sim_files, 50)
 
         p_aa = np.round(_p_aa).astype('uint8')
         p_ab = np.round(_p_ab).astype('uint8')

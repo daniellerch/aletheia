@@ -41,6 +41,19 @@ def natural_sort_key(s, _nsre=re.compile('([0-9]+)')):
             for text in re.split(_nsre, s)]    
 
 
+def pair_by_basename(A_files, B_dir):
+    """Return (A, B) lists aligned by basename, skipping A files without B."""
+    A_ok, B_ok = [], []
+    for a in sorted(A_files):
+        b = os.path.join(B_dir, os.path.basename(a))
+        if os.path.isfile(b):
+            A_ok.append(a)
+            B_ok.append(b)
+        else:
+            print("WARNING: no B image for", a, "(ignored)")
+    return A_ok, B_ok
+
+
 def which(program):
 
     def is_exe(fpath):

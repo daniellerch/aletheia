@@ -355,7 +355,11 @@ def dci():
                                        embed_fn_saving=embed_fn_saving)
 
     B_nn = aletheialib.models.NN("effnetb0", inference=True)
-    B_files = glob.glob(os.path.join(B_dir, '*'))
+    A_files, B_files = aletheialib.utils.pair_by_basename(A_files, B_dir)
+    if len(A_files)==0:
+        print("ERROR: Cannot prepare the B set\n")
+        shutil.rmtree(B_dir)
+        sys.exit(0)
 
     # Make some replacements to adapt the name of the method with the name
     # of the model file
