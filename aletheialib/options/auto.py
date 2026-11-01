@@ -7,6 +7,7 @@ import numpy as np
 
 from aletheialib.utils import download_octave_code
 from aletheialib.utils import download_octave_jpeg_toolbox
+from aletheialib.utils import download_F5
 
 
 
@@ -346,6 +347,9 @@ def dci():
     A_files = files
 
     fn_sim=aletheialib.stegosim.embedding_fn(sys.argv[2])
+    if sys.argv[2] == "f5-sim":
+        download_octave_jpeg_toolbox()
+        download_F5()
     method = sys.argv[2]
     method = method.replace("-sim", "")
 
@@ -449,6 +453,10 @@ def dci_si():
     from aletheialib.stegosim import JPEG_METHODS 
     import aletheialib.models # XXX Print logs here
     from aletheialib.models import dci_si_method
+
+    if method == "f5-sim":
+        download_octave_jpeg_toolbox()
+        download_F5()
 
     if os.path.isdir(path):
         files = sorted(glob.glob(os.path.join(path, '*.*')))

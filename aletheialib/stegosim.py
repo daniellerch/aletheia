@@ -31,7 +31,7 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 JPEG_METHODS = ["j_uniward", "j_uniward_color", "j_mipod", "j_mipod_color",
                 "ebs", "ebs_color", "ueb", "ued_color", "nsf5", "nsf5_color",
-                "steghide", "outguess"]
+                "steghide", "outguess", "f5"]
 
 EMB_FN_SAVING_METHODS = ["j-uniward", "j-uniward-color", "j-mipod", 
 "j-mipod-color", "ebs", "ebs-color", "ueb", "ued-color", "nsf5", "nsf5-color",
@@ -586,7 +586,7 @@ def embedding_fn(name):
     if name=="steganogan-sim":
         return steganogan
     if name=="f5-sim":
-        return outguess
+        return f5
     #print(f"|{name}|")
     print("Unknown simulator:", name)
     sys.exit(0)
