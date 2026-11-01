@@ -143,7 +143,7 @@ class RSAnalysis(object):
         self.abs_mask = np.abs(mask)
 
     def call(self, group):
-        flip = (group + self.cmask) ^ self.abs_mask - self.cmask
+        flip = ((group + self.cmask) ^ self.abs_mask) - self.cmask
         return  np.sign(smoothness(flip) - smoothness(group))
 
 
