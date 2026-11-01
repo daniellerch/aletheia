@@ -18,6 +18,8 @@ IGNORE_FILETYPES = ['inode/x-empty', 'application/x-dosexec', 'application/octet
 def check_password(params):
     passw, command, use_filetype, continue_searching, success_output_string = params
     cmd = command.replace("<PASSWORD>", passw)
+    # Printable version: non UTF-8 bytes are shown as \xNN
+    shown = passw.encode('utf-8', 'surrogateescape').decode('utf-8', 'backslashreplace')
 
     if use_filetype:
         tempd = tempfile.mkdtemp()
@@ -34,7 +36,7 @@ def check_password(params):
     if success_output_string != None:
         for line in output.decode().split('\n'):
             if success_output_string in line:
-                print("\nPassword found:", passw)
+                print("\nPassword found:", shown)
                 print(line)
                 return True
         return False
@@ -48,7 +50,7 @@ def check_password(params):
             pass
         if ft != None and ft not in IGNORE_FILETYPES:
             if not continue_searching:
-                print("\nPassword found:", passw)
+                print("\nPassword found:", shown)
                 shutil.rmtree(tempd, ignore_errors=True)
                 return True
 
@@ -69,12 +71,12 @@ def check_password(params):
 
             if candidate:
                 size = os.path.getsize(tempf)
-                print(f"Candidate password: {passw}, ft: {ft}, size: {size} bytes{content}")
+                print(f"Candidate password: {shown}, ft: {ft}, size: {size} bytes{content}")
 
         shutil.rmtree(tempd, ignore_errors=True)
 
     elif p.returncode==0:
-        print("\nPassword found:", passw)
+        print("\nPassword found:", shown)
         return True
     return False
 # }}}
@@ -87,7 +89,8 @@ def generic(command, password_file, use_filetype=False,
         print("ERROR: File not found -", password_file)
         sys.exit(0)
 
-    with open(password_file, "rU") as f:
+    # surrogateescape keeps non UTF-8 bytes, so the exact password is tested
+    with open(password_file, "r", errors="surrogateescape") as f:
         passwords = f.readlines()
 
     params = [ (passwd.replace("\n", ""), 
