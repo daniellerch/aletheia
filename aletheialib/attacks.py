@@ -289,6 +289,7 @@ def calibration_f5_octave_jpeg(filename, return_result=False):
 
     im_jpeg = JPEG(filename)
     impred_jpeg = JPEG(predfile)
+    shutil.rmtree(tmpdir)
     beta_avg = 0.0
     for i in range(im_jpeg.components()):
         dct_b = im_jpeg.coeffs(i)
@@ -308,8 +309,6 @@ def calibration_f5_octave_jpeg(filename, return_result=False):
     beta_avg /= im_jpeg.components()
     if return_result:
         return beta_avg
-
-    shutil.rmtree(tmpdir)
 
 # }}}
 
