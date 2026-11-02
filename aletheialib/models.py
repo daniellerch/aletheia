@@ -254,7 +254,7 @@ class NN:
 
         else:
             print("NN __init__ Error: network not found")
-            sys.exit(0)
+            sys.exit(1)
 
 
         if self.acc_grad>1:
@@ -515,10 +515,10 @@ class NN:
         multiple_stego_sets = len(stego_sets) > 1
         if not multiple_stego_sets and len(cover_list) != len(stego_sets[0]):
             print("NN valid_generator error: we expect same number of cover and stego images")
-            sys.exit(0)
+            sys.exit(1)
         if len(cover_list)*2 % batch != 0:
             print("NN valid_generator error: wrong batch size")
-            sys.exit(0)
+            sys.exit(1)
 
         C, S = [], []
         bs = batch//2
@@ -941,7 +941,7 @@ def dci_si_method(image_path, method, modelA=None, modelB=None):
 
     if len(B_files)==0:
         print("ERROR: Cannot prepare the B set", image_path, B_files, method, "embed_fn_saving=", embed_fn_saving)
-        sys.exit(0)
+        sys.exit(1)
 
     
     if modelA!=None and modelB!=None:

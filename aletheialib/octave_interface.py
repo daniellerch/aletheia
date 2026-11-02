@@ -29,7 +29,7 @@ FEAEXT_3CH = ["SCRMQ1", "GFR", "SRM", "DCTR"]
 def check_octave():
     if not shutil.which("octave"):
         print("ERROR: you need to install Octave to run this command!");
-        sys.exit(0)
+        sys.exit(1)
 # }}}
 
 # {{{ embed()

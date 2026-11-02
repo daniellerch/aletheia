@@ -93,7 +93,7 @@ def spa_image(image, channel=0):
 
     if k==0:
         print("ERROR")
-        sys.exit(0)
+        sys.exit(1)
 
     a=2*k
     b=2*(2*x-r.size)
@@ -361,7 +361,7 @@ def imgdiff(image1, image2):
 
     if len(I1.shape) != len(I2.shape):
         print("Error, both images must have the same dimensionality")
-        sys.exit(0)
+        sys.exit(1)
 
     if len(I1.shape) == 2:
         D = I1 - I2
@@ -393,7 +393,7 @@ def imgdiff_pixels(image1, image2):
 
     if len(I1.shape) != len(I2.shape):
         print("Error, both images must have the same dimensionality")
-        sys.exit(0)
+        sys.exit(1)
 
     if len(I1.shape) == 2:
         D = I1 - I2
@@ -436,7 +436,7 @@ def print_diffs(cover, stego):
 
     if len(C.shape) != len(S.shape):
         print("Error, both images must have the same dimensionality")
-        sys.exit(0)
+        sys.exit(1)
 
     if len(C.shape) == 2:
         D = S - C
@@ -525,7 +525,7 @@ def remove_alpha_channel(input_image, output_image):
     print(I.shape)
     if I.shape[2] != 4:
         print("Please provide a RGBA image")
-        sys.exit(0)
+        sys.exit(1)
     I[:,:,3] = 255;
     imsave(output_image, I)
 # }}}
@@ -615,12 +615,12 @@ def eof_extract(input_image, output_data):
     if not (raw[:2] == b"\xFF\xD8" or raw[:8] == b"\x89PNG\r\n\x1a\n" or
             raw[:6] in [b"GIF87a", b"GIF89a"]):
         print("Please provide a JPG, GIF or PNG file")
-        sys.exit(0)
+        sys.exit(1)
 
     end = _image_end(raw)
     if end is None:
         print("Error: the end of the image can not be found (corrupted file?)")
-        sys.exit(0)
+        sys.exit(1)
 
     data = raw[end:]
     if len(data)==0:

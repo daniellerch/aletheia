@@ -280,7 +280,7 @@ def steghide(path, payload, dst_path):
     capacity = _steghide_capacity(path)
     if capacity is None:
         print("ERROR: can not get capacity for", path)
-        sys.exit(0)
+        sys.exit(1)
 
     nbytes = int(capacity*float(payload));
 
@@ -334,7 +334,7 @@ def outguess(path, payload, dst_path):
     capacity = _steghide_capacity(path)
     if capacity is None:
         print("ERROR: can not get capacity for", path)
-        sys.exit(0)
+        sys.exit(1)
 
 
     password = ''.join(random.sample(string.ascii_letters+string.digits, 8))
@@ -542,7 +542,7 @@ def embedding_fn(name):
         return f5
     #print(f"|{name}|")
     print("Unknown simulator:", name)
-    sys.exit(0)
+    sys.exit(1)
 # }}}
 
 

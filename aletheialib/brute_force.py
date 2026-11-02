@@ -98,7 +98,7 @@ def generic(command, password_file, use_filetype=False,
     
     if not os.path.isfile(password_file):
         print("ERROR: File not found -", password_file)
-        sys.exit(0)
+        sys.exit(1)
 
     # surrogateescape keeps non UTF-8 bytes, so the exact password is tested
     with open(password_file, "r", errors="surrogateescape") as f:
@@ -134,7 +134,7 @@ def steghide(path, password_file):
 
     if not os.path.isfile(password_file):
         print("ERROR: File not found -", password_file)
-        sys.exit(0)
+        sys.exit(1)
 
     aletheialib.utils.check_bin("steghide")   
     command = f"steghide extract -sf {shlex.quote(path)} -xf output.txt -p <PASSWORD> -f"
@@ -152,7 +152,7 @@ def outguess(path, password_file):
 
     if not os.path.isfile(password_file):
         print("ERROR: File not found -", password_file)
-        sys.exit(0)
+        sys.exit(1)
 
     aletheialib.utils.check_bin("outguess")   
     command = f"outguess -k <PASSWORD> -r {shlex.quote(path)} <OUTPUT_FILE>"
@@ -165,7 +165,7 @@ def openstego(path, password_file):
 
     if not os.path.isfile(password_file):
         print("ERROR: File not found -", password_file)
-        sys.exit(0)
+        sys.exit(1)
 
     aletheialib.utils.check_bin("openstego")   
     command = f"openstego extract -sf {shlex.quote(path)} -p <PASSWORD> -xf <OUTPUT_FILE>"
@@ -183,7 +183,7 @@ def f5(path, password_file):
     
     if not os.path.isfile(password_file):
         print("ERROR: File not found -", password_file)
-        sys.exit(0)
+        sys.exit(1)
 
     # Password path
     if os.path.isabs(password_file):
@@ -214,7 +214,7 @@ def stegosuite(path, password_file):
 
     if not os.path.isfile(password_file):
         print("ERROR: File not found -", password_file)
-        sys.exit(0)
+        sys.exit(1)
 
     aletheialib.utils.check_bin("stegosuite")   
     command = f"stegosuite -k <PASSWORD> -x {shlex.quote(path)} "

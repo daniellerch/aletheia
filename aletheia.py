@@ -299,6 +299,7 @@ def main():
 
     else:
         print("Wrong command!")
+        sys.exit(1)
 
 
 

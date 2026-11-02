@@ -46,7 +46,7 @@ def extract_features(extract_fn, image_path, ofile, params={}):
     
     if os.path.isdir(output_file):
         print("The provided file is a directory:", output_file)
-        sys.exit(0)
+        sys.exit(1)
 
     if os.path.exists(output_file):
         print("Output file already exists! cotinue ...")
@@ -191,6 +191,6 @@ def extractor_fn(name):
         return DCTR_extract
 
     print("Unknown feature extractor:", name)
-    sys.exit(0)
+    sys.exit(1)
 
 

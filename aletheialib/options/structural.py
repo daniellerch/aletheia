@@ -38,7 +38,7 @@ def spa():
 
     if not aletheialib.utils.is_valid_image(sys.argv[2]):
         print("Please, provide a valid image")
-        sys.exit(0)
+        sys.exit(1)
 
     threshold = 0.05
     if len(sys.argv) == 4:
@@ -83,7 +83,7 @@ def rs():
 
     if not aletheialib.utils.is_valid_image(sys.argv[2]):
         print("Please, provide a valid image")
-        sys.exit(0)
+        sys.exit(1)
 
     threshold=0.05
     if len(sys.argv) == 4:
@@ -125,7 +125,7 @@ def ws():
 
     if not aletheialib.utils.is_valid_image(sys.argv[2]):
         print("Please, provide a valid image")
-        sys.exit(0)
+        sys.exit(1)
 
     threshold=0.05
     if len(sys.argv) == 4:
@@ -174,7 +174,7 @@ def triples():
 
     if not aletheialib.utils.is_valid_image(sys.argv[2]):
         print("Please, provide a valid image")
-        sys.exit(0)
+        sys.exit(1)
 
 
     threshold=0.05
@@ -225,7 +225,7 @@ def aump():
 
     if not aletheialib.utils.is_valid_image(sys.argv[2]):
         print("Please, provide a valid image")
-        sys.exit(0)
+        sys.exit(1)
 
 
     threshold=0.05

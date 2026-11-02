@@ -74,7 +74,7 @@ def _auto():
     files = nn.filter_images(files)
     if len(files)==0:
         print("ERROR: please provide valid files")
-        sys.exit(0)
+        sys.exit(1)
 
 
     jpg_files = []
@@ -199,7 +199,7 @@ def auto():
     files = nn.filter_images(files)
     if len(files)==0:
         print("ERROR: please provide valid files")
-        sys.exit(0)
+        sys.exit(1)
 
 
     jpg_files = []
@@ -313,11 +313,11 @@ def dci():
 
     if not os.path.isdir(sys.argv[3]):
         print("ERROR: Please, provide a valid directory\n")
-        sys.exit(0)
+        sys.exit(1)
 
     if len(files)<10:
         print("ERROR: We need more images from the same actor\n")
-        sys.exit(0)
+        sys.exit(1)
 
     
     ext = os.path.splitext(files[0])[1].lower().replace('.jpeg', '.jpg')
@@ -325,7 +325,7 @@ def dci():
         curr_ext = os.path.splitext(f)[1].lower().replace('.jpeg', '.jpg')
         if ext != curr_ext:
             print(f"ERROR: All images must be of the same type: {curr_ext}!={ext} \n")
-            sys.exit(0)
+            sys.exit(1)
 
     embed_fn_saving = False
     if ext=='.jpg':
@@ -360,7 +360,7 @@ def dci():
     if len(A_files)==0:
         print("ERROR: Cannot prepare the B set\n")
         shutil.rmtree(B_dir)
-        sys.exit(0)
+        sys.exit(1)
 
     # Make some replacements to adapt the name of the method with the name
     # of the model file
@@ -439,7 +439,7 @@ def dci_si():
         model_B = sys.argv[6]
         if not os.path.isfile(model_A) or not  os.path.isfile(model_B):
             print("Model not found. Check the file path.")
-            sys.exit(0)
+            sys.exit(1)
         print("Using custom models:")
         print("- Model A:", model_A)
         print("- Model B:", model_B)
@@ -474,10 +474,10 @@ def dci_si():
         m = method.replace('-sim', '').replace('-', '_')
         if ext=='.jpg' and m not in JPEG_METHODS:
             print("ERROR: Please, provide a compatible image for this method\n")
-            sys.exit(0)
+            sys.exit(1)
         elif ext!='.jpg' and m  in JPEG_METHODS:
             print("ERROR: Please, provide a compatible image for this method\n")
-            sys.exit(0)
+            sys.exit(1)
 
         dci_pred_score, aa_mean = dci_si_method(image_path, method, model_A, model_B)
 

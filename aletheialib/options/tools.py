@@ -44,10 +44,10 @@ def print_diffs():
     stego = aletheialib.utils.absolute_path(sys.argv[3])
     if not os.path.isfile(cover):
         print("Cover file not found:", cover)
-        sys.exit(0)
+        sys.exit(1)
     if not os.path.isfile(stego):
         print("Stego file not found:", stego)
-        sys.exit(0)
+        sys.exit(1)
 
     aletheialib.attacks.print_diffs(cover, stego)
     sys.exit(0)
@@ -69,21 +69,21 @@ def print_dct_diffs():
 
     if not os.path.isfile(cover):
         print("Cover file not found:", cover)
-        sys.exit(0)
+        sys.exit(1)
     if not os.path.isfile(stego):
         print("Stego file not found:", stego)
-        sys.exit(0)
+        sys.exit(1)
 
 
     name, ext = os.path.splitext(cover)
     if ext.lower() not in [".jpeg", ".jpg"] or not os.path.isfile(cover):
         print("Please, provide a JPEG image!\n")
-        sys.exit(0)
+        sys.exit(1)
 
     name, ext = os.path.splitext(stego)
     if ext.lower() not in [".jpeg", ".jpg"] or not os.path.isfile(stego):
         print("Please, provide a JPEG image!\n")
-        sys.exit(0)
+        sys.exit(1)
 
 
 
@@ -151,7 +151,7 @@ def plot_dct_histogram():
     name, ext = os.path.splitext(fn)
     if ext.lower() not in [".jpeg", ".jpg"] or not os.path.isfile(fn):
         print("Please, provide a JPEG image!\n")
-        sys.exit(0)
+        sys.exit(1)
     I = aletheialib.jpeg.JPEG(fn)
     channels = ["r", "g", "b"]
     dct_list = []
@@ -220,7 +220,7 @@ def print_coeffs():
     fn, ext = os.path.splitext(sys.argv[2])
     if ext[1:].lower() not in ["jpg", "jpeg"]:
         print("ERROR: Please, provide a JPEG image")
-        sys.exit(0)
+        sys.exit(1)
 
     import aletheialib.utils
     from aletheialib.jpeg import JPEG
@@ -248,7 +248,7 @@ def eof_extract():
 
     if not os.path.isfile(sys.argv[2]):
         print("Please, provide a valid image!\n")
-        sys.exit(0)
+        sys.exit(1)
 
     import aletheialib.attacks
     aletheialib.attacks.eof_extract(sys.argv[2], sys.argv[3])
@@ -265,7 +265,7 @@ def print_metadata():
 
     if not os.path.isfile(sys.argv[2]):
         print("Please, provide a valid image!\n")
-        sys.exit(0)
+        sys.exit(1)
 
     import aletheialib.attacks
     aletheialib.attacks.exif(sys.argv[2])

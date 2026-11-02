@@ -53,7 +53,7 @@ def split_sets():
 
     if len(cover_files)!=len(stego_files):
         print("ERROR: we expect the same number of cover and stego files");
-        sys.exit(0)
+        sys.exit(1)
 
 
     indices = list(range(len(cover_files)))
@@ -131,7 +131,7 @@ def split_sets_dci():
 
     if len(cover_files)!=len(stego_files) or len(stego_files)!=len(double_files):
         print("split-sets-dci error: we expect sets with the same number of images")
-        sys.exit(0)
+        sys.exit(1)
 
     indices = list(range(len(cover_files)))
     random.seed(seed)
@@ -233,7 +233,7 @@ def create_actors():
     min_max = sys.argv[7].split('-')
     if len(min_max)!=2:
         print("create-actors error: min-max format error, use for example: 10-50")
-        sys.exit(0)
+        sys.exit(1)
     seed=int(sys.argv[8])
 
     cover_files = sorted(glob.glob(os.path.join(cover_dir, '*')))
@@ -241,7 +241,7 @@ def create_actors():
 
     if len(cover_files)!=len(stego_files):
         print("ERROR: we expect the same number of cover and stego files");
-        sys.exit(0)
+        sys.exit(1)
 
 
     innocent_actors = os.path.join(output_dir, "innocent")
@@ -413,7 +413,7 @@ def nn_train(network):
         any(not files for files in trn_stego_sets) or
         any(not files for files in val_stego_sets)):
         print("ERROR: directory without files found")
-        sys.exit(0)
+        sys.exit(1)
 
 
     import aletheialib.models
@@ -526,7 +526,7 @@ def nn_predict(network):
     test_files = nn.filter_images(test_files)
     if len(test_files)==0:
         print("ERROR: please provice valid files")
-        sys.exit(0)
+        sys.exit(1)
 
 
     pred = nn.predict(test_files, 10)
@@ -585,7 +585,7 @@ def effnetb0_dci_score():
         glob.glob(os.path.join(A_stego_dir, '*')), B_double_dir)
     if len(A_cover_files)==0 or len(A_stego_files)==0:
         print("ERROR: no paired images found, check the directories\n")
-        sys.exit(0)
+        sys.exit(1)
 
     A_nn = aletheialib.models.NN("effnetb0", inference=True)
     A_nn.load_model(A_model_file)
@@ -682,7 +682,7 @@ def effnetb0_dci_predict():
         glob.glob(os.path.join(A_dir, '*')), B_dir)
     if len(A_files)==0:
         print("ERROR: no paired images found, check the directories\n")
-        sys.exit(0)
+        sys.exit(1)
 
     A_nn = aletheialib.models.NN("effnetb0", inference=True)
     A_nn.load_model(A_model_file)
@@ -827,11 +827,11 @@ def _actor(image_dir, output_file, dev_id="cpu"):
 
     if not os.path.isdir(image_dir):
         print("ERROR: Please, provide a valid directory\n")
-        sys.exit(0)
+        sys.exit(1)
 
     if len(files)<10:
         print("ERROR: We need more images from the same actor\n")
-        sys.exit(0)
+        sys.exit(1)
 
     
     ext = os.path.splitext(files[0])[1].lower().replace('.jpeg', '.jpg')
@@ -839,7 +839,7 @@ def _actor(image_dir, output_file, dev_id="cpu"):
         curr_ext = os.path.splitext(f)[1].lower().replace('.jpeg', '.jpg')
         if ext != curr_ext:
             print(f"ERROR: All images must be of the same type: {curr_ext}!={ext} \n")
-            sys.exit(0)
+            sys.exit(1)
 
     if ext=='.jpg':
         simulators = ["outguess-sim", "steghide-sim", "nsf5-color-sim", "j-uniward-color-sim"]
@@ -895,7 +895,7 @@ def _actor(image_dir, output_file, dev_id="cpu"):
         A_sim_files, B_files = aletheialib.utils.pair_by_basename(A_files, B_dir)
         if len(A_sim_files)==0:
             print("ERROR: Cannot prepare the B set:", B_dir)
-            sys.exit(0)
+            sys.exit(1)
 
         if method in A_models:
             ops.reset_default_graph()

@@ -42,11 +42,11 @@ def launch():
 
         if not aletheialib.utils.is_valid_image(sys.argv[2]):
             print("Please, provide a valid image")
-            sys.exit(0)
+            sys.exit(1)
 
         if not sys.argv[2].lower().endswith(('.jpg', '.jpeg')):
             print("Please, provide a JPEG file")
-            sys.exit(0)
+            sys.exit(1)
 
         fn = aletheialib.utils.absolute_path(sys.argv[2])
         aletheialib.attacks.calibration_f5_octave_jpeg(fn)

@@ -105,7 +105,7 @@ def check_bin(cmd):
     import shutil
     if not shutil.which(cmd):
         print("ERROR: you need to install "+cmd+" to run this command!");
-        sys.exit(0)
+        sys.exit(1)
 
 # {{{ init_tensorflow_safe()
 def init_tensorflow_safe(prefer_gpu: bool = True, quiet: bool = True):
@@ -202,7 +202,7 @@ def download_octave_code(method):
         urllib.request.urlretrieve(remote_license_file, local_license_file)
     except:
         print("Error,", method, "license cannot be downloaded")
-        sys.exit(0)
+        sys.exit(1)
 
 
     # Accept license
@@ -219,7 +219,7 @@ def download_octave_code(method):
         r = input("Do you agree? (y/n): ")
         if r == "n":
             print("The terms have not been accepted\n")
-            sys.exit(0)
+            sys.exit(1)
         elif r == "y":
             break
 
@@ -228,7 +228,7 @@ def download_octave_code(method):
         urllib.request.urlretrieve(remote_octave_file, local_octave_file)
     except:
         print("Error,", method, "code cannot be downloaded")
-        sys.exit(0)
+        sys.exit(1)
 
 # }}}
 
@@ -252,7 +252,7 @@ def download_octave_aux_file(fname):
         urllib.request.urlretrieve(remote_octave_file, local_octave_file)
     except:
         print("Error,", fname, "code cannot be downloaded")
-        sys.exit(0)
+        sys.exit(1)
 
 # }}}
 
@@ -276,7 +276,7 @@ def download_octave_jpeg_toolbox():
         urllib.request.urlretrieve(remote_license_file, local_license_file)
     except Exception as e:
         print("Error, JPEG TOOLBOX license cannot be downloaded")
-        sys.exit(0)
+        sys.exit(1)
 
     # Accept license
     print("\nTo use this command, you must accept the license of the JPEG TOOLBOX. In that")
@@ -289,7 +289,7 @@ def download_octave_jpeg_toolbox():
         r = input("Do you accept the license? (y/n): ")
         if r == "n":
             print("The license has not been accepted\n")
-            sys.exit(0)
+            sys.exit(1)
         elif r == "y":
             break
 
@@ -305,7 +305,7 @@ def download_octave_jpeg_toolbox():
         print(remote_file)
         print(local_file)
         print("Error, JPEG_READ_STRUCT cannot be downloaded")
-        sys.exit(0)
+        sys.exit(1)
 
 
     # Download JPEG TOOLBOX
@@ -316,7 +316,7 @@ def download_octave_jpeg_toolbox():
             urllib.request.urlretrieve(remote_file, local_file)
         except:
             print("Error,", remote_file, "cannot be downloaded")
-            sys.exit(0)
+            sys.exit(1)
 
 
     subprocess.run(["make"], cwd=os.path.join(cache_dir, 'jpeg_toolbox'))
@@ -343,7 +343,7 @@ def download_F5():
     while r not in ["y", "n"]:
         r = input("Do you agree to download the F5 software from 'aletheia-external-resources'? (y/n): ")
         if r == "n":
-            sys.exit(0)
+            sys.exit(1)
         elif r == "y":
             break
 
@@ -354,7 +354,7 @@ def download_F5():
         urllib.request.urlretrieve(remote_file, local_file)
     except:
         print("Error,", remote_file, "cannot be downloaded")
-        sys.exit(0)
+        sys.exit(1)
 
     # Unzip
     F5_path = os.path.join(cache_dir, "F5")
@@ -406,7 +406,7 @@ def download_e4s():
         urllib.request.urlretrieve(remote_license_file, local_license_file)
     except Exception as e:
         print("Error, e4s license cannot be downloaded")
-        sys.exit(0)
+        sys.exit(1)
 
     # Accept license
     print("\nENSEMBLE CLASSIFERS FOR STEGANALYSIS (e4s)\n")
@@ -420,7 +420,7 @@ def download_e4s():
         r = input("Do you accept the license? (y/n): ")
         if r == "n":
             print("The license has not been accepted\n")
-            sys.exit(0)
+            sys.exit(1)
         elif r == "y":
             break
 
@@ -432,7 +432,7 @@ def download_e4s():
             urllib.request.urlretrieve(remote_file, local_file)
         except:
             print("Error,", remote_file, "cannot be downloaded")
-            sys.exit(0)
+            sys.exit(1)
 
 
 
