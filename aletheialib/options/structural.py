@@ -250,7 +250,7 @@ def aump():
         if alpha_B>=threshold:
             print("Hidden data found in channel B", alpha_B)
     else:
-        alpha = O._attack('WS', path, params={"channel":1})["data"][0][0]
+        alpha = O._attack('AUMP', path, params={"channel":1})["data"][0][0]
         if alpha>=threshold:
             print("Hidden data found", alpha)
         else:
