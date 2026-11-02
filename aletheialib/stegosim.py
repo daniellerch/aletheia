@@ -420,7 +420,7 @@ def calc_lambda(rho_p1, rho_m1, message_length, n):
         else:
             l1 = lamb
             m1 = m2
-    iterations = iterations + 1;
+        iterations = iterations + 1
     return lamb
     # }}}
 

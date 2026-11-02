@@ -248,6 +248,7 @@ def eof_extract():
 
     if not os.path.isfile(sys.argv[2]):
         print("Please, provide a valid image!\n")
+        sys.exit(0)
 
     import aletheialib.attacks
     aletheialib.attacks.eof_extract(sys.argv[2], sys.argv[3])
@@ -264,6 +265,7 @@ def print_metadata():
 
     if not os.path.isfile(sys.argv[2]):
         print("Please, provide a valid image!\n")
+        sys.exit(0)
 
     import aletheialib.attacks
     aletheialib.attacks.exif(sys.argv[2])

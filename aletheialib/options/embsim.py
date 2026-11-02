@@ -29,8 +29,8 @@ doc="\n" \
 "  - nsf5-color-sim:       nsF5 color simulator.\n" \
 "  - steghide-sim:         Steghide simulator.\n" \
 "  - outguess-sim:         Outguess simulator.\n" \
-"  - steganogan-sim:       SteganoGAN simulator." 
-"  - f5-sim:               F5 simulator." 
+"  - steganogan-sim:       SteganoGAN simulator.\n" \
+"  - f5-sim:               F5 simulator.\n" 
 
 
 

@@ -197,7 +197,7 @@ def download_octave_code(method):
         return
 
     # Download the license if available
-    os.makedirs(os.path.join(cache_dir, "octave"), exist_ok=True)
+    os.makedirs(cache_dir, exist_ok=True)
     try:
         urllib.request.urlretrieve(remote_license_file, local_license_file)
     except:
@@ -247,7 +247,7 @@ def download_octave_aux_file(fname):
         return
 
     # Download the file
-    os.makedirs(os.path.join(cache_dir, "octave"), exist_ok=True)
+    os.makedirs(cache_dir, exist_ok=True)
     try:
         urllib.request.urlretrieve(remote_octave_file, local_octave_file)
     except:
@@ -398,6 +398,7 @@ def download_e4s():
         return
 
     # Download the license if available
+    os.makedirs(cache_dir, exist_ok=True)
     licpath = 'e4s.LICENSE'
     remote_license_file = EXTERNAL_RESOURCES+'octave/code/'+licpath
     local_license_file = os.path.join(cache_dir, licpath)
