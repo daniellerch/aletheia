@@ -22,7 +22,7 @@ from multiprocessing import cpu_count
 # {{{ Ensemble4Stego
 
 #M_BIN="/usr/local/MATLAB/R2013a/bin/matlab -nodesktop -nojvm -nosplash -r"
-M_BIN="octave -q --no-gui --eval"
+_q = utils.octave_str # quote strings for Octave code
 
 class Ensemble4Stego:
 
@@ -62,14 +62,12 @@ class Ensemble4Stego:
         del X
 
         m_code=""
-        m_code+="cd "+self.__tmpdir+";"
-        m_code+="addpath('"+m_path+"');"
+        m_code+="cd("+_q(self.__tmpdir)+");"
+        m_code+="addpath("+_q(m_path)+");"
         m_code+="warning('off');"
-        m_code+="ensemble_fit('"+pcover+"', '"+pstego+"', '"+pclf+"');"
+        m_code+="ensemble_fit("+_q(pcover)+", "+_q(pstego)+", "+_q(pclf)+");"
         m_code+="exit"
-        p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
-        # output, err = p.communicate()
-        status = p.wait()
+        p=utils.run_octave(m_code)
 
         self.__mat_clf=loadmat(pclf)
         shutil.rmtree(self.__tmpdir)
@@ -97,14 +95,12 @@ class Ensemble4Stego:
         pvotes=self.__tmpdir+"/votes.txt"
 
         m_code=""
-        m_code+="cd "+self.__tmpdir+";"
-        m_code+="addpath('"+m_path+"');"
+        m_code+="cd("+_q(self.__tmpdir)+");"
+        m_code+="addpath("+_q(m_path)+");"
         m_code+="warning('off');"
-        m_code+="ensemble_predict('"+pclf+"', '"+path+"', '"+pvotes+"');"
+        m_code+="ensemble_predict("+_q(pclf)+", "+_q(path)+", "+_q(pvotes)+");"
         m_code+="exit"
-        p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
-        #output, err = p.communicate()
-        status = p.wait()
+        p=utils.run_octave(m_code)
 
         with open(pvotes, 'r') as f:
             lines=f.readlines()

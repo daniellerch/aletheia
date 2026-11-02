@@ -4,12 +4,42 @@ import os
 import re
 import sys
 import zipfile
+import subprocess
 from PIL import Image
 import urllib.request
 import urllib.error
 
 
 EXTERNAL_RESOURCES='https://raw.githubusercontent.com/daniellerch/aletheia-external-resources/main/'
+
+# {{{ octave_str()
+def octave_str(s):
+    """ Quote a string as an Octave literal, so that a file name can not
+        break or inject Octave code """
+    s = str(s)
+    if s.isprintable():
+        return "'" + s.replace("'", "''") + "'"
+    # Newlines, control characters or bytes that are not valid UTF-8
+    return "char(["+",".join(str(b) for b in os.fsencode(s))+"])"
+# }}}
+
+# {{{ run_octave()
+def run_octave(m_code):
+    """ Run Octave code without a shell """
+    return subprocess.run(["octave", "-q", "--no-gui", "--eval", m_code],
+                          stdout=subprocess.PIPE)
+# }}}
+
+# {{{ jpeg_quality()
+def jpeg_quality(path, default=95):
+    """ JPEG quality estimated by ImageMagick """
+    try:
+        p = subprocess.run(["identify", "-format", "%Q", os.path.abspath(path)],
+                           stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        return int(p.stdout)
+    except Exception:
+        return default
+# }}}
 
 def is_valid_image(path):
  

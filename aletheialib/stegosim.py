@@ -3,6 +3,7 @@ import sys
 import scipy
 import logging
 import numpy
+import shlex
 import string
 import tempfile
 import shutil
@@ -197,13 +198,14 @@ def experimental(path, payload):
     return octave_interface.embed('experimental', path, payload)
 
 def custom(path, command, dst_path):
-    bn = os.path.basename(path)
     shutil.copyfile(path, dst_path)
-    cmd = command.replace("<IMAGE>", dst_path)
-    FNUL = open(os.devnull, 'w')
-    p=subprocess.Popen(cmd, stdout=FNUL, stderr=FNUL, shell=True)
-    #output, err = p.communicate()
-    status = p.wait()
+    # The command is written by the user and needs a shell, but the image
+    # path comes from a file name, so it is quoted
+    q = shlex.quote(dst_path)
+    cmd = command.replace('"<IMAGE>"', q).replace("'<IMAGE>'", q)
+    cmd = cmd.replace("<IMAGE>", q)
+    subprocess.run(cmd, shell=True, 
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 
@@ -237,20 +239,16 @@ def lsbr(path, payload):
     return X
 # }}}
 
-# {{{ steghide()
-def steghide(path, payload, dst_path):
+# {{{ _steghide_capacity()
+def _steghide_capacity(path):
+    """ Capacity in bytes estimated by steghide, or None """
+    p=subprocess.run(["steghide", "info", os.path.abspath(path)],
+                     input=b'n',
+                     stdout=subprocess.PIPE,
+                     stderr=subprocess.DEVNULL,
+                     env=dict(os.environ, LANG="C", LC_ALL="C"))
+    output = p.stdout.decode(errors="replace")
 
-    p=subprocess.Popen("LANG=en_US && steghide info "+path, \
-                       shell=True,  
-                       stdout=subprocess.PIPE,   
-                       stdin=subprocess.PIPE, 
-                       stderr=subprocess.DEVNULL) 
-    output, err = p.communicate(input=b'n')   
-    status = p.wait() 
-    output = output.decode()   
- 
-    found = False
-    capacity = 0.0
     for line in output.splitlines():
         if "capacity" in line:  
             m = 1 
@@ -263,11 +261,24 @@ def steghide(path, payload, dst_path):
                 m = 1024*1024 
             elif "Byte" in line: 
                 line = line.replace("Byte", "")  
-     
-            capacity = int(float(line)*m) 
-            found = True
-            break
-    if not found:
+            return int(float(line)*m) 
+    return None
+# }}}
+
+# {{{ _secret_file()
+def _secret_file(nbytes):
+    """ Temporary file with random data to embed """
+    fd, secret_path = tempfile.mkstemp(suffix=".data")
+    with os.fdopen(fd, "wb") as secret:
+        secret.write(os.urandom(nbytes))
+    return secret_path
+# }}}
+
+# {{{ steghide()
+def steghide(path, payload, dst_path):
+
+    capacity = _steghide_capacity(path)
+    if capacity is None:
         print("ERROR: can not get capacity for", path)
         sys.exit(0)
 
@@ -275,14 +286,13 @@ def steghide(path, payload, dst_path):
 
     password = ''.join(random.sample(string.ascii_letters+string.digits, 8))
 
-    with open("/tmp/secret-"+password+".data", "wb") as secret:
-        secret.write(os.urandom(nbytes))
-
-
-    cmd = "steghide embed -cf "+path+" -ef /tmp/secret-"+password+".data -sf " \
-          +dst_path+" -p "+password+" -Z -q"
-    os.system(cmd)                                                           
-    os.remove("/tmp/secret-"+password+".data")  
+    secret_path = _secret_file(nbytes)
+    try:
+        subprocess.run(["steghide", "embed", "-cf", os.path.abspath(path),
+                        "-ef", secret_path, "-sf", os.path.abspath(dst_path),
+                        "-p", password, "-Z", "-q"])
+    finally:
+        os.remove(secret_path)
 
 # }}}
 
@@ -297,29 +307,22 @@ def f5(path, payload, dst_path):
         nbytes += nz_coeffs*float(payload)
     nbytes = int(round(nbytes))
 
-
-    # Image path
-    if os.path.isabs(path):
-        image_path = path
-    else:
-        image_path = os.path.join(os.getcwd(), path)
-
     # Get the directory where the resources are installed
     dir_path = os.path.dirname(os.path.realpath(__file__))
     dir_path = os.path.join(dir_path, os.pardir, 'aletheia-cache', 'F5')
-    os.chdir(dir_path)
     utils.check_bin("java")   
 
     print("payload:", payload, "bytes to hide:", nbytes)
 
     password = ''.join(random.sample(string.ascii_letters+string.digits, 8))
 
-    with open("/tmp/secret-"+password+".data", "wb") as secret:
-        secret.write(os.urandom(nbytes))
-
-    cmd = "java Embed  -p "+password+" -e /tmp/secret-"+password+".data "+image_path+" "+dst_path
-    os.system(cmd)                                                           
-    os.remove("/tmp/secret-"+password+".data")  
+    secret_path = _secret_file(nbytes)
+    try:
+        subprocess.run(["java", "Embed", "-p", password, "-e", secret_path,
+                        os.path.abspath(path), os.path.abspath(dst_path)],
+                       cwd=dir_path)
+    finally:
+        os.remove(secret_path)
 
 # }}}
 
@@ -328,35 +331,8 @@ def outguess(path, payload, dst_path):
 
     # XXX: We use steghide to estimate the capacity, this is not a good
     # option but Outguess does not provide this feature.
-    p=subprocess.Popen("LANG=en_US && steghide info "+path, \
-                       shell=True,  
-                       stdout=subprocess.PIPE,   
-                       stdin=subprocess.PIPE, 
-                       stderr=subprocess.DEVNULL) 
-    output, err = p.communicate(input=b'n')   
-    status = p.wait() 
-    output = output.decode()   
- 
-    found = False
-    capacity = 0.0
-    for line in output.splitlines():
-        if "capacity" in line:  
-            m = 1 
-            line = line.replace("capacity: ", "") 
-            if "KB" in line: 
-                line = line.replace("KB", "") 
-                m = 1024  
-            elif "MB" in line:  
-                line = line.replace("MB", "") 
-                m = 1024*1024 
-            elif "Byte" in line: 
-                line = line.replace("Byte", "")  
-     
-            capacity = int(float(line)*m) 
-            found = True
-            break
-
-    if not found:
+    capacity = _steghide_capacity(path)
+    if capacity is None:
         print("ERROR: can not get capacity for", path)
         sys.exit(0)
 
@@ -369,14 +345,13 @@ def outguess(path, payload, dst_path):
     for i in range(100): 
         nbytes = int(capacity*float(payload));
         payload = float(payload)*0.9
-        with open("/tmp/secret-"+password+".data", "wb") as secret:
-            secret.write(os.urandom(nbytes))
-        cmd = "outguess -k "+password+" -d "+"/tmp/secret-"+password+".data " \
-              +path+" "+dst_path+" 2>/dev/null"
-        exit_status = os.WEXITSTATUS(os.system(cmd))
-        os.remove("/tmp/secret-"+password+".data")  
-        #if exit_status == 0:
-        #    break
+        secret_path = _secret_file(nbytes)
+        try:
+            subprocess.run(["outguess", "-k", password, "-d", secret_path,
+                            os.path.abspath(path), os.path.abspath(dst_path)],
+                           stderr=subprocess.DEVNULL)
+        finally:
+            os.remove(secret_path)
         if os.path.exists(dst_path) and os.path.getsize(dst_path)>0:
             return
     print("WARNING: Outguess embedding failed:", path)
@@ -394,10 +369,8 @@ def steganogan(path, payload, dst_path):
     #print("nbytes:", nbytes)
 
     msg = ''.join(random.choice(string.ascii_letters+string.digits) for i in range(nbytes))
-    cmd = "steganogan encode --cpu "+path+" "+msg+" -o "+dst_path
-    #cmd = "steganogan encode "+path+" "+msg+" -o "+dst_path
-
-    os.system(cmd)     
+    subprocess.run(["steganogan", "encode", "--cpu", os.path.abspath(path),
+                    msg, "-o", os.path.abspath(dst_path)])
 
 # }}}
 

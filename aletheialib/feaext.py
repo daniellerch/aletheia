@@ -50,7 +50,7 @@ def extract_features(extract_fn, image_path, ofile, params={}):
 
     if os.path.exists(output_file):
         print("Output file already exists! cotinue ...")
-        with open(output_file+".label", 'r') as f:
+        with open(output_file+".label", 'r', errors="surrogateescape") as f:
             labels = [os.path.join(image_path, x) for x in f.read().splitlines()]
 
         pending_files = [x for x in files if x not in labels]
@@ -66,12 +66,13 @@ def extract_features(extract_fn, image_path, ofile, params={}):
             return
 
         X = X.reshape((1, X.shape[0]))
-        lock.acquire()
-        with open(output_file, 'a+') as f_handle:
-            with open(output_file+".label", 'a+') as f_handle_label:
-                numpy.savetxt(f_handle, X)
-                f_handle_label.write(os.path.basename(path)+"\n")
-        lock.release()
+        # surrogateescape: file names that are not valid UTF-8
+        with lock:
+            with open(output_file, 'a+') as f_handle:
+                with open(output_file+".label", 'a+', 
+                          errors="surrogateescape") as f_handle_label:
+                    numpy.savetxt(f_handle, X)
+                    f_handle_label.write(os.path.basename(path)+"\n")
 
     pool = ThreadPool(cpu_count())
     results = pool.map(extract_and_save, files)
@@ -121,13 +122,7 @@ def SCRMQ1_extract(path):
 def GFR_extract(path, quality="auto", rotations=32):
     
     if quality=="auto":
-        try:
-            p=subprocess.Popen("identify -format '%Q' "+path, \
-                               stdout=subprocess.PIPE, shell=True)
-            quality, err = p.communicate()
-            status = p.wait()
-        except:
-            quality = 95
+        quality = utils.jpeg_quality(path)
 
 
     # suppoted qualities
@@ -155,13 +150,7 @@ def GFR_extract(path, quality="auto", rotations=32):
 def DCTR_extract(path, quality="auto"):
     
     if quality=="auto":
-        try:
-            p=subprocess.Popen("identify -format '%Q' "+path, \
-                               stdout=subprocess.PIPE, shell=True)
-            quality, err = p.communicate()
-            status = p.wait()
-        except:
-            quality = 95
+        quality = utils.jpeg_quality(path)
 
 
     # suppoted qualities

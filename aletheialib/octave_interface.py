@@ -19,7 +19,7 @@ import multiprocessing
 from multiprocessing.dummy import Pool as ThreadPool 
 from multiprocessing import cpu_count
 
-M_BIN="octave -q --no-gui --eval"
+_q = utils.octave_str # quote strings for Octave code
 
 
 FEAEXT_1CH = ["GFR", "DCTR", "SRM", "SRMQ1"]
@@ -54,7 +54,7 @@ def embed(sim, path, payload, dst_path=None):
             os.system("make")
 
 
-    payload = str(payload)
+    payload = str(float(payload))
     for i in range(3):
         try:
             X=numpy.array([])
@@ -68,59 +68,55 @@ def embed(sim, path, payload, dst_path=None):
             X_path=tmpdir+"/X.mat"
 
             m_code=""
-            m_code+="cd "+tmpdir+";"
-            m_code+="addpath('"+m_path+"');"
+            m_code+="cd("+_q(tmpdir)+");"
+            m_code+="addpath("+_q(m_path)+");"
             m_code+="warning('off');"
             m_code+="pkg load image;"
             m_code+="pkg load signal;"
             m_code+="pkg load nan;"
 
             if sim=='wow':
-                m_code+="X=WOW('"+path+"',"+payload+");"
+                m_code+="X=WOW("+_q(path)+","+payload+");"
             elif sim=='hugo':
-                m_code+="X=HUGO('"+path+"',"+payload+");"
+                m_code+="X=HUGO("+_q(path)+","+payload+");"
             elif sim=='s_uniward':
-                m_code+="X=S_UNIWARD('"+path+"',"+payload+");"
+                m_code+="X=S_UNIWARD("+_q(path)+","+payload+");"
             elif sim=='s_uniward_color':
-                m_code+="X=S_UNIWARD_COLOR('"+path+"',"+payload+");"
+                m_code+="X=S_UNIWARD_COLOR("+_q(path)+","+payload+");"
             elif sim=='hill':
-                m_code+="X=HILL('"+path+"',"+payload+");"
+                m_code+="X=HILL("+_q(path)+","+payload+");"
             elif sim=='hill_color':
-                m_code+="X=HILL_COLOR('"+path+"',"+payload+");"
+                m_code+="X=HILL_COLOR("+_q(path)+","+payload+");"
             elif sim=='j_uniward':
-                m_code+="J_UNIWARD('"+path+"',"+payload+",'"+dst_path+"');"
+                m_code+="J_UNIWARD("+_q(path)+","+payload+","+_q(dst_path)+");"
             elif sim=='j_uniward_color':
-                m_code+="J_UNIWARD_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
+                m_code+="J_UNIWARD_COLOR("+_q(path)+","+payload+","+_q(dst_path)+");"
             elif sim=='j_mipod':
-                m_code+="J_MIPOD('"+path+"',"+payload+",'"+dst_path+"');"
+                m_code+="J_MIPOD("+_q(path)+","+payload+","+_q(dst_path)+");"
             elif sim=='j_mipod_color':
-                m_code+="J_MIPOD_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
+                m_code+="J_MIPOD_COLOR("+_q(path)+","+payload+","+_q(dst_path)+");"
             elif sim=='nsf5':
-                m_code+="NSF5('"+path+"',"+payload+",'"+dst_path+"');"
+                m_code+="NSF5("+_q(path)+","+payload+","+_q(dst_path)+");"
             elif sim=='nsf5_color':
-                m_code+="NSF5_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
+                m_code+="NSF5_COLOR("+_q(path)+","+payload+","+_q(dst_path)+");"
             elif sim=='ebs':
-                m_code+="EBS('"+path+"',"+payload+",'"+dst_path+"');"
+                m_code+="EBS("+_q(path)+","+payload+","+_q(dst_path)+");"
             elif sim=='ebs_color':
-                m_code+="EBS_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
+                m_code+="EBS_COLOR("+_q(path)+","+payload+","+_q(dst_path)+");"
             elif sim=='ued':
-                m_code+="UED('"+path+"',"+payload+",'"+dst_path+"');"
+                m_code+="UED("+_q(path)+","+payload+","+_q(dst_path)+");"
             elif sim=='ued_color':
-                m_code+="UED_COLOR('"+path+"',"+payload+",'"+dst_path+"');"
+                m_code+="UED_COLOR("+_q(path)+","+payload+","+_q(dst_path)+");"
             elif sim=='experimental':
-                m_code+="X=EXPERIMENTAL('"+path+"',"+payload+");"
+                m_code+="X=EXPERIMENTAL("+_q(path)+","+payload+");"
             elif sim=='jpeg_read_struct':
-                m_code+="X=JPEG_READ_STRUCT('"+path+"');"
+                m_code+="X=JPEG_READ_STRUCT("+_q(path)+");"
 
             if not dst_path:
-                m_code+="save('-mat7-binary', '"+X_path+"','X');"
+                m_code+="save('-mat7-binary', "+_q(X_path)+",'X');"
             m_code+="exit"
 
-            p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
-            #print(M_BIN+" \""+m_code+"\"")
-            output, err = p.communicate()
-            #print(output)
-            status = p.wait()
+            p=utils.run_octave(m_code)
 
             if not dst_path:
                 data=loadmat(X_path)
@@ -163,25 +159,23 @@ def _extract(extractor_name, path, params={}):
 
         data_path=tmpdir+"/data.mat"
         m_code=""
-        m_code+="cd "+tmpdir+";"
-        m_code+="addpath('"+m_path+"');"
+        m_code+="cd("+_q(tmpdir)+");"
+        m_code+="addpath("+_q(m_path)+");"
         m_code+="warning('off');"
         m_code+="pkg load image;"
         m_code+="pkg load signal;"
         m_code+="pkg load nan;"
         if extractor_name=="GFR":
-            m_code+="data="+extractor_name+"('"+path+"'," \
-                    +str(params["rotations"])+", "+str(params["quality"])+", "+str(channel)+");"
+            m_code+="data="+extractor_name+"("+_q(path)+"," \
+                    +str(int(params["rotations"]))+", "+str(int(params["quality"]))+", "+str(int(channel))+");"
         elif extractor_name=="DCTR":
-            m_code+="data="+extractor_name+"('"+path+"'," \
-                    +str(params["quality"])+", "+str(channel)+");"
+            m_code+="data="+extractor_name+"("+_q(path)+"," \
+                    +str(int(params["quality"]))+", "+str(int(channel))+");"
         else:
-            m_code+="data="+extractor_name+"('"+path+"', "+str(channel)+");"
-        m_code+="save('-mat7-binary', '"+data_path+"','data');"
+            m_code+="data="+extractor_name+"("+_q(path)+", "+str(int(channel))+");"
+        m_code+="save('-mat7-binary', "+_q(data_path)+",'data');"
         m_code+="exit"
-        p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
-        # output, err = p.communicate()
-        status = p.wait()
+        p=utils.run_octave(m_code)
 
         data=loadmat(data_path)
         shutil.rmtree(tmpdir)
@@ -227,23 +221,21 @@ def _jpeg(fn_name, path):
             X_path=tmpdir+"/X.mat"
 
             m_code=""
-            m_code+="cd "+tmpdir+";"
-            m_code+="addpath('"+m_path+"');"
+            m_code+="cd("+_q(tmpdir)+");"
+            m_code+="addpath("+_q(m_path)+");"
             m_code+="warning('off');"
             m_code+="pkg load image;"
             m_code+="pkg load signal;"
             m_code+="pkg load nan;"
 
             if fn_name=='jpeg_read_struct':
-                m_code+="X=JPEG_READ_STRUCT('"+path+"');"
+                m_code+="X=JPEG_READ_STRUCT("+_q(path)+");"
 
             if fn_name in fn_names_with_return:
-                m_code+="save('-mat7-binary', '"+X_path+"','X');"
+                m_code+="save('-mat7-binary', "+_q(X_path)+",'X');"
             m_code+="exit"
 
-            p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
-            #output, err = p.communicate()
-            status = p.wait()
+            p=utils.run_octave(m_code)
 
             if fn_name in fn_names_with_return:
                 data=loadmat(X_path)
@@ -283,19 +275,16 @@ def _attack(attack_name, path, params={}):
 
     data_path=tmpdir+"/data.mat"
     m_code=""
-    m_code+="cd "+tmpdir+";"
-    m_code+="addpath('"+m_path+"');"
+    m_code+="cd("+_q(tmpdir)+");"
+    m_code+="addpath("+_q(m_path)+");"
     m_code+="warning('off');"
     m_code+="pkg load image;"
     m_code+="pkg load signal;"
     m_code+="pkg load nan;"
-    m_code+="data="+attack_name+"('"+path+"', "+str(channel)+");"
-    m_code+="save('-mat7-binary', '"+data_path+"','data');"
+    m_code+="data="+attack_name+"("+_q(path)+", "+str(int(channel))+");"
+    m_code+="save('-mat7-binary', "+_q(data_path)+",'data');"
     m_code+="exit"
-    p=subprocess.Popen(M_BIN+" \""+m_code+"\"", stdout=subprocess.PIPE, shell=True)
-    #output, err = p.communicate()
-    #print(output)
-    status = p.wait()
+    p=utils.run_octave(m_code)
 
     data=loadmat(data_path)
     shutil.rmtree(tmpdir)

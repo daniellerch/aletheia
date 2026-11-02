@@ -217,7 +217,7 @@ def calibration_f5(path):
 
     tmpdir = tempfile.mkdtemp()
     predfile = os.path.join(tmpdir, 'img.jpg')
-    os.system("convert -chop 4x4 "+path+" "+predfile)
+    subprocess.run(["convert", "-chop", "4x4", os.path.abspath(path), predfile])
     im_jpeg = jt.load(path)
     impred_jpeg = jt.load(predfile)
     shutil.rmtree(tmpdir)
@@ -244,7 +244,7 @@ def calibration_chisquare_mode(path):
 
     tmpdir = tempfile.mkdtemp()
     predfile = os.path.join(tmpdir, 'img.jpg')
-    os.system("convert -chop 4x4 "+path+" "+predfile)
+    subprocess.run(["convert", "-chop", "4x4", os.path.abspath(path), predfile])
     im_jpeg = jt.load(path)
     impred_jpeg = jt.load(predfile)
     shutil.rmtree(tmpdir)
@@ -286,7 +286,7 @@ def calibration_f5_octave_jpeg(filename, return_result=False):
     """ It uses JPEG from octave """
     tmpdir = tempfile.mkdtemp()
     predfile = os.path.join(tmpdir, 'img.jpg')
-    os.system("convert -chop 4x4 "+filename+" "+predfile)
+    subprocess.run(["convert", "-chop", "4x4", os.path.abspath(filename), predfile])
 
     im_jpeg = JPEG(filename)
     impred_jpeg = JPEG(predfile)

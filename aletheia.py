@@ -25,6 +25,10 @@ import aletheialib.options as options
 
 def main():
 
+    # File names that are not valid UTF-8 are printed escaped instead of
+    # raising UnicodeEncodeError
+    sys.stdout.reconfigure(errors="backslashreplace")
+    sys.stderr.reconfigure(errors="backslashreplace")
 
     if len(sys.argv)<2:
         print(sys.argv[0], "<command>\n")
