@@ -8,7 +8,6 @@ import ntpath
 import tempfile
 import subprocess
 
-from io import BytesIO
 from aletheialib import stegosim, utils
 
 import numpy as np
@@ -532,35 +531,104 @@ def remove_alpha_channel(input_image, output_image):
     imsave(output_image, I)
 # }}}
 
+# {{{ _image_end()
+def _jpeg_end(raw):
+    """ Offset after the EOI marker, following the JPEG segments (so an
+        FF D9 inside the EXIF thumbnail or the hidden data is not used) """
+    i = 2 # after SOI
+    while i+2 <= len(raw):
+        if raw[i] != 0xFF:
+            return None
+        marker = raw[i+1]
+        if marker == 0xFF: # fill byte
+            i += 1
+            continue
+        if marker == 0xD9: # EOI
+            return i+2
+        if marker == 0x01 or 0xD0 <= marker <= 0xD7: # no length
+            i += 2
+            continue
+        if i+4 > len(raw):
+            return None
+        length = int.from_bytes(raw[i+2:i+4], 'big')
+        i += 2+length
+        if marker == 0xDA: # SOS: entropy-coded data until the next marker
+            while i+1 < len(raw):
+                if raw[i] == 0xFF and raw[i+1] != 0x00 and \
+                   not 0xD0 <= raw[i+1] <= 0xD7 and raw[i+1] != 0xFF:
+                    break
+                i += 1
+    return None
+
+def _png_end(raw):
+    """ Offset after the IEND chunk """
+    i = 8 # after the signature
+    while i+12 <= len(raw):
+        length = int.from_bytes(raw[i:i+4], 'big')
+        ctype = raw[i+4:i+8]
+        i += 12+length
+        if ctype == b"IEND":
+            return i if i <= len(raw) else None
+    return None
+
+def _gif_end(raw):
+    """ Offset after the trailer (0x3B) """
+    def skip_sub_blocks(i):
+        while i < len(raw) and raw[i] != 0:
+            i += raw[i]+1
+        return i+1
+    i = 13 # header + logical screen descriptor
+    if raw[10] & 0x80: # global color table
+        i += 3*2**((raw[10] & 0x07)+1)
+    while i < len(raw):
+        if raw[i] == 0x3B: # trailer
+            return i+1
+        elif raw[i] == 0x21: # extension
+            i = skip_sub_blocks(i+2)
+        elif raw[i] == 0x2C: # image descriptor
+            flags = raw[i+9]
+            i += 10
+            if flags & 0x80: # local color table
+                i += 3*2**((flags & 0x07)+1)
+            i = skip_sub_blocks(i+1) # LZW minimum code size + data
+        else:
+            return None
+    return None
+
+def _image_end(raw):
+    """ Offset where the image ends, according to its format, or None """
+    try:
+        if raw[:2] == b"\xFF\xD8":
+            return _jpeg_end(raw)
+        if raw[:8] == b"\x89PNG\r\n\x1a\n":
+            return _png_end(raw)
+        if raw[:6] in [b"GIF87a", b"GIF89a"]:
+            return _gif_end(raw)
+    except IndexError:
+        pass
+    return None
+# }}}
+
 # {{{ eof_extract()
 def eof_extract(input_image, output_data): 
 
-    name, ext = os.path.splitext(input_image)
-
-    eof = None
-    if ext.lower() in [".jpeg", ".jpg"]:
-        eof = b"\xFF\xD9"
-    elif ext.lower() in [".gif"]:
-        eof = b"\x00\x3B"
-    elif ext.lower() in [".png"]:
-        eof = b"\x49\x45\x4E\x44\xAE\x42\x60\x82"
-    else:
+    raw = open(input_image, 'rb').read()
+    if not (raw[:2] == b"\xFF\xD8" or raw[:8] == b"\x89PNG\r\n\x1a\n" or
+            raw[:6] in [b"GIF87a", b"GIF89a"]):
         print("Please provide a JPG, GIF or PNG file")
         sys.exit(0)
 
-    raw = open(input_image, 'rb').read()
-    buff = BytesIO()
-    buff.write(raw)
-    buff.seek(0)
-    bytesarray = buff.read()
-    data = bytesarray.rsplit(eof, 1) # last occurrence
+    end = _image_end(raw)
+    if end is None:
+        print("Error: the end of the image can not be found (corrupted file?)")
+        sys.exit(0)
 
-    # data[0] contains the original image
-    if len(data[1])==0:
+    data = raw[end:]
+    if len(data)==0:
         print("No data found")
         sys.exit(0)
     with open(output_data, 'wb') as outf:
-        outf.write(data[1])
+        outf.write(data)
 
     ft = magic.Magic(mime=True).from_file(output_data)
     print("\nData extracted from", input_image, "to", output_data, "("+ft+")\n")
