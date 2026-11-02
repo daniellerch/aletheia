@@ -524,32 +524,32 @@ class NN:
         bs = batch//2
         while True:
             for i in range(len(cover_list)):
-                if bs>0:
-                    try:
-                        C_path = cover_list[i]
-                        if multiple_stego_sets:
-                            S_path = self._random_stego(stego_sets)
-                        else:
-                            S_path = stego_sets[0][i]
+                try:
+                    C_path = cover_list[i]
+                    if multiple_stego_sets:
+                        S_path = self._random_stego(stego_sets)
+                    else:
+                        S_path = stego_sets[0][i]
 
-                        if self.replace_method:
-                           S_path = S_path.replace(self.replace_base_str,
-                                                   random.choice(self.replace_list))
+                    if self.replace_method:
+                       S_path = S_path.replace(self.replace_base_str,
+                                               random.choice(self.replace_list))
 
-                        Ic = imread(C_path)
-                        Is = imread(S_path)
-                        if Ic.shape!=self.shape or Is.shape!=self.shape:
-                            #print("NN valid_generator warning: wrong shape:", C_path, S_path)
-                            continue
-                        C.append(Ic)
-                        S.append(Is)
-                        bs -= 1
-                    except KeyboardInterrupt:
-                        sys.exit(0)
-                    except:
-                        #print("NN valid_generator warning: cannot read image:", C_path, S_path, i)
+                    Ic = imread(C_path)
+                    Is = imread(S_path)
+                    if Ic.shape!=self.shape or Is.shape!=self.shape:
+                        #print("NN valid_generator warning: wrong shape:", C_path, S_path)
                         continue
-                else:
+                except KeyboardInterrupt:
+                    sys.exit(0)
+                except:
+                    #print("NN valid_generator warning: cannot read image:", C_path, S_path, i)
+                    continue
+
+                C.append(Ic)
+                S.append(Is)
+                bs -= 1
+                if bs == 0:
                     if self.div255:
                         X = np.vstack((C,S)).astype('float32')/255
                     else:
