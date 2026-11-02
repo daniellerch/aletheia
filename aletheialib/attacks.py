@@ -317,52 +317,41 @@ def calibration_f5_octave_jpeg(filename, return_result=False):
 
 # -- NAIVE ATTACKS
 
+# {{{ _filter_channels()
+def _filter_channels(I, kernel):
+    """ Apply a 2D kernel to each color channel, in float. The alpha channel
+        is kept as is """
+    I = I.astype('float64')
+    if I.ndim == 2:
+        return ndimage.convolve(I, kernel)
+    n_color = {2: 1, 4: 3}.get(I.shape[2], I.shape[2])
+    If = I.copy()
+    for c in range(n_color):
+        If[:,:,c] = ndimage.convolve(I[:,:,c], kernel)
+    return If
+# }}}
+
 # {{{ high_pass_filter()
 def high_pass_filter(input_image, output_image): 
 
     I = imread(input_image)
-    if len(I.shape)==3:
-        kernel = np.array([[[-1, -1, -1],
-                            [-1,  8, -1],
-                            [-1, -1, -1]],
-                           [[-1, -1, -1],
-                            [-1,  8, -1],
-                            [-1, -1, -1]],
-                           [[-1, -1, -1],
-                            [-1,  8, -1],
-                            [-1, -1, -1]]])
-    else:
-        kernel = np.array([[-1, -1, -1],
-                           [-1,  8, -1],
-                           [-1, -1, -1]])
-
-
-    If = ndimage.convolve(I, kernel)
-    imsave(output_image, If)
+    kernel = np.array([[-1, -1, -1],
+                       [-1,  8, -1],
+                       [-1, -1, -1]])
+    If = _filter_channels(I, kernel)
+    # The residual can be negative: save its magnitude
+    If = np.clip(np.abs(If), 0, 255)
+    imsave(output_image, If.astype('uint8'))
 # }}}
 
 # {{{ low_pass_filter()
 def low_pass_filter(input_image, output_image): 
 
     I = imread(input_image)
-    if len(I.shape)==3:
-        kernel = np.array([[[1, 1, 1],
-                            [1, 1, 1],
-                            [1, 1, 1]],
-                           [[1, 1, 1],
-                            [1, 1, 1],
-                            [1, 1, 1]],
-                           [[1, 1, 1],
-                            [1, 1, 1],
-                            [1, 1, 1]]])
-    else:
-        kernel = np.array([[1, 1, 1],
-                           [1, 1, 1],
-                           [1, 1, 1]])
-
-    kernel = kernel.astype('float32')/9
-    If = ndimage.convolve(I, kernel)
-    imsave(output_image, If)
+    kernel = np.ones((3, 3))/9
+    If = _filter_channels(I, kernel)
+    If = np.clip(np.round(If), 0, 255)
+    imsave(output_image, If.astype('uint8'))
 # }}}
 
 # {{{ imgdiff()
