@@ -327,11 +327,6 @@ def dci():
             print(f"ERROR: All images must be of the same type: {curr_ext}!={ext} \n")
             sys.exit(1)
 
-    embed_fn_saving = False
-    if ext=='.jpg':
-        embed_fn_saving = True
-
-
     import shutil
     import tempfile
     import aletheialib.stegosim
@@ -349,6 +344,7 @@ def dci():
     aletheialib.utils.download_sim_code(sys.argv[2])
     method = sys.argv[2]
     method = method.replace("-sim", "")
+    embed_fn_saving = aletheialib.stegosim.is_embed_fn_saving(sys.argv[2])
 
     B_dir=tempfile.mkdtemp()
     print("Preparind the B set ...")

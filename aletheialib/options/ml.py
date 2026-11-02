@@ -864,11 +864,8 @@ def _actor(image_dir, output_file, dev_id="cpu"):
 
     output = ""
     for simulator in simulators:
-        if simulator in ["steganogan-sim", "outguess-sim", "steghide-sim", "nsf5-color-sim", "j-uniward-color-sim"]:
-            embed_fn_saving = True
-        else:
-            embed_fn_saving = False
-            
+        embed_fn_saving = aletheialib.stegosim.is_embed_fn_saving(simulator)
+
         fn_sim=aletheialib.stegosim.embedding_fn(simulator)
 
         # Make some replacements to adapt the name of the method with the name

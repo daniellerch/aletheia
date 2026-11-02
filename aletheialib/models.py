@@ -916,9 +916,7 @@ def dci_si_method(image_path, method, modelA=None, modelB=None):
     fn_sim=aletheialib.stegosim.embedding_fn(method)
     method = method.replace("-sim", "")
 
-    embed_fn_saving = False
-    if method in aletheialib.stegosim.EMB_FN_SAVING_METHODS:
-        embed_fn_saving = True
+    embed_fn_saving = aletheialib.stegosim.is_embed_fn_saving(method)
 
     # Make some replacements to adapt the name of the method with the name
     # of the model file
