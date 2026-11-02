@@ -199,7 +199,7 @@ def extractor_fn(name):
     if name == "gfr": 
         return GFR_extract
     if name == "dctr": 
-        return dctr_extract
+        return DCTR_extract
 
     print("Unknown feature extractor:", name)
     sys.exit(0)

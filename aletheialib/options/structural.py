@@ -92,7 +92,7 @@ def rs():
 
     I = np.asarray(imread(sys.argv[2]))
     if len(I.shape)==2:
-        bitrate = aletheialib.attacks.rs_image(I)
+        bitrate = aletheialib.attacks.rs_image(I, None)
         if bitrate<threshold:
             print("No hidden data found")
         else:
