@@ -265,7 +265,7 @@ class NN:
 
 
         if self.acc_grad>1:
-            self.model = AccumulatingModel(accum_steps=acc_grad, inputs=self.model.inputs, outputs=self.model.outputs)
+            self.model = AccumulatingModel(accum_steps=self.acc_grad, inputs=self.model.inputs, outputs=self.model.outputs)
 
         if model_name:
             model_path = resolve_model_path(self.model_dir, self.model_name+'-best', required=False)
