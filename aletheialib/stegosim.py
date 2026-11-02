@@ -381,8 +381,12 @@ def steganogan(path, payload, dst_path):
     #print("nbytes:", nbytes)
 
     msg = ''.join(random.choice(string.ascii_letters+string.digits) for i in range(nbytes))
-    subprocess.run(["steganogan", "encode", "--cpu", os.path.abspath(path),
-                    msg, "-o", os.path.abspath(dst_path)])
+    # steganogan_cli loads the pretrained models with a restricted unpickler,
+    # since they can not be loaded with torch.load(weights_only=True)
+    cli = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+                       "steganogan_cli.py")
+    subprocess.run([sys.executable, cli, "encode", "--cpu", 
+                    os.path.abspath(path), msg, "-o", os.path.abspath(dst_path)])
 
 # }}}
 
