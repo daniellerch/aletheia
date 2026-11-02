@@ -51,7 +51,7 @@ def spa():
         if bitrate<threshold:
             print("No hidden data found")
         else:
-            print("Hidden data found"), bitrate
+            print("Hidden data found", round(bitrate,3))
     else:
         bitrate_R = aletheialib.attacks.spa_image(I, 0)
         bitrate_G = aletheialib.attacks.spa_image(I, 1)
