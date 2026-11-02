@@ -213,7 +213,7 @@ def split_sets_dci():
 # {{{ create_actors
 def create_actors():
 
-    if len(sys.argv)<8:
+    if len(sys.argv)<9:
         print(sys.argv[0], "create-actors <cover-dir> <stego-dir> <output-dir> <#innocent> <#guilty> <min-max> <seed>\n")
         print("  - cover-dir:    Directory containing cover images")
         print("  - stego-dir:    Directory containing stego images")
