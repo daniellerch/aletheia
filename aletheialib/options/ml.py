@@ -994,25 +994,6 @@ def actors_predict_fea():
 
 
 # {{{ ats
-def _download_sim_code(method):
-    """ Download the external code needed by an embedding simulator """
-    from aletheialib.utils import download_octave_code, download_octave_aux_file
-    from aletheialib.utils import download_octave_jpeg_toolbox, download_F5
-
-    octave_sims = ["hugo", "wow", "s-uniward", "s-uniward-color", "hill",
-                   "hill-color", "j-uniward", "j-uniward-color", "j-mipod",
-                   "j-mipod-color", "ebs", "ebs-color", "ued", "ued-color",
-                   "nsf5", "nsf5-color"]
-    if method.startswith("j-") or method in ["ebs", "ebs-color", "ued",
-            "ued-color", "nsf5", "nsf5-color", "wow", "f5"]:
-        download_octave_jpeg_toolbox()
-    if method in octave_sims:
-        download_octave_code(method.upper().replace("-", "_"))
-    if method.startswith("j-mipod"):
-        download_octave_aux_file("ixlnx3_5.mat")
-    if method == "f5":
-        download_F5()
-
 def _download_feaext_code(name):
     """ Download the external code needed by a feature extractor """
     from aletheialib.utils import download_octave_code
@@ -1056,7 +1037,7 @@ def ats():
         method = emb_sim.replace("-sim", "")
         if method in aletheialib.stegosim.EMB_FN_SAVING_METHODS:
             embed_fn_saving = True
-        _download_sim_code(method)
+        aletheialib.utils.download_sim_code(method)
     else:
         print("custom command")
         payload=sys.argv[2] # the command is passed as payload, see custom()

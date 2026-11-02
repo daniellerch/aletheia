@@ -338,6 +338,26 @@ def download_F5():
     
 # }}}
 
+# {{{ download_sim_code()
+def download_sim_code(method):
+    """ Download the external code needed by an embedding simulator """
+
+    method = method.replace("-sim", "")
+    octave_sims = ["hugo", "wow", "s-uniward", "s-uniward-color", "hill",
+                   "hill-color", "j-uniward", "j-uniward-color", "j-mipod",
+                   "j-mipod-color", "ebs", "ebs-color", "ued", "ued-color",
+                   "nsf5", "nsf5-color"]
+    if method.startswith("j-") or method in ["ebs", "ebs-color", "ued",
+            "ued-color", "nsf5", "nsf5-color", "wow", "f5"]:
+        download_octave_jpeg_toolbox()
+    if method in octave_sims:
+        download_octave_code(method.upper().replace("-", "_"))
+    if method.startswith("j-mipod"):
+        download_octave_aux_file("ixlnx3_5.mat")
+    if method == "f5":
+        download_F5()
+# }}}
+
 # {{{ download_e4s()
 def download_e4s():
 
