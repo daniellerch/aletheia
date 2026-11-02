@@ -3,6 +3,7 @@
 import os
 import sys
 import magic
+import shlex
 import shutil
 import tempfile
 import subprocess
@@ -14,17 +15,27 @@ from multiprocessing import cpu_count
 IGNORE_FILETYPES = ['inode/x-empty', 'application/x-dosexec', 'application/octet-stream']
 
 
+# {{{ _fill()
+def _fill(command, placeholder, value):
+    """ Replace a placeholder with a shell-quoted value (also if the
+        user wrote it between quotes) """
+    q = shlex.quote(value)
+    for p in ['"'+placeholder+'"', "'"+placeholder+"'", placeholder]:
+        command = command.replace(p, q)
+    return command
+# }}}
+
 # {{{ check_password()
 def check_password(params):
     passw, command, use_filetype, continue_searching, success_output_string = params
-    cmd = command.replace("<PASSWORD>", passw)
+    cmd = _fill(command, "<PASSWORD>", passw)
     # Printable version: non UTF-8 bytes are shown as \xNN
     shown = passw.encode('utf-8', 'surrogateescape').decode('utf-8', 'backslashreplace')
 
     if use_filetype:
         tempd = tempfile.mkdtemp()
         tempf = os.path.join(tempd, 'output')
-        cmd = cmd.replace("<OUTPUT_FILE>", tempf)
+        cmd = _fill(cmd, "<OUTPUT_FILE>", tempf)
 
 
     FNUL = open(os.devnull, 'w')
@@ -126,7 +137,7 @@ def steghide(path, password_file):
         sys.exit(0)
 
     aletheialib.utils.check_bin("steghide")   
-    command = f"steghide extract -sf {path} -xf output.txt -p <PASSWORD> -f"
+    command = f"steghide extract -sf {shlex.quote(path)} -xf output.txt -p <PASSWORD> -f"
     generic(command, password_file, use_filetype=False, continue_searching=False)
 
 # }}}
@@ -144,7 +155,7 @@ def outguess(path, password_file):
         sys.exit(0)
 
     aletheialib.utils.check_bin("outguess")   
-    command = f"outguess -k <PASSWORD> -r {path} <OUTPUT_FILE>"
+    command = f"outguess -k <PASSWORD> -r {shlex.quote(path)} <OUTPUT_FILE>"
     generic(command, password_file, use_filetype=True, continue_searching=True)
 
 # }}}
@@ -157,7 +168,7 @@ def openstego(path, password_file):
         sys.exit(0)
 
     aletheialib.utils.check_bin("openstego")   
-    command = f"openstego extract -sf {path} -p <PASSWORD> -xf <OUTPUT_FILE>"
+    command = f"openstego extract -sf {shlex.quote(path)} -p <PASSWORD> -xf <OUTPUT_FILE>"
     generic(command, password_file, use_filetype=True, continue_searching=False)
 
 # }}}
@@ -195,7 +206,7 @@ def f5(path, password_file):
 
     aletheialib.utils.check_bin("java")   
 
-    command = f"java Extract -p <PASSWORD> -e <OUTPUT_FILE> {image_path} "
+    command = f"java Extract -p <PASSWORD> -e <OUTPUT_FILE> {shlex.quote(image_path)} "
     generic(command, pass_path, use_filetype=True, continue_searching=True)
 
 # }}}
@@ -208,7 +219,7 @@ def stegosuite(path, password_file):
         sys.exit(0)
 
     aletheialib.utils.check_bin("stegosuite")   
-    command = f"stegosuite -k <PASSWORD> -x {path} "
+    command = f"stegosuite -k <PASSWORD> -x {shlex.quote(path)} "
     generic(command, password_file, use_filetype=False, 
             continue_searching=False, 
             success_output_string="Extracted message")
