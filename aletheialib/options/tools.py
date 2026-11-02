@@ -13,6 +13,7 @@ doc = "\n" \
 "  - plot-dct-histogram:    Plot DCT histogram.\n" \
 "  - eof-extrat:            Extract the data after EOF.\n" \
 "  - print-metadata:        Print Exif metadata.\n" \
+"  - download-external:     Download all the external code (Octave, F5, e4s).\n" \
 
 
 # {{{ hpf
@@ -270,3 +271,86 @@ def print_metadata():
 # }}}
 
 
+
+# {{{ download_external
+def download_external():
+
+    if len(sys.argv)>3 or (len(sys.argv)==3 and sys.argv[2]!="--status"):
+        print(sys.argv[0], "download-external [--status]\n")
+        print("  Download all the external code used by Aletheia. The license of")
+        print("  each resource is shown and must be accepted before downloading it.")
+        print("  Resources already in the cache are skipped.\n")
+        print("  --status:   Only show which resources are already downloaded.")
+        print("")
+        sys.exit(0)
+
+    import aletheialib.utils as u
+
+    currdir = os.path.dirname(u.__file__)
+    cache_dir = os.path.join(os.path.dirname(currdir), 'aletheia-cache')
+    octave_dir = os.path.join(cache_dir, 'octave')
+
+    octave_code = [
+        "WS", "TRIPLES", "AUMP",
+        "SRM", "SRMQ1", "SCRMQ1", "GFR", "DCTR",
+        "HUGO", "WOW", "HILL", "HILL_COLOR", "S_UNIWARD", "S_UNIWARD_COLOR",
+        "J_UNIWARD", "J_UNIWARD_COLOR", "J_MIPOD", "J_MIPOD_COLOR",
+        "NSF5", "NSF5_COLOR", "EBS", "EBS_COLOR", "UED", "UED_COLOR",
+    ]
+
+    # (name, file that marks it as downloaded, download function)
+    # The JPEG toolbox goes first, since the JPEG methods need it.
+    resources = [
+        ("JPEG_TOOLBOX", os.path.join(cache_dir, 'jpeg_toolbox', 'Makefile'),
+            u.download_octave_jpeg_toolbox),
+    ]
+    for name in octave_code:
+        resources.append((name, os.path.join(octave_dir, name+'.m'),
+            lambda name=name: u.download_octave_code(name)))
+
+    # Data file needed by J-MIPOD, only if its code has been accepted
+    def download_ixlnx():
+        if (os.path.isfile(os.path.join(octave_dir, 'J_MIPOD.m')) or
+            os.path.isfile(os.path.join(octave_dir, 'J_MIPOD_COLOR.m'))):
+            u.download_octave_aux_file("ixlnx3_5.mat")
+        else:
+            print("Skipped: J_MIPOD has not been downloaded")
+
+    resources += [
+        ("ixlnx3_5.mat", os.path.join(octave_dir, 'ixlnx3_5.mat'),
+            download_ixlnx),
+        ("E4S", os.path.join(octave_dir, 'ensemble_training.m'),
+            u.download_e4s),
+        ("F5", os.path.join(cache_dir, 'F5', 'Extract.class'),
+            u.download_F5),
+    ]
+
+    if len(sys.argv)<3:
+        cwd = os.getcwd()
+        for name, path, download in resources:
+            if os.path.isfile(path):
+                continue
+            print("\n==== "+name+" ====")
+            # The download functions call sys.exit() when the license is
+            # not accepted or the download fails: skip and go on.
+            try:
+                download()
+            except SystemExit:
+                pass
+            # Some of them change the working directory
+            os.chdir(cwd)
+
+    print("\nExternal resources:")
+    missing = 0
+    for name, path, _ in resources:
+        if os.path.isfile(path):
+            print("  [x]", name)
+        else:
+            print("  [ ]", name)
+            missing += 1
+    if missing:
+        print("\n", missing, "resources not downloaded\n")
+    else:
+        print("\nAll the external resources are downloaded\n")
+    sys.exit(0)
+# }}}

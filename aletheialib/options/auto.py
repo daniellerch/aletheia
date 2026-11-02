@@ -369,6 +369,7 @@ def dci():
     # of the model file
     method = method.replace("-color", "")
     method = method.replace("j-uniward", "juniw")
+    method = method.replace("s-uniward", "uniw")
 
     A_nn = load_model(A_nn, "effnetb0-A-alaska2-"+method)
     B_nn = load_model(B_nn, "effnetb0-B-alaska2-"+method)
