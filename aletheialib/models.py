@@ -952,6 +952,8 @@ def dci_si_method(image_path, method, modelA=None, modelB=None):
 
     A = imread(A_files[0])
     B = imread(B_files[0])
+    if A.ndim != 3 or B.ndim != 3:
+        raise ValueError("expected a color image: " + image_path)
     # This function must support images with variable size
     # Note that with big images we are only analyzing a small part
     d0 = min(A.shape[0], A_nn.shape[0])

@@ -338,6 +338,10 @@ def dci():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
     A_nn = aletheialib.models.NN("effnetb0", inference=True)
+    files = A_nn.filter_images(files)
+    if len(files)<10:
+        print("ERROR: We need at least 10 valid color images from the same actor\n")
+        sys.exit(1)
     A_files = files
 
     fn_sim=aletheialib.stegosim.embedding_fn(sys.argv[2])
@@ -454,6 +458,11 @@ def dci_si():
         files = sorted(glob.glob(os.path.join(path, '*.*')))
     else:
         files = [path]
+
+    files = aletheialib.models.NN("effnetb0", inference=True).filter_images(files)
+    if len(files)==0:
+        print("ERROR: please provide valid color images")
+        sys.exit(1)
 
     mx = 20
 
