@@ -202,11 +202,9 @@ def f5(path, password_file):
     dir_path = os.path.dirname(os.path.realpath(__file__))
     dir_path = os.path.join(dir_path, os.pardir, 'aletheia-cache', 'F5')
 
-    os.chdir(dir_path)
-
     aletheialib.utils.check_bin("java")   
 
-    command = f"java Extract -p <PASSWORD> -e <OUTPUT_FILE> {shlex.quote(image_path)} "
+    command = f"java -cp {shlex.quote(dir_path)} Extract -p <PASSWORD> -e <OUTPUT_FILE> {shlex.quote(image_path)} "
     generic(command, pass_path, use_filetype=True, continue_searching=True)
 
 # }}}

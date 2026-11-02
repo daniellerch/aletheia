@@ -37,6 +37,11 @@ def embed(sim, path, payload, dst_path=None):
 
     check_octave()
 
+    # Octave runs in a temporary directory
+    path = os.path.abspath(path)
+    if dst_path:
+        dst_path = os.path.abspath(dst_path)
+
     currdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(currdir, os.pardir))
     m_path=os.path.join(basedir, 'aletheia-cache', 'octave')
@@ -50,8 +55,7 @@ def embed(sim, path, payload, dst_path=None):
                "jpeg_read_struct"]:
         if not os.path.isfile(os.path.join(m_path, 'jpeg_write.mex')):
             tb_path=os.path.join(basedir, 'aletheia-cache', 'jpeg_toolbox')
-            os.chdir(tb_path)
-            os.system("make")
+            subprocess.run(["make"], cwd=tb_path)
 
 
     payload = str(float(payload))
@@ -138,6 +142,9 @@ def _extract(extractor_name, path, params={}):
 
     check_octave()
 
+    # Octave runs in a temporary directory
+    path = os.path.abspath(path)
+
     fdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(fdir, os.pardir))
     m_path=os.path.join(basedir, 'aletheia-cache', 'octave')
@@ -148,10 +155,6 @@ def _extract(extractor_name, path, params={}):
     if ((im.mode=='L' and extractor_name in FEAEXT_1CH) or 
         (im.mode in ['RGB', 'RGBA', 'RGBX'] and extractor_name in FEAEXT_3CH)):
         tmpdir=tempfile.mkdtemp()
-        try:
-            os.chdir(tmpdir)
-        except Exception as e:
-            print("chdir:", str(e))
 
         channel = 1
         if "channel" in params:
@@ -201,14 +204,16 @@ def _jpeg(fn_name, path):
  
     check_octave()
 
+    # Octave runs in a temporary directory
+    path = os.path.abspath(path)
+
     currdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(currdir, os.pardir))
     m_path=os.path.join(basedir, 'aletheia-cache', 'octave')
 
     if not os.path.isfile(os.path.join(m_path, 'jpeg_read.mex')):
         tb_path=os.path.join(basedir, 'aletheia-cache', 'jpeg_toolbox')
-        os.chdir(tb_path)
-        os.system("make")
+        subprocess.run(["make"], cwd=tb_path)
 
     fn_names_with_return = ['jpeg_read_struct']
 
@@ -257,6 +262,9 @@ def _attack(attack_name, path, params={}):
 
     check_octave()
 
+    # Octave runs in a temporary directory
+    path = os.path.abspath(path)
+
     fdir=os.path.dirname(__file__)
     basedir=os.path.abspath(os.path.join(fdir, os.pardir))
     m_path=os.path.join(basedir, 'aletheia-cache', 'octave')
@@ -264,10 +272,6 @@ def _attack(attack_name, path, params={}):
     X=numpy.array([])
     im=Image.open(path)
     tmpdir=tempfile.mkdtemp()
-    try:
-        os.chdir(tmpdir)
-    except Exception as e:
-        print("chdir:", str(e))
 
     channel = 1
     if "channel" in params:

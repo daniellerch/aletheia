@@ -326,7 +326,6 @@ def download_external():
     ]
 
     if len(sys.argv)<3:
-        cwd = os.getcwd()
         for name, path, download in resources:
             if os.path.isfile(path):
                 continue
@@ -337,8 +336,6 @@ def download_external():
                 download()
             except SystemExit:
                 pass
-            # Some of them change the working directory
-            os.chdir(cwd)
 
     print("\nExternal resources:")
     missing = 0

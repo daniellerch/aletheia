@@ -319,8 +319,7 @@ def download_octave_jpeg_toolbox():
             sys.exit(0)
 
 
-    os.chdir(os.path.join(cache_dir, 'jpeg_toolbox/'))
-    os.system("make")
+    subprocess.run(["make"], cwd=os.path.join(cache_dir, 'jpeg_toolbox'))
 
 
 
@@ -362,8 +361,7 @@ def download_F5():
     with zipfile.ZipFile(local_file, 'r') as zip_file:
         zip_file.extractall(cache_dir)
 
-    os.chdir(F5_path)
-    os.system("make")
+    subprocess.run(["make"], cwd=F5_path)
 
     
 # }}}
