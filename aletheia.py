@@ -59,9 +59,6 @@ def main():
 
 
     # Structural LSB detectors
-    elif sys.argv[1] == "sp":
-        options.structural.sp()
-
     elif sys.argv[1] == "ws":
         options.structural.ws()
 

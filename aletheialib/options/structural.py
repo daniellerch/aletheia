@@ -15,6 +15,16 @@ from multiprocessing import cpu_count
 from PIL import Image
 import aletheialib.octave_interface as O
 
+# {{{ _read_planes()
+def _read_planes(path):
+    """ Read an image as gray (HxW) or color (HxWx3+). Gray images with an
+        alpha channel (HxWx2) are returned as gray """
+    I = np.asarray(imread(path))
+    if I.ndim == 3 and I.shape[2] in [1, 2]:
+        I = I[:,:,0]
+    return I
+# }}}
+
 
 
 doc = "\n" \
@@ -45,7 +55,7 @@ def spa():
         threshold = float(sys.argv[3])
     print("Using threshold:", threshold)
 
-    I = imread(sys.argv[2])
+    I = _read_planes(sys.argv[2])
     if len(I.shape)==2:
         bitrate = aletheialib.attacks.spa_image(I, None)
         if bitrate<threshold:
@@ -90,7 +100,7 @@ def rs():
         threshold = float(sys.argv[3])
     print("Using threshold:", threshold)
 
-    I = np.asarray(imread(sys.argv[2]))
+    I = _read_planes(sys.argv[2])
     if len(I.shape)==2:
         bitrate = aletheialib.attacks.rs_image(I, None)
         if bitrate<threshold:
@@ -218,7 +228,7 @@ def triples():
 # XXX Do not work
 def aump():
     if len(sys.argv)<3:
-        print(sys.argv[0], "aump <image> [threshold]\n")
+        print(sys.argv[0], "aump <image> [false alarm probability]\n")
         sys.exit(0)
 
     download_octave_code("AUMP")
@@ -228,10 +238,15 @@ def aump():
         sys.exit(1)
 
 
-    threshold=0.05
+    # The AUMP statistic is ~N(0,1) for cover images, so the threshold is
+    # given as a false alarm probability
+    import scipy.stats
+    p_fa = 0.05
     if len(sys.argv) == 4:
-        threshold = float(sys.argv[3])
-    print("Using threshold:", threshold)
+        p_fa = float(sys.argv[3])
+    threshold = scipy.stats.norm.ppf(1-p_fa)
+    print("Using false alarm probability:", p_fa, 
+          "(threshold:", str(round(threshold,3))+")")
 
     path = aletheialib.utils.absolute_path(sys.argv[2])
     im=Image.open(path)
@@ -264,7 +279,7 @@ def aump():
 # {{{ spa_score
 def spa_detect(p):
     f, threshold = p
-    I = imread(f)
+    I = _read_planes(f)
     if len(I.shape)==2:
         bitrate = aletheialib.attacks.spa_image(I, None)
     else:

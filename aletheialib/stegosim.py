@@ -316,13 +316,25 @@ def f5(path, payload, dst_path):
 
     password = ''.join(random.sample(string.ascii_letters+string.digits, 8))
 
+    # F5 uses AWT and needs a display: use a virtual one if there is none
+    cmd = ["java", "Embed", "-p", password, "-e", None,
+           os.path.abspath(path), os.path.abspath(dst_path)]
+    if not os.environ.get("DISPLAY") and shutil.which("xvfb-run"):
+        cmd = ["xvfb-run", "-a"] + cmd
+
     secret_path = _secret_file(nbytes)
+    cmd[cmd.index(None)] = secret_path
     try:
-        subprocess.run(["java", "Embed", "-p", password, "-e", secret_path,
-                        os.path.abspath(path), os.path.abspath(dst_path)],
-                       cwd=dir_path)
+        p = subprocess.run(cmd, cwd=dir_path, stderr=subprocess.PIPE)
     finally:
         os.remove(secret_path)
+    stderr = p.stderr.decode(errors="replace")
+    sys.stderr.write(stderr)
+    if "HeadlessException" in stderr:
+        print("ERROR: F5 needs a graphical display. Set DISPLAY or install "
+              "xvfb (xvfb-run)")
+        if os.path.exists(dst_path) and os.path.getsize(dst_path)==0:
+            os.remove(dst_path)
 
 # }}}
 

@@ -67,8 +67,8 @@ def spa(filename, channel=0):
     return spa_image(imread(filename), channel)
 
 def spa_image(image, channel=0):
-    if channel!=None:
-        I = image[:,:,channel]
+    if image.ndim == 3:
+        I = image[:,:,channel or 0]
     else:
         I = image
 
@@ -166,8 +166,8 @@ def rs(filename, channel=0):
     return rs_image(np.asarray(imread(filename)), channel)
 
 def rs_image(image, channel=0):
-    if channel!=None:
-        I = image[:,:,channel]
+    if image.ndim == 3:
+        I = image[:,:,channel or 0]
     else:
         I = image
     I = I.astype(int)
@@ -269,6 +269,11 @@ def calibration_chisquare_mode(path):
                     f_obs.append(h)
                 #print(f_exp, f_obs)
 
+                if len(f_obs) < 2:
+                    continue
+                # chisquare needs both histograms with the same total
+                f_exp = np.array(f_exp, dtype=float)
+                f_exp *= sum(f_obs)/f_exp.sum()
                 chi, p = scipy.stats.chisquare(f_obs, f_exp)
                 p_list.append(p)
 

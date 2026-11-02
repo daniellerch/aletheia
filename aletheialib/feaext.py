@@ -33,7 +33,10 @@ def extract_features(extract_fn, image_path, ofile, params={}):
         for dirpath,_,filenames in os.walk(image_path):
             for f in filenames:
                 path=os.path.abspath(os.path.join(dirpath, f))
-                if not utils.is_valid_image(path):
+                if "\n" in f:
+                    # The .label file has one name per line
+                    print("Warning, file names with newlines are not supported: ", repr(f))
+                elif not utils.is_valid_image(path):
                     print("Warning, please provide a valid image: ", f)
                 else:
                     files.append(path)

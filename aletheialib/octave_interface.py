@@ -174,6 +174,8 @@ def _extract(extractor_name, path, params={}):
         elif extractor_name=="DCTR":
             m_code+="data="+extractor_name+"("+_q(path)+"," \
                     +str(int(params["quality"]))+", "+str(int(channel))+");"
+        elif extractor_name=="SCRMQ1":
+            m_code+="data="+extractor_name+"("+_q(path)+");"
         else:
             m_code+="data="+extractor_name+"("+_q(path)+", "+str(int(channel))+");"
         m_code+="save('-mat7-binary', "+_q(data_path)+",'data');"
