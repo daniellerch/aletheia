@@ -290,6 +290,9 @@ def main():
     elif sys.argv[1] == "print-metadata":
         options.tools.print_metadata()
 
+    elif sys.argv[1] == "download-external":
+        options.tools.download_external()
+
     else:
         print("Wrong command!")
 
