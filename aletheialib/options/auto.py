@@ -263,7 +263,8 @@ def auto():
             else:
                 name = name.ljust(mx, ' ')
  
-            beta = O._attack('WS', bitmap_files[i], params={"channel":1})["data"][0][0]
+            beta = max(O._attack('WS', bitmap_files[i], params={"channel":c})["data"][0][0]
+                       for c in (1, 2, 3))
             if beta<=0.05:
                 beta = 0
      
@@ -331,6 +332,10 @@ def dci():
     import tempfile
     import aletheialib.stegosim
     import aletheialib.models
+
+    if not aletheialib.stegosim.is_compatible(sys.argv[2], files[0]):
+        print("ERROR: Please, provide images compatible with this simulator\n")
+        sys.exit(1)
     import numpy as np
     from aletheialib.models import load_model
 
@@ -448,7 +453,7 @@ def dci_si():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
-    from aletheialib.stegosim import JPEG_METHODS 
+    import aletheialib.stegosim
     import aletheialib.models # XXX Print logs here
     from aletheialib.models import dci_si_method
 
@@ -475,12 +480,7 @@ def dci_si():
         method = method.replace("juniw", "j-uniward")
 
         # Check pair method/image
-        ext = os.path.splitext(image_path)[1].lower().replace('.jpeg', '.jpg')
-        m = method.replace('-sim', '').replace('-', '_')
-        if ext=='.jpg' and m not in JPEG_METHODS:
-            print("ERROR: Please, provide a compatible image for this method\n")
-            sys.exit(1)
-        elif ext!='.jpg' and m  in JPEG_METHODS:
+        if not aletheialib.stegosim.is_compatible(method, image_path):
             print("ERROR: Please, provide a compatible image for this method\n")
             sys.exit(1)
 

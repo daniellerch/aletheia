@@ -38,6 +38,12 @@ EMB_FN_SAVING_METHODS = ["j-uniward", "j-uniward-color", "j-mipod",
 "j-mipod-color", "ebs", "ebs-color", "ued", "ued-color", "nsf5", "nsf5-color",
 "f5", "outguess", "steganogan", "steghide" ]
 
+def is_compatible(name, path):
+    """ JPEG simulators need JPEG images and spatial ones need bitmaps """
+    ext = os.path.splitext(path)[1].lower()
+    is_jpeg = ext in (".jpg", ".jpeg")
+    return is_jpeg == (name.replace("-sim", "").replace("-", "_") in JPEG_METHODS)
+
 def is_embed_fn_saving(name):
     """ True if the simulator writes the output image itself (needs dst_path) """
     return name.replace("-sim", "") in EMB_FN_SAVING_METHODS

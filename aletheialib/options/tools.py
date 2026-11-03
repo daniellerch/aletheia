@@ -11,7 +11,7 @@ doc = "\n" \
 "  - rm-alpha:              Opacity of the alpha channel to 255.\n" \
 "  - plot-histogram:        Plot histogram.\n" \
 "  - plot-dct-histogram:    Plot DCT histogram.\n" \
-"  - eof-extrat:            Extract the data after EOF.\n" \
+"  - eof-extract:           Extract the data after EOF.\n" \
 "  - print-metadata:        Print Exif metadata.\n" \
 "  - download-external:     Download all the external code (Octave, F5, e4s).\n" \
 

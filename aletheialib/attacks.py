@@ -17,7 +17,7 @@ from cmath import sqrt
 from imageio import imread, imsave
 
 from PIL import Image
-from PIL.ExifTags import TAGS
+from PIL.ExifTags import TAGS, GPSTAGS, IFD
 
 from aletheialib.jpeg import JPEG
 
@@ -41,16 +41,43 @@ def _print_list(items, line_size):
 # -- EXIF --
 
 # {{{ exif()
+def _exif_value(tag, data, endian="<"):
+    if not isinstance(data, bytes):
+        return data
+    if isinstance(tag, str) and tag.startswith("XP"):
+        # XPComment, XPAuthor...: UTF-16
+        return data.decode("utf-16-le", errors="replace").rstrip("\x00")
+    if tag == "UserComment" and len(data) >= 8:
+        # 8-byte charset prefix
+        text = data[8:]
+        if not data[:8].startswith(b"UNICODE"):
+            enc = "latin-1"
+        elif text[:2] in (b"\xff\xfe", b"\xfe\xff"):
+            enc = "utf-16"
+        else:
+            # without BOM, the byte order of the Exif data
+            enc = "utf-16-le" if endian == "<" else "utf-16-be"
+        return text.decode(enc, errors="replace").rstrip("\x00")
+    try:
+        return data.decode()
+    except UnicodeDecodeError:
+        h = data[:32].hex()
+        return h + ("..." if len(data) > 32 else "") + f" ({len(data)} bytes)"
+
 def exif(filename):
     image = Image.open(filename)
-
     exifdata = image.getexif()
-    for tag_id in exifdata:
+    endian = getattr(exifdata, "endian", None) or "<"
+    for tag_id, data in exifdata.items():
+        if tag_id in (IFD.Exif, IFD.GPSInfo):
+            # offsets of the sub-IFDs, shown below
+            continue
         tag = TAGS.get(tag_id, tag_id)
-        data = exifdata.get(tag_id)
-        if isinstance(data, bytes):
-            data = data.decode()
-        print(f"{tag:25}: {data}")
+        print(f"{tag:25}: {_exif_value(tag, data, endian)}")
+    for ifd_id, names in ((IFD.Exif, TAGS), (IFD.GPSInfo, GPSTAGS)):
+        for tag_id, data in exifdata.get_ifd(ifd_id).items():
+            tag = names.get(tag_id, tag_id)
+            print(f"{tag:25}: {_exif_value(tag, data, endian)}")
 
 
 # }}}$

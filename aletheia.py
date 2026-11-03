@@ -216,12 +216,6 @@ def main():
     elif sys.argv[1] == "effnetb0-dci-predict":
         options.ml.effnetb0_dci_predict()
 
-    elif sys.argv[1] == "esvm":
-        options.ml.esvm()
-
-    elif sys.argv[1] == "esvm-predict":
-        options.ml.esvm_predict()
-
     elif sys.argv[1] == "e4s":
         options.ml.e4s()
 
