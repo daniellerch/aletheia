@@ -210,6 +210,24 @@ def main():
     elif sys.argv[1] == "effnetb0-predict":
         options.ml.nn_predict("effnetb0")
 
+    elif sys.argv[1] == "srnet-shift":
+        options.ml.nn_train("srnet-shift")
+
+    elif sys.argv[1] == "srnet-shift-score":
+        options.ml.nn_score("srnet-shift")
+
+    elif sys.argv[1] == "srnet-shift-predict":
+        options.ml.nn_predict("srnet-shift")
+
+    elif sys.argv[1] == "effnetb0-shift":
+        options.ml.nn_train("effnetb0-shift")
+
+    elif sys.argv[1] == "effnetb0-shift-score":
+        options.ml.nn_score("effnetb0-shift")
+
+    elif sys.argv[1] == "effnetb0-shift-predict":
+        options.ml.nn_predict("effnetb0-shift")
+
     elif sys.argv[1] == "effnetb0-dci-score":
         options.ml.effnetb0_dci_score()
 

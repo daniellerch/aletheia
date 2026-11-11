@@ -227,7 +227,8 @@ class NN:
         self.steps_train_limit = None
         self.use_pairs = False
         self.use_pairs_prob = 0.8
-    
+        self.shift_aug = False
+
         if network == "effnetb0":
             self.model = self.create_model_effnetb0()
             self.steps_train_limit = 1000
@@ -251,6 +252,28 @@ class NN:
             self.use_pairs_prob = 0.8
             self.subset = None
             self.steps_train_limit = 1000
+
+        elif network == "effnetb0-shift":
+            # Same as "effnetb0" with cyclic shifts (multiples of 8 px)
+            # added to the rotation/flip augmentation.
+            self.model = self.create_model_effnetb0()
+            self.acc_grad = 1
+            self.use_pairs = False
+            self.subset = None
+            self.steps_train_limit = 1000
+            self.shift_aug = True
+
+        elif network == "srnet-shift":
+            # Same as "srnet" with cyclic shifts (multiples of 8 px)
+            # added to the rotation/flip augmentation.
+            self.model = self.create_model_srnet()
+            self.opt = optimizers.Adamax(learning_rate=1e-3)
+            self.acc_grad = 1
+            self.use_pairs = False
+            self.use_pairs_prob = 0.8
+            self.subset = None
+            self.steps_train_limit = 1000
+            self.shift_aug = True
 
         else:
             print("NN __init__ Error: network not found")
@@ -418,6 +441,17 @@ class NN:
         return model
         # }}}
 
+    def _random_shift_offsets(self, shape):
+        # {{{
+        # Random cyclic shift over the full image size on each axis,
+        # restricted to multiples of 8 px so the 8x8 JPEG block grid stays
+        # aligned (every block-grid position can be reached).
+        block = 8
+        dy = random.randrange(0, max(shape[0], block), block)
+        dx = random.randrange(0, max(shape[1], block), block)
+        return dy, dx
+        # }}}
+
     def rot_flip(self, I):
         # {{{
         rot = random.randint(0,3)
@@ -425,6 +459,9 @@ class NN:
             I = np.rot90(I, rot)
         else:
             I = np.flip(np.rot90(I, rot), axis=1)
+        if self.shift_aug:
+            dy, dx = self._random_shift_offsets(I.shape)
+            I = np.roll(I, shift=(dy, dx), axis=(0, 1))
         return I
         # }}}
 
@@ -437,6 +474,10 @@ class NN:
         else:
             I1 = np.flip(np.rot90(I1, rot), axis=1)
             I2 = np.flip(np.rot90(I2, rot), axis=1)
+        if self.shift_aug:
+            dy, dx = self._random_shift_offsets(I1.shape)
+            I1 = np.roll(I1, shift=(dy, dx), axis=(0, 1))
+            I2 = np.roll(I2, shift=(dy, dx), axis=(0, 1))
         return I1, I2
         # }}}
 

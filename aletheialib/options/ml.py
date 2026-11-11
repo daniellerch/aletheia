@@ -17,6 +17,12 @@ doc="\n" \
 "  - effnetb0:              Train a model with EfficientNet B0.\n" \
 "  - effnetb0-score:        Score with EfficientNet B0.\n" \
 "  - effnetb0-predict:      Predict with EfficientNet B0.\n" \
+"  - srnet-shift:           Train SRNet with cyclic-shift augmentation.\n" \
+"  - srnet-shift-score:     Score with the shift-augmented SRNet.\n" \
+"  - srnet-shift-predict:   Predict with the shift-augmented SRNet.\n" \
+"  - effnetb0-shift:        Train EfficientNet B0 with cyclic-shift augmentation.\n" \
+"  - effnetb0-shift-score:  Score with the shift-augmented EfficientNet B0.\n" \
+"  - effnetb0-shift-predict: Predict with the shift-augmented EfficientNet B0.\n" \
 "  - effnetb0-dci-score:    DCI Score with EfficientNet B0.\n" \
 "  - effnetb0-dci-predict:  DCI Prediction with EfficientNet B0.\n" \
 "  - e4s:                   Train Ensemble Classifiers for Steganalysis.\n" \
