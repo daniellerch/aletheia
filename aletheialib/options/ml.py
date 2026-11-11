@@ -18,6 +18,7 @@ doc="\n" \
 "  - effnetb0-score:        Score with EfficientNet B0.\n" \
 "  - effnetb0-predict:      Predict with EfficientNet B0.\n" \
 "  - srnet-shift:           Train SRNet with cyclic-shift augmentation.\n" \
+"  - srnet-shift-pairs:     Train SRNet with shifts and cover/stego pairs.\n" \
 "  - srnet-shift-score:     Score with the shift-augmented SRNet.\n" \
 "  - srnet-shift-predict:   Predict with the shift-augmented SRNet.\n" \
 "  - effnetb0-shift:        Train EfficientNet B0 with cyclic-shift augmentation.\n" \

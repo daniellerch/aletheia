@@ -213,6 +213,9 @@ def main():
     elif sys.argv[1] == "srnet-shift":
         options.ml.nn_train("srnet-shift")
 
+    elif sys.argv[1] == "srnet-shift-pairs":
+        options.ml.nn_train("srnet-shift-pairs")
+
     elif sys.argv[1] == "srnet-shift-score":
         options.ml.nn_score("srnet-shift")
 

@@ -253,6 +253,19 @@ class NN:
             self.subset = None
             self.steps_train_limit = 1000
 
+        elif network == "srnet-shift-pairs":
+            # "srnet-shift" trained with cover/stego pairs (same basename)
+            # in the same batch, as in the original SRNet. Helps escaping
+            # the initial 0.5 plateau. Pairs share rot/flip/shift.
+            self.model = self.create_model_srnet()
+            self.opt = optimizers.Adamax(learning_rate=1e-3)
+            self.acc_grad = 1
+            self.use_pairs = True
+            self.use_pairs_prob = 1.0
+            self.subset = None
+            self.steps_train_limit = 1000
+            self.shift_aug = True
+
         elif network == "effnetb0-shift":
             # Same as "effnetb0" with cyclic shifts (multiples of 8 px)
             # added to the rotation/flip augmentation.
