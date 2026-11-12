@@ -228,6 +228,7 @@ class NN:
         self.use_pairs = False
         self.use_pairs_prob = 0.8
         self.shift_aug = False
+        self.reduce_lr = False
 
         if network == "effnetb0":
             self.model = self.create_model_effnetb0()
@@ -265,6 +266,7 @@ class NN:
             self.subset = None
             self.steps_train_limit = 1000
             self.shift_aug = True
+            self.reduce_lr = True
 
         elif network == "effnetb0-shift":
             # Same as "effnetb0" with cyclic shifts (multiples of 8 px)
@@ -275,6 +277,7 @@ class NN:
             self.subset = None
             self.steps_train_limit = 1000
             self.shift_aug = True
+            self.reduce_lr = True
 
         elif network == "srnet-shift":
             # Same as "srnet" with cyclic shifts (multiples of 8 px)
@@ -287,6 +290,7 @@ class NN:
             self.subset = None
             self.steps_train_limit = 1000
             self.shift_aug = True
+            self.reduce_lr = True
 
         else:
             print("NN __init__ Error: network not found")
@@ -754,6 +758,18 @@ class NN:
             cb_checkpoint_last,
             cb_earlystopping
         ]
+
+        if self.reduce_lr:
+            # Halve the learning rate when val_accuracy stalls, so the
+            # validation curve settles instead of oscillating at a fixed LR.
+            callbacks_list.append(callbacks.ReduceLROnPlateau(
+                monitor='val_accuracy',
+                mode='max',
+                factor=0.5,
+                patience=4,
+                min_lr=1e-5,
+                verbose=1
+            ))
 
         #callbacks_list = [] # XXX
 
